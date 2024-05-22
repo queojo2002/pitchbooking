@@ -10,10 +10,13 @@ export const login = ({ email, password }) => async (dispatch) => {
         const result = await loginUser({ email, password });
         if (result.user) {
             const userDoc = await firestore().collection('users').doc(email).get();
-            if (userDoc._exists) {
+            if (userDoc.exists) {
                 dispatch({
                     type: LOGIN_SUCCESS,
-                    payload: userDoc._data,
+                    payload: {
+                        ...userDoc._data,
+                        ...result.user,
+                    },
                 });
             } else {
                 dispatch({

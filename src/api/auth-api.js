@@ -20,16 +20,15 @@ export const logoutUser = () => {
 export const signUpUser = async ({ name, email, password }) => {
     try {
         const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-       
         const user = userCredential.user;
-        
         await auth().currentUser.updateProfile({
             displayName: name,
         });
-        const userModel = new User(name, email, password);
+        const userModel = new User(name, email);
         const userModelAdd = userModel.toObject();
         await firestore().collection('users').doc(email).set(userModelAdd);
-
+        await user.sendEmailVerification();
+        await auth().signOut();
 
         return { user };
     } catch (error) {

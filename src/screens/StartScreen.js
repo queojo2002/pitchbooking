@@ -18,7 +18,7 @@ export default StartScreen = ({ navigation }) => {
                 Login
             </Button>
             <Button
-                mode="outlined"
+                mode="contained"
                 onPress={() => navigation.navigate('RegisterScreen')}
             >
                 Sign Up

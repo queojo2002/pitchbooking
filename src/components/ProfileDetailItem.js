@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 16,
         fontWeight: 'bold',
+        paddingBottom: 3,
     },
     phoneNumber: {
         fontSize: 16,

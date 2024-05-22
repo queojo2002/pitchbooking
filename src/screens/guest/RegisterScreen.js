@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { TouchableOpacity, StyleSheet, View } from 'react-native'
+import { TouchableOpacity, StyleSheet, View, Alert } from 'react-native'
 import { theme } from "../../core/theme";
 import { ActivityIndicator, Text } from 'react-native-paper'
 import { BackButton, Background, Header, Logo, TextInput, Button } from "../../components";
-import { emailValidator, nameValidator } from "../../helpers";
+import { emailValidator, nameValidator, passwordValidator } from "../../helpers";
 import { signUpUser } from "../../api/auth-api";
 
 
@@ -11,6 +11,8 @@ export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState({ value: '', error: '' })
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const [confirmPassword, setConfirmPassword] = useState({ value: '', error: '' })
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -21,10 +23,16 @@ export default function RegisterScreen({ navigation }) {
     const nameError = nameValidator(name.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError || nameError) {
+    confirmPasswordError = passwordValidator(confirmPassword.value)
+    if (emailError || passwordError || nameError || confirmPasswordError) {
       setName({ ...name, error: nameError })
       setEmail({ ...email, error: emailError })
       setPassword({ ...password, error: passwordError })
+      setConfirmPassword({ ...confirmPassword, error: confirmPasswordError })
+      setLoading(false)
+      return
+    } else if (password.value !== confirmPassword.value || confirmPassword.value === '') {
+      setConfirmPassword({ ...confirmPassword, error: 'Password and Confirm Password must be the same' })
       setLoading(false)
       return
     }
@@ -38,10 +46,19 @@ export default function RegisterScreen({ navigation }) {
         password: password.value
       })
       if (result.user) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'LoginScreen' }],
-        })
+        Alert.alert(
+          "Verification Email Sent",
+          "Chúng tôi đã gửi một đường dẫn xác thực đến email của bạn. Vui lòng nhấn vào đó để có thể xác thực email.",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.reset({
+                index: 0,
+                routes: [{ name: 'LoginScreen' }],
+              })
+            }
+          ]
+        );
       } else {
         setError(result.error);
       }
@@ -62,10 +79,9 @@ export default function RegisterScreen({ navigation }) {
           routes: [{ name: 'StartScreen' }],
         })
       }} />
-      <Logo />
       <Header>Create Account</Header>
       <TextInput
-        label="Name"
+        label="Full Name"
         returnKeyType="next"
         value={name.value}
         onChangeText={(text) => setName({ value: text, error: '' })}
@@ -91,6 +107,16 @@ export default function RegisterScreen({ navigation }) {
         onChangeText={(text) => setPassword({ value: text, error: '' })}
         error={!!password.error}
         errorText={password.error}
+        secureTextEntry
+      />
+
+      <TextInput
+        label="Confirm Password"
+        returnKeyType="done"
+        value={confirmPassword.value}
+        onChangeText={(text) => setConfirmPassword({ value: text, error: '' })}
+        error={!!confirmPassword.error}
+        errorText={confirmPassword.error}
         secureTextEntry
       />
 

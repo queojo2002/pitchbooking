@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ActivityIndicator, Text } from 'react-native-paper';
+import { ActivityIndicator, IconButton, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { BackButton, Background, Button, Header, Logo, TextInput } from "../../components";
 import { theme } from "../../core/theme";
 import { emailValidator, passwordValidator } from "../../helpers";
 import { clearError, login } from "../../redux/actions/authAction";
-import { Button as PaperButton } from 'react-native-paper';
 
 
 export default LoginScreen = ({ navigation }) => {
@@ -98,33 +97,46 @@ export default LoginScreen = ({ navigation }) => {
             {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
-                <Button mode="contained" onPress={onLoginPressed}>
+                <Button mode="contained" onPress={onLoginPressed} style={{ backgroundcolor: "red" }}>
                     Login
                 </Button>
             )}
 
-            <View style={{flexDirection: 'row',justifyContent: 'space-between',}}>
-                <PaperButton
-                    mode="contained"
-                    icon="google"
-                    style={{
-                        flex: 1,
-                        margin: 10,
-                    }}
-                >
-                    Google
-                </PaperButton>
-                <PaperButton
-                    mode="contained"
-                    icon="phone"
-                    style={{
-                        flex: 1,
-                        margin: 10,
-                    }}
-                >
-                    Phone
-                </PaperButton>
+            <View>
+                <Text>OR</Text>
             </View>
+
+
+
+
+            <Button mode="contained" onPress={onLoginPressed} icon={() => {
+                return (
+                    <IconButton
+                        icon="google"
+                        size={20}
+                        onPress={() => console.log('Pressed')}
+                    />
+                );
+            }} style={{
+                backgroundColor: "#F3F3F3",
+            }}>
+                <Text style={{ marginLeft: 8 }}>Login with Google</Text>
+            </Button>
+
+
+            <Button mode="contained" onPress={onLoginPressed} icon={() => {
+                return (
+                    <IconButton
+                        icon="phone"
+                        size={20}
+                        onPress={() => console.log('Pressed')}
+                    />
+                );
+            }} style={{
+                backgroundColor: "#F3F3F3",
+            }}>
+                <Text style={{ marginLeft: 8 }}>Login with Phone</Text>
+            </Button>
 
 
 
@@ -161,3 +173,4 @@ const styles = StyleSheet.create({
         color: theme.colors.primary,
     },
 })
+
