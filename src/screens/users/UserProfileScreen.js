@@ -9,6 +9,7 @@ import { truncate } from '../../helpers/truncateString';
 import auth from '@react-native-firebase/auth';
 import { LOGIN_SUCCESS } from '../../redux/actions';
 import { useFocusEffect } from '@react-navigation/native';
+import { appColor } from '../../constants/appColor';
 
 export default UserProfileScreen = () => {
 
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     avatarSection: {
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#10B3C4",
+        backgroundColor: appColor.lightBlue,
         height: '30%',
 
     },

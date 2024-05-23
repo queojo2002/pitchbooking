@@ -22,11 +22,11 @@ export default function AdminBottomNavigation({ navigation }) {
                 },
                 headerTitleAlign: "center",
                 headerRight: () => {
-                    
+
                 },
                 headerTitle: () => {
                     return (
-                        <View style={{height: 20, justifyContent: "center", alignItems: "center", alignSelf: "center", alignContent: "center"}}>
+                        <View style={{ height: 20, justifyContent: "center", alignItems: "center", alignSelf: "center", alignContent: "center" }}>
                             <Text>{(route.name)}</Text>
                         </View>
                     );
@@ -44,15 +44,15 @@ export default function AdminBottomNavigation({ navigation }) {
                 tabBarActiveTintColor: "#0071ff",
                 tabBarInactiveTintColor: "gray",
             })}
-            barStyle={{ 
+            barStyle={{
                 backgroundColor: 'white',
-                }}
+            }}
         >
             <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    
+
                     tabBarLabel: 'Home',
                     tabBarIcon: ({ color }) => (
                         <MaterialCommunityIcons name="home" color={color} size={26} />
