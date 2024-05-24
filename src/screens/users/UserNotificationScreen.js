@@ -1,44 +1,72 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
 import { appColor } from '../../constants/appColor';
+import moment from 'moment';
 
 class UserNotificationScreen extends Component {
 
+    //Saiiiiiiiiiiiiiiiiiiiiiiiii
+    formatTimeDifference = (timestamp) => {
+    const formattedTimeString = timestamp.replace('at ', '');
+
+    const time = moment.utc(formattedTimeString, 'MMMM< DD, YYYY hh:mm:ss A Z');
+    const now = moment();
+    console.log("formattedTimeString:", formattedTimeString);
+    console.log("time:", time);
+    const diffMinutes = now.diff(time, 'minutes');
+    const diffHours = now.diff(time, 'hours');
+    const diffDays = now.diff(time, 'days');
+    
+    if (diffMinutes < 60) {
+        return `${diffMinutes} phút trước`;
+    } else if (diffHours < 24) {
+        return `${diffHours} giờ trước`;
+    } else if (diffDays < 7){
+        return `${diffDays} ngày trước`;
+    } else {
+        return time.format('DD MMM, YYYY');
+    }
+}
+
+    
+    
+    
+    
+    
+    
     render() {
         const data = [
             {
-                id:'001',
-                title:'@@@@',
-                img:'https://reactnative.dev/img/tiny_logo.png',
-                username:'David',
-                nofitication:'sent a photo, please check your message',
-                time: "'1966-07-30' , '08:30:00'",
+                id: '001',
+                title: '@@@@',
+                img: 'https://reactnative.dev/img/tiny_logo.png',
+                username: 'David',
+                notification: 'sent a photo, please check your message',
+                time: 'May 23, 2024 at 10:53:19 PM UTC+7', 
             },
             {
-                id:'002',
-                title:'@@@@',
-                img:'https://reactnative.dev/img/tiny_logo.png',
-                username:'Tom',
-                nofitication:'ashud usdh dhasd asdhaj sjd ashdj sj ajsd  adj jnđs djasđ án  nlsdaj',
-                time: "'1966-07-30' , '08:30:00'",
+                id: '002',
+                title: '@@@@',
+                img: 'https://reactnative.dev/img/tiny_logo.png',
+                username: 'Tom',
+                notification: 'ashud usdh dhasd asdhaj sjd ashdj sj ajsd  adj jnđs djasđ án  nlsdaj',
+                time: 'May 18, 2024 at 08:30:00 AM UTC+7', 
             }
-        ]
+        ];
         return (
-            <View style={{flex: 1, backgroundColor: appColor.lightBlue}}>
+            <View style={{ flex: 1, backgroundColor: appColor.lightBlue }}>
                 <FlatList
                     data={data}
-                    keyExtractor={(item,index) => index.toString()}
-                    renderItem={({item}) => (
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => (
                         <View style={styles.container}>
-                            <View style={styles.headerleftimgview}>
-                                <Image style={styles.headerleftimg} source={{uri: item.img}}/>
-                            </View>
-                            <View style={{flexDirection: "row"}}>
-                            <View style={{flexDirection: "co"}}>
-                                <Text style={{color: "#fff", fontSize: 15, fontWeight: 'bold',marginLeft: 10}}>{item.username} </Text>
-
-                                <Text style={{color: "#fff",fontWeight: 'normal', fontSize: 15, marginLeft: 10, marginRight: 40}}>{item.nofitication}</Text>
-                            </View>            
+                            <Image style={styles.headerLeftImg} source={{ uri: item.img }} />
+                            <View style={styles.contentContainer}>
+                                <View style={styles.userInfoContainer}>
+                                    <Text style={styles.usernameText}>{item.username}</Text>
+                                    <Text style={styles.timeText}>{this.formatTimeDifference(item.time)}</Text>
+                                </View>
+                                <Text style={styles.notificationText}>{item.notification}</Text>
                             </View>
                         </View>
                     )}
@@ -54,18 +82,36 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 15,
+        padding: 10,
         backgroundColor: appColor.lightBlue,
     },
-    headerleftimg: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-    },
-    headerleftimgview: {
+    headerLeftImg: {
         width: 50,
         height: 50,
         borderRadius: 25,
         marginLeft: 10,
-    }
+    },
+    contentContainer: {
+        flex: 1,
+        marginLeft: 10,
+    },
+    userInfoContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    usernameText: {
+        color: "#fff",
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+    timeText: {
+        color: "#fff",
+        fontSize: 15,
+    },
+    notificationText: {
+        color: "#fff",
+        fontWeight: 'normal',
+        fontSize: 15,
+        marginTop: 5,
+    },
 });
