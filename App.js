@@ -7,7 +7,6 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { StatusBar } from "expo-status-bar";
 
 
-
 export default function App() {
   return (
     <Provider store={store}>

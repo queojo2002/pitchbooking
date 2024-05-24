@@ -5,7 +5,7 @@ export default Slides = () => {
     const images = [
         require('../assets/background1.jpg'),
         require('../assets/background2.jpg'),
-        require('../assets/background3.jpg'),
+        require('../assets/background4.jpg'),
     ];
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -28,7 +28,7 @@ export default Slides = () => {
 const styles = StyleSheet.create({
     background: {
       width: '100%',
-      height: 200,
+      height: 150,
       borderRadius: 20,
     },
 })

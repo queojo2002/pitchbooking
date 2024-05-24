@@ -21,6 +21,8 @@ export default function UserBottomNavigation({ navigation }) {
                     backgroundColor: "#ffffff",
                     borderRadius: 5,
                     height: 60,
+                    left: 10,
+                    right: 10
                 },
                 tabBarItemStyle: {
                     marginBottom: 5,
