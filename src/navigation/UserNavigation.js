@@ -6,6 +6,7 @@ import { appColor } from '../constants/appColor';
 import { IconButton, Menu, Text } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
 
+
 const Stack = createNativeStackNavigator();
 
 const UserNavigation = () => {
@@ -26,7 +27,7 @@ const UserNavigation = () => {
                 component={UserNotificationScreen}
                 options={{
                     headerShown: true,
-                    headerStyle: { backgroundColor: appColor.lightBlue },
+                    headerStyle: { backgroundColor: appColor.blackblue },
                     headerTintColor: '#fff',
                     headerTitle: 'Notification',
                     headerRight: () => (
@@ -65,13 +66,14 @@ const UserNavigation = () => {
 const styles = StyleSheet.create({
     menu: {
         backgroundColor: '#E0E0E0',
+        height:"90%",
+        justifyContent:"center"
     },
     menuItem: {
-        paddingVertical: 1,
         paddingHorizontal: 10,
     },
     menuItemText: {
-        fontSize: 12,
+        fontSize: 16,
         color: appColor.darkGray,
     },
     line: {
