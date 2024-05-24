@@ -76,7 +76,7 @@ export default function RegisterScreen({ navigation }) {
       <BackButton goBack={() => {
         navigation.reset({
           index: 0,
-          routes: [{ name: 'StartScreen' }],
+          routes: [{ name: 'LoginScreen' }],
         })
       }} />
       <Header>Create Account</Header>
@@ -130,7 +130,6 @@ export default function RegisterScreen({ navigation }) {
         <Button
           mode="contained"
           onPress={onSignUpPressed}
-          style={{ marginTop: 24 }}
         >
           Sign Up
         </Button>
@@ -138,7 +137,7 @@ export default function RegisterScreen({ navigation }) {
 
 
       <View style={styles.row}>
-        <Text style={{color: '#fff'}}>Already have an account? </Text>
+        <Text>Already have an account? </Text>
         <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
           <Text style={styles.link}>Login</Text>
         </TouchableOpacity>

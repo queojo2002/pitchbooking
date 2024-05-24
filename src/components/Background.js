@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, ImageBackground, StyleSheet, KeyboardAvoidingView } from 'react-native';
-import Slides from './Slides'
-
+import { View, ImageBackground, StyleSheet, KeyboardAvoidingView,Text } from 'react-native';
+import Slides from './Slides';
+import { appColor } from '../constants/appColor';
 
 export default function Background({ children }) {
   
   return (
+
     <View style={styles.wrapper}>
-      <Slides />
+      <Text style={{backgroundColor: appColor.blackblue,height: '100%'}}></Text>
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         {children}
       </KeyboardAvoidingView>
@@ -19,16 +20,11 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
   },
-  background: {
-    width: '100%',
-    height: 200,
-    borderRadius: 20,
-  },
   container: {
     position: 'absolute',
-    top: 150,
+    top: 80,
     bottom: 0,
-    backgroundColor: '#090021',
+    backgroundColor: "#ffff",
     flex: 1,
     padding: 20,
     width: '100%',

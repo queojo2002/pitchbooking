@@ -8,6 +8,7 @@ import { emailValidator, passwordValidator } from "../../helpers";
 import { clearError, login } from "../../redux/actions/authAction";
 import IconButton from 'react-native-vector-icons/FontAwesome6';
 
+
 export default LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState({ value: "", error: "" })
     const [password, setPassword] = useState({ value: "", error: "" })
@@ -55,17 +56,17 @@ export default LoginScreen = ({ navigation }) => {
 
 
     return (
-   
-
+        
         <Background>
             <BackButton goBack={() => {
                 navigation.reset({
                     index: 0,
-                    routes: [{ name: 'StartScreen' }],
+                    routes: [{ name: 'OnboardingScreen' }],
+                   
                 })
+               
             }} />
             <Header>Welcome back</Header>
-            <ScrollView >
             <TextInput 
                 label="Email"
                 returnKeyType="next"
@@ -77,7 +78,7 @@ export default LoginScreen = ({ navigation }) => {
                 autoCompleteType="email"
                 textContentType="emailAddress"
                 keyboardType="email-address"
-                style={styles.textinput}
+
             />
             <TextInput
                 label="Password"
@@ -87,7 +88,7 @@ export default LoginScreen = ({ navigation }) => {
                 error={!!password.error}
                 errorText={password.error}
                 secureTextEntryProp
-                style={styles.textinput}
+
             />
             {errorLogin ? <Text>{errorLogin}</Text> : null}
             <View style={styles.forgotPassword}>
@@ -105,6 +106,12 @@ export default LoginScreen = ({ navigation }) => {
                     Login
                 </Button>
             )}
+            <View style={styles.row}>
+                <Text style={{ padding: 10}}>Don’t have an account? </Text>
+                <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
+                    <Text style={styles.link}>Sign up</Text>
+                </TouchableOpacity>
+            </View>
             <Button mode="contained" onPress={onLoginPressed} icon={() => {
                 return (
                     <IconButton
@@ -136,16 +143,6 @@ export default LoginScreen = ({ navigation }) => {
                 <Text style={{ marginLeft: 25 }}>Login with Phone</Text>
             </Button>
 
-
-
-            <View style={styles.row}>
-                <Text style={{color: '#fff', padding: 10}}>Don’t have an account? </Text>
-                <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
-                    <Text style={styles.link}>Sign up</Text>
-                </TouchableOpacity>
-            </View>
-            
-            </ScrollView>
         </Background>
 
 
@@ -173,10 +170,6 @@ const styles = StyleSheet.create({
         color: theme.colors.primary,
         padding: 10
     },
-    textinput:{
-        width: '100%',
-        paddingTop: 10,
-        borderRadius: 10,
-    }
+    
 })
 
