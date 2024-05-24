@@ -138,7 +138,7 @@ export default function RegisterScreen({ navigation }) {
 
 
       <View style={styles.row}>
-        <Text>Already have an account? </Text>
+        <Text style={{color: '#fff'}}>Already have an account? </Text>
         <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
           <Text style={styles.link}>Login</Text>
         </TouchableOpacity>
@@ -151,9 +151,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginTop: 4,
+    margin: 10,
   },
   link: {
     fontWeight: 'bold',
-    color: theme.colors.primary,
+    color: 'orange',
+    marginBottom: 30,
   },
 })
