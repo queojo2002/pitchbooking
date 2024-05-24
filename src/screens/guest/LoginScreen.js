@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ActivityIndicator, IconButton, Text } from 'react-native-paper';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { BackButton, Background, Button, Header, Logo, TextInput } from "../../components";
 import { theme } from "../../core/theme";
 import { emailValidator, passwordValidator } from "../../helpers";
 import { clearError, login } from "../../redux/actions/authAction";
-
+import IconButton from 'react-native-vector-icons/FontAwesome6';
 
 export default LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState({ value: "", error: "" })
@@ -55,6 +55,8 @@ export default LoginScreen = ({ navigation }) => {
 
 
     return (
+   
+
         <Background>
             <BackButton goBack={() => {
                 navigation.reset({
@@ -62,9 +64,9 @@ export default LoginScreen = ({ navigation }) => {
                     routes: [{ name: 'StartScreen' }],
                 })
             }} />
-            <Logo />
             <Header>Welcome back</Header>
-            <TextInput
+            <ScrollView >
+            <TextInput 
                 label="Email"
                 returnKeyType="next"
                 value={email.value}
@@ -75,6 +77,7 @@ export default LoginScreen = ({ navigation }) => {
                 autoCompleteType="email"
                 textContentType="emailAddress"
                 keyboardType="email-address"
+                style={styles.textinput}
             />
             <TextInput
                 label="Password"
@@ -84,6 +87,7 @@ export default LoginScreen = ({ navigation }) => {
                 error={!!password.error}
                 errorText={password.error}
                 secureTextEntryProp
+                style={styles.textinput}
             />
             {errorLogin ? <Text>{errorLogin}</Text> : null}
             <View style={styles.forgotPassword}>
@@ -101,18 +105,11 @@ export default LoginScreen = ({ navigation }) => {
                     Login
                 </Button>
             )}
-
-            <View>
-                <Text>OR</Text>
-            </View>
-
-
-
-
             <Button mode="contained" onPress={onLoginPressed} icon={() => {
                 return (
                     <IconButton
-                        icon="google"
+                        name="google"
+                        color="#4285F4"
                         size={20}
                         onPress={() => console.log('Pressed')}
                     />
@@ -120,14 +117,15 @@ export default LoginScreen = ({ navigation }) => {
             }} style={{
                 backgroundColor: "#F3F3F3",
             }}>
-                <Text style={{ marginLeft: 8 }}>Login with Google</Text>
+                <Text style={{ marginLeft: 25}}>Login with Google</Text>
             </Button>
 
 
             <Button mode="contained" onPress={onLoginPressed} icon={() => {
                 return (
                     <IconButton
-                        icon="phone"
+                        name="phone"
+                        color="green"
                         size={20}
                         onPress={() => console.log('Pressed')}
                     />
@@ -135,18 +133,19 @@ export default LoginScreen = ({ navigation }) => {
             }} style={{
                 backgroundColor: "#F3F3F3",
             }}>
-                <Text style={{ marginLeft: 8 }}>Login with Phone</Text>
+                <Text style={{ marginLeft: 25 }}>Login with Phone</Text>
             </Button>
 
 
 
             <View style={styles.row}>
-                <Text>Don’t have an account? </Text>
+                <Text style={{color: '#fff', padding: 10}}>Don’t have an account? </Text>
                 <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
                     <Text style={styles.link}>Sign up</Text>
                 </TouchableOpacity>
             </View>
-
+            
+            </ScrollView>
         </Background>
 
 
@@ -159,6 +158,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'flex-end',
         marginBottom: 5,
+        color: "#ffff"
     },
     row: {
         flexDirection: 'row',
@@ -171,6 +171,12 @@ const styles = StyleSheet.create({
     link: {
         fontWeight: 'bold',
         color: theme.colors.primary,
+        padding: 10
     },
+    textinput:{
+        width: '100%',
+        paddingTop: 10,
+        borderRadius: 10,
+    }
 })
 

@@ -7,10 +7,6 @@ export default StartScreen = ({ navigation }) => {
     return (
         <Background>
             <Logo />
-            <Header>Pitch Booking</Header>
-            <Paragraph>
-                Đây là màn hình khi khởi động ứng dụng.
-            </Paragraph>
             <Button
                 mode="contained"
                 onPress={() => navigation.navigate('LoginScreen')}
