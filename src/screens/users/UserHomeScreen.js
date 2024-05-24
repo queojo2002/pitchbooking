@@ -86,7 +86,9 @@ export default UserHomeScreen = ({ navigation }) => {
                         padding: 10
                     }}
                     onPress={() => {
-                        Alert.alert("Notification", "This is a notification");
+                        return (
+                            navigation.navigate("UserNotificationScreen")
+                        );
                     }}>
                     <Notification size="25" color="white" />
                 </TouchableOpacity>
