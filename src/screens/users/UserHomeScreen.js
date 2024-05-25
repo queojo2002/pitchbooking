@@ -38,7 +38,7 @@ export default UserHomeScreen = ({ navigation }) => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{ paddingLeft: 10 }}>
                                 <Image
-                                    source={{ uri: "https://ui-avatars.com/api/?name=" + user.name + "&size=128" }}
+                                    source={{ uri: user.avatar }}
                                     style={{ ...styles.logo, borderRadius: 64, aspectRatio: 1 }}
                                     onLoadEnd={() => setImageLoaded(true)}
                                 />
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     logo: {
         width: 85,
         height: 30,
-        resizeMode: "contain"
+        resizeMode: "contain",
     },
     flatListContainer: {
         paddingBottom: 20,
