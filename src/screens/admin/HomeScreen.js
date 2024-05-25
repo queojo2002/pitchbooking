@@ -140,10 +140,15 @@ export default function HomeScreen({navigation}) {
         </Menu>
       </View>
       <FlatList
-        data={services}
-        renderItem={renderItem}
-        keyExtractor={item => item.key}
-        contentContainerStyle={styles.serviceList}
+          style={{ flex: 1 }}
+          data={services}
+          keyExtractor={(item) => item.id}
+          
+          renderItem={({ item }) => (
+          <Service
+            {...item}
+          />
+        )}
       />
     </View>
   );

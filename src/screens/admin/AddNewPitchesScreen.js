@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, StyleSheet, View } from 'react-native';
 import { Button, Text, TextInput } from 'react-native-paper';
-
+import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
+import { appColor } from '../../constants/appColor';
+import Slides from '../../components/Slides';
 
 export default function AddNewPitchesScreen({ navigation }) {
     const [name, setName] = useState('');
@@ -19,7 +21,7 @@ export default function AddNewPitchesScreen({ navigation }) {
         navigation.setOptions({
             headerShown: true,
             headerStyle: {
-                backgroundColor: '#f06292',
+                backgroundColor: '#090210',
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
@@ -99,6 +101,9 @@ export default function AddNewPitchesScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+              <View style={{marginBottom: 10}}>
+                <Slides />
+            </View>
             <TextInput
                 mode="outlined"
                 label="Tên sân"
@@ -114,38 +119,45 @@ export default function AddNewPitchesScreen({ navigation }) {
                 keyboardType="numeric"
                 style={styles.input}
             />
-            <TextInput
-                mode="outlined"
-                label="Loại sân (sân 5,7)"
-                value={pitchType}
-                onChangeText={setPitchType}
-                keyboardType="numeric"
-                style={styles.input}
-            />
-            <TextInput
-                mode="outlined"
-                label="Trạng thái"
-                value={status}
-                onChangeText={setStatus}
-                keyboardType="numeric"
-                style={styles.input}
-            />
+           <Picker
+                selectedValue={pitchType}
+                onValueChange={(itemValue) => setPitchType(itemValue)}
+                style={styles.select}
+                mode="dropdown"
+            >
+                <Picker.Item label="Chọn loại sân" value="" />
+                <Picker.Item label="Sân 5" value="1" />
+                <Picker.Item label="Sân 7" value="2" />
+            </Picker>
+            
+            <Picker
+                selectedValue={status}
+                onValueChange={(itemValue) => setStatus(itemValue)}
+                style={styles.select}
+                mode="dropdown"
+            >
+                <Picker.Item label="Tình trạng" value="" />
+                <Picker.Item label="Sân đang mở" value="1" />
+                <Picker.Item label="Sân đang đóng" value="2" />
+            </Picker>
             <Button
                 mode="contained"
                 icon="camera"
                 onPress={selectImage}
                 style={styles.button}
             >
-                Select Image
+                Chọn ảnh
             </Button>
             {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
             <Button
                 mode="contained"
                 onPress={addPitch}
-                style={styles.button}
+                style={styles.button_add}
             >
                 Thêm sân bóng
             </Button>
+      
+           
         </View>
     );
 }
@@ -167,6 +179,9 @@ const styles = StyleSheet.create({
     button: {
         marginVertical: 10,
     },
+    button_add: {
+        backgroundColor: "#006769",
+    },
     image: {
         width: 100,
         height: 100,
@@ -174,4 +189,11 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         alignSelf: 'center',
     },
+    select:{
+        height: 50,
+        borderColor: 'gray',
+        backgroundColor: '#DCF2F1',
+        borderWidth: 1,
+        marginBottom: 10,
+    }
 });

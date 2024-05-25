@@ -47,10 +47,10 @@ export default LoginScreen = ({ navigation }) => {
 
 
     useEffect(() => {
-        setEmail({ value: "ducln339@gmail.com", error: '' })
-        setPassword({ value: "123456789Duc@@", error: '' })
-        // setEmail({ value: "AnhTu080302@gmail.com", error: '' })
-        // setPassword({ value: "AnhTu$123", error: '' })
+        // setEmail({ value: "ducln339@gmail.com", error: '' })
+        //  setPassword({ value: "123456789Duc@@", error: '' })
+         setEmail({ value: "AnhTu080302@gmail.com", error: '' })
+         setPassword({ value: "AnhTu$123", error: '' })
         if (errorLogin) {
             dispatch(clearError());
         }
