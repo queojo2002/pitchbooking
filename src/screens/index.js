@@ -14,6 +14,8 @@ import ServicesDetailScreen from "./admin/ServicesDetailScreen"
 import UpdateServicesScreen from "./admin/UpdateServicesScreen"
 import CustomerOfAdminScreen from "./admin/CustomerOfAdminScreen"
 import OnboardingScreen from "./OnboardingScreen"
+import AddNewPitchesScreen from "./admin/AddNewPitchesScreen"
+
 export {
     LoginScreen,
     RegisterScreen,
@@ -30,5 +32,6 @@ export {
     UserNotificationScreen,
     UserProfileScreen,
     OnboardingScreen,
-    UserChatScreen
+    UserChatScreen,
+    AddNewPitchesScreen
 }

@@ -111,7 +111,7 @@ export default UserHomeScreen = ({ navigation }) => {
                         <View style={{
                             ...styles.address, flexDirection: 'row', alignItems: 'center',
                         }}>
-                            <Image source={require('../../assets/ĐTH.png')} style={styles.logo} />
+                            <Image source={require('../../assets/Logodth.png')} style={styles.logo} />
                             <View style={{ flexDirection: 'column', paddingLeft: 10, flex: 1 }}>
                                 <Text style={{
                                     ...styles.text,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
         color: "#ccc",
     },
     logo: {
-        width: 30,
+        width: 85,
         height: 30,
         resizeMode: "contain"
     },
