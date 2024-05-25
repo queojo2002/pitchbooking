@@ -18,11 +18,15 @@ export default function UserBottomNavigation({ navigation }) {
                 headerShown: false,
                 tabBarStyle: {
                     position: "absolute",
-                    backgroundColor: "#ffffff",
+                    backgroundColor: "white",
                     borderRadius: 5,
                     height: 60,
-                    left: 10,
-                    right: 10
+                    borderTopEndRadius: 30,
+                    borderTopStartRadius: 30,
+                    borderWidth: 1, 
+                    borderColor: '#e0e0e0',
+                    shadowColor: "#000",
+                    
                 },
                 tabBarItemStyle: {
                     marginBottom: 5,
@@ -59,7 +63,7 @@ export default function UserBottomNavigation({ navigation }) {
                 name="UserChatScreen"
                 component={UserChatScreen}
                 options={{
-                    tabBarLabel: 'Thông báo',
+                    tabBarLabel: 'Nhắn tin',
                     tabBarIcon: ({ color }) => (
                         <MaterialCommunityIcons name="chat" color={color} size={26} />
                     ),
