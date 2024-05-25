@@ -48,7 +48,7 @@ class UserNotificationScreen extends Component {
                 {data.length === 0 ? (
                     <View style={styles.noNotificationContainer}>
                         <Image
-                            source={require('../../assets/no_notification.png')} // Make sure to add your image in the correct path
+                            source={require('../../assets/no_notification.png')}
                             style={styles.noNotificationImage}
                         />
                         <Text style={styles.noNotificationText}>No Notification</Text>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { UserHomeScreen, UserNotificationScreen } from '../screens';
+import { UserHomeScreen, UserNotificationScreen, UserProfilEditScreen } from '../screens';
 import UserBottomNavigation from './UserBottomNavigation';
 import { appColor } from '../constants/appColor';
 import { IconButton, Menu, Text } from 'react-native-paper';
@@ -22,6 +22,16 @@ const UserNavigation = () => {
         >
             <Stack.Screen name="UserBottomNavigation" component={UserBottomNavigation} />
             <Stack.Screen name="UserHomeScreen" component={UserHomeScreen} />
+            <Stack.Screen 
+                name="UserProfileEditScreen" 
+                component={UserProfilEditScreen}
+                options={{
+                    headerShown: true,
+                    headerStyle: { backgroundColor: appColor.blackblue },
+                    headerTintColor: '#fff',
+                    headerTitle: 'Cập nhật thông tin',
+                }}
+            />
             <Stack.Screen
                 name="UserNotificationScreen"
                 component={UserNotificationScreen}
@@ -29,7 +39,7 @@ const UserNavigation = () => {
                     headerShown: true,
                     headerStyle: { backgroundColor: appColor.blackblue },
                     headerTintColor: '#fff',
-                    headerTitle: 'Notification',
+                    headerTitle: 'Thông báo',
                     headerRight: () => (
                         <Menu
                             visible={menuVisible}

@@ -1,16 +1,14 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons'
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default ProfileThumbnail = (props) => {
-
     const {
         name = 'Đức Anh',
         phone = '0326393540',
-        avatar = "https://ui-avatars.com/api/?name="+name+"&size=128",
-        textColor = 'black',
-        onPress = null
+        avatar = "https://ui-avatars.com/api/?name=" + name + "&size=128",
+        textColor = 'white',
+        onPress = null,
     } = props;
 
     const colorStyle = {
@@ -22,13 +20,17 @@ export default ProfileThumbnail = (props) => {
         <View style={styles.container}>
             <ImageComponent onPress={onPress}>
                 <Image
-                    source={{ uri: avatar, }}
+                    source={{ uri: avatar }}
                     style={styles.avatar}
                 />
             </ImageComponent>
 
             {
-                name !== '' && <Text style={[styles.name, colorStyle]}>{name}</Text>
+                name !== '' && (
+                    <View style={styles.nameSection}>
+                        <Text style={[styles.name, colorStyle]}>{name}</Text>
+                    </View>
+                )
             }
             {
                 phone !== '' && (
@@ -40,14 +42,9 @@ export default ProfileThumbnail = (props) => {
                     </View>
                 )
             }
-
-
-
         </View>
     );
-
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -63,21 +60,24 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 2,
     },
-    details: {
-        flex: 1,
+    nameSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
     },
     name: {
         fontSize: 20,
-        marginTop: 10,
-        marginBottom: 2,
         fontWeight: 'bold',
+        marginRight: 5,
+    },
+    editIcon: {
+        marginLeft: 5,
     },
     phone: {
         marginLeft: 4,
         fontSize: 16,
         fontWeight: 'bold',
     },
-
     phoneSection: {
         flexDirection: 'row',
         marginTop: 3,
@@ -85,4 +85,3 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
 });
-
