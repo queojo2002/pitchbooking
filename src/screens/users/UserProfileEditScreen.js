@@ -76,7 +76,7 @@ export default UserProfileEditScreen = ({ navigation }) => {
             <View style={styles.avatarSection}>
             <TouchableOpacity onPress={handleImageUpload}>
                 <Image
-                    source={{ uri: avatar || 'https://ui-avatars.com/api/?name=John+Doe&size=128'}}
+                    source={{ uri: avatar || "https://ui-avatars.com/api/?name=" + name + "&size=128"}}
                     style={styles.avatar}
                 />
             </TouchableOpacity>
