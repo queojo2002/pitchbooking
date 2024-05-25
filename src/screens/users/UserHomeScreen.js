@@ -38,7 +38,7 @@ export default UserHomeScreen = ({ navigation }) => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{ paddingLeft: 10 }}>
                                 <Image
-                                    source={{ uri: user.avatar }}
+                                    source={{ uri: user.avatar ? user.avatar : "https://ui-avatars.com/api/?name=" + user.name + "&size=128"}}
                                     style={{ ...styles.logo, borderRadius: 64, aspectRatio: 1 }}
                                     onLoadEnd={() => setImageLoaded(true)}
                                 />

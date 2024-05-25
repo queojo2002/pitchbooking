@@ -27,7 +27,7 @@ export const signUpUser = async ({ name, email, password }) => {
         });
         const userModel = new User(name, email);
         const userModelAdd = userModel.toObject();
-        await firestore().collection('users').doc(email).set(userModelAdd);
+        await firestore().collection('users').doc(email.toLowerCase()).set(userModelAdd);
         await user.sendEmailVerification();
         await auth().signOut();
 
