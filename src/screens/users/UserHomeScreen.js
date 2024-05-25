@@ -85,7 +85,7 @@ export default UserHomeScreen = ({ navigation }) => {
         return () => unsubscribe();
 
 
-    }, []);
+    }, [user]);
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.item}
@@ -110,7 +110,7 @@ export default UserHomeScreen = ({ navigation }) => {
 
     return (
         <Fragment>
-            {(!imageLoaded || !pitchLoaded) ? <ActivityIndicator style={{ flex: 1 }} />
+            {(!imageLoaded || !pitchLoaded || !user) ? <ActivityIndicator style={{ flex: 1 }} />
                 : (
                     <View style={styles.background}>
                         <View style={{

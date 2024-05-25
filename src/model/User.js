@@ -12,7 +12,7 @@ export class User {
         name: this.name,
         phone: this.phone,
         address: this.address,
-        email: this.email,
+        email: this.email.toLowerCase(),
         role: this.role
       };
     }

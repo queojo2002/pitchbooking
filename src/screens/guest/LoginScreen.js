@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
+import IconButton from 'react-native-vector-icons/FontAwesome6';
 import { useDispatch, useSelector } from 'react-redux';
-import { BackButton, Background, Button, Header, Logo, TextInput } from "../../components";
+import { BackButton, Background, Button, Header, TextInput } from "../../components";
 import { theme } from "../../core/theme";
 import { emailValidator, passwordValidator } from "../../helpers";
 import { clearError, login } from "../../redux/actions/authAction";
-import IconButton from 'react-native-vector-icons/FontAwesome6';
 
 
 export default LoginScreen = ({ navigation }) => {
@@ -58,18 +58,18 @@ export default LoginScreen = ({ navigation }) => {
 
 
     return (
-        
+
         <Background>
             <BackButton goBack={() => {
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'OnboardingScreen' }],
-                   
+
                 })
-               
+
             }} />
             <Header>Welcome back</Header>
-            <TextInput 
+            <TextInput
                 label="Email"
                 returnKeyType="next"
                 value={email.value}
@@ -109,7 +109,7 @@ export default LoginScreen = ({ navigation }) => {
                 </Button>
             )}
             <View style={styles.row}>
-                <Text style={{ padding: 10}}>Don’t have an account? </Text>
+                <Text style={{ padding: 10 }}>Don’t have an account? </Text>
                 <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
                     <Text style={styles.link}>Sign up</Text>
                 </TouchableOpacity>
@@ -126,7 +126,7 @@ export default LoginScreen = ({ navigation }) => {
             }} style={{
                 backgroundColor: "#F3F3F3",
             }}>
-                <Text style={{ marginLeft: 25}}>Login with Google</Text>
+                <Text style={{ marginLeft: 25 }}>Login with Google</Text>
             </Button>
 
 
@@ -172,6 +172,6 @@ const styles = StyleSheet.create({
         color: theme.colors.primary,
         padding: 10
     },
-    
+
 })
 

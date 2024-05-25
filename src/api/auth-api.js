@@ -6,12 +6,13 @@ import { User } from '../model/User';
 
 export const loginUser = async ({ email, password }) => {
     try {
-        const userCredential = await auth().signInWithEmailAndPassword(email, password);
+        const userCredential = await auth().signInWithEmailAndPassword(email.toLowerCase(), password);
         return { user: userCredential.user };
     } catch (error) {
         return { error: error.message };
     }
 };
+
 
 export const logoutUser = () => {
     return auth().signOut();
@@ -19,7 +20,7 @@ export const logoutUser = () => {
 
 export const signUpUser = async ({ name, email, password }) => {
     try {
-        const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+        const userCredential = await auth().createUserWithEmailAndPassword(email.toLowerCase(), password);
         const user = userCredential.user;
         await auth().currentUser.updateProfile({
             displayName: name,
@@ -37,3 +38,10 @@ export const signUpUser = async ({ name, email, password }) => {
 };
 
 
+export const getCurrenUser = () => {
+    try {
+
+    }catch (error) {
+        return { error: error.message };
+    }
+}
