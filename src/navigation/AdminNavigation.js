@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AddNewServicesScreen, Dashboard, ServicesDetailScreen, UpdateServicesScreen } from '../screens';
+import { AddNewServicesScreen, Dashboard, ServicesDetailScreen, UpdateServicesScreen,AddNewPitchesScreen } from '../screens';
 import AdminBottomNavigation from './AdminBottomNavigation';
 
 
@@ -13,6 +13,7 @@ export default AdminNavigation = () => {
             <Stack.Screen name="AdminBottomNavigation" component={AdminBottomNavigation} />
             <Stack.Screen name="ServicesDetailScreen" component={ServicesDetailScreen} />
             <Stack.Screen name="AddNewServicesScreen" component={AddNewServicesScreen} />
+            <Stack.Screen name="AddNewPitchesScreen" component={AddNewPitchesScreen} />
             <Stack.Screen name="UpdateServicesScreen" component={UpdateServicesScreen} />
         </Stack.Navigator>
     );
