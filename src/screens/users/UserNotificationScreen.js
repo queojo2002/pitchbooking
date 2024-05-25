@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
-import { appColor } from '../../constants/appColor';
 import moment from 'moment';
+import React, { Component } from 'react';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { appColor } from '../../constants/appColor';
 
 class UserNotificationScreen extends Component {
     formatTimeDifference = (timestamp) => {
@@ -44,6 +44,8 @@ class UserNotificationScreen extends Component {
         ];
 
         return (
+
+
             <View style={{ flex: 1, backgroundColor: appColor.blackblue }}>
                 {data.length === 0 ? (
                     <View style={styles.noNotificationContainer}>
@@ -71,6 +73,9 @@ class UserNotificationScreen extends Component {
                         )}
                     />
                 )}
+
+
+
             </View>
         );
     }
