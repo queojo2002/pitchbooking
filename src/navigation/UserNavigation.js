@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { UserHomeScreen, UserNotificationScreen } from '../screens';
+import { UserBookingScreen, UserHomeScreen, UserNotificationScreen } from '../screens';
 import UserBottomNavigation from './UserBottomNavigation';
 import { appColor } from '../constants/appColor';
 import { IconButton, Menu, Text } from 'react-native-paper';
@@ -59,6 +59,7 @@ const UserNavigation = () => {
                     ),
                 }}
             />
+            <Stack.Screen name="UserBookingScreen" component={UserBookingScreen} />
         </Stack.Navigator>
     );
 };

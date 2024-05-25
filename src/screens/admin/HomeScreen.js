@@ -121,7 +121,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/Logodth.png')} style={styles.logo} />
+      <Image source={require('../../assets/logodth.png')} style={styles.logo} />
       <View style={styles.headerRow}>
         <Text style={styles.serviceListTitle}>Danh sách dịch vụ</Text>
         <Menu

@@ -1,12 +1,10 @@
-import { MessageQuestion, Notification, } from 'iconsax-react-native';
+import { Notification } from 'iconsax-react-native';
 import React, { Fragment, useEffect, useState } from 'react';
-import { Alert, StatusBar, Text, TouchableOpacity, View, StyleSheet, FlatList, Image, TouchableHighlight, Touchable } from 'react-native';
-import { appColor } from '../../constants/appColor';
-import Slides from '../../components/Slides';
-import { useSelector } from 'react-redux';
+import { Alert, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
-import firestore from '@react-native-firebase/firestore';
+import { useSelector } from 'react-redux';
 import { loadAllPith } from '../../api/pitch-api';
+import { appColor } from '../../constants/appColor';
 
 
 
@@ -90,7 +88,14 @@ export default UserHomeScreen = ({ navigation }) => {
     }, []);
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.item} onPress={() => Alert.alert("assd", item.name)} key={item.name}>
+        <TouchableOpacity style={styles.item}
+            key={item.name}
+            onPress={() =>
+                navigation.navigate("UserBookingScreen")
+            }
+
+
+        >
             <Text style={{
                 ...styles.title,
                 color: appColor.blackblue,
@@ -111,7 +116,7 @@ export default UserHomeScreen = ({ navigation }) => {
                         <View style={{
                             ...styles.address, flexDirection: 'row', alignItems: 'center',
                         }}>
-                            <Image source={require('../../assets/Logodth.png')} style={styles.logo} />
+                            <Image source={require('../../assets/logodth.png')} style={styles.logo} />
                             <View style={{ flexDirection: 'column', paddingLeft: 10, flex: 1 }}>
                                 <Text style={{
                                     ...styles.text,
@@ -169,7 +174,7 @@ const styles = StyleSheet.create({
         resizeMode: "contain"
     },
     flatListContainer: {
-         paddingBottom: 20,   
+        paddingBottom: 20,
     },
     item: {
         backgroundColor: '#fff',
