@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 const windowWidth = Dimensions.get('window').width;
 const itemWidth = windowWidth / 3
+
 class UserHistoryScreen extends Component {
     constructor(props) {
         super(props);

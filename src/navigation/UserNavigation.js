@@ -1,29 +1,30 @@
+import { TransitionPresets, createStackNavigator } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { UserHomeScreen, UserNotificationScreen, UserBookingScreen, UserProfileEditScreen } from '../screens';
-import UserBottomNavigation from './UserBottomNavigation';
-import { appColor } from '../constants/appColor';
-import { IconButton, Menu, Text } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
+import { appColor } from '../constants/appColor';
+import { UserBookingScreen, UserHomeScreen, UserNotificationScreen, UserProfileEditScreen } from '../screens';
+import UserBottomNavigation from './UserBottomNavigation';
 
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const UserNavigation = () => {
-    const [menuVisible, setMenuVisible] = useState(false);
-
-    const openMenu = () => setMenuVisible(true);
-    const closeMenu = () => setMenuVisible(false);
+    
 
     return (
         <Stack.Navigator
             initialRouteName='UserBottomNavigation'
-            screenOptions={{ headerShown: false }}
+            screenOptions={{
+                headerShown: false,
+                gestureEnabled: true,
+                cardOverlayEnabled: true,
+                ...TransitionPresets.SlideFromRightIOS,
+            }}
         >
             <Stack.Screen name="UserBottomNavigation" component={UserBottomNavigation} />
             <Stack.Screen name="UserHomeScreen" component={UserHomeScreen} />
-            <Stack.Screen 
-                name="UserProfileEditScreen" 
+            <Stack.Screen
+                name="UserProfileEditScreen"
                 component={UserProfileEditScreen}
                 options={{
                     headerShown: true,
@@ -35,41 +36,12 @@ const UserNavigation = () => {
             <Stack.Screen
                 name="UserNotificationScreen"
                 component={UserNotificationScreen}
-                options={{
-                    headerShown: true,
-                    headerStyle: { backgroundColor: appColor.blackblue },
-                    headerTintColor: '#fff',
-                    headerTitle: 'Thông báo',
-                    headerRight: () => (
-                        <Menu
-                            visible={menuVisible}
-                            onDismiss={closeMenu}
-                            anchor={<IconButton icon="menu" iconColor="#fff" onPress={openMenu} />}
-                            contentStyle={styles.menu}
-                        >
-                            <Menu.Item
-                                onPress={() => {}}
-                                title="Mark all read"
-                                leadingIcon="check"
-                                style={styles.menuItem}
-                                titleStyle={styles.menuItemText}
-                                iconColor={appColor.darkGray}
-
-                            />
-                            <View style={styles.line}></View>
-                            <Menu.Item
-                                onPress={() => {}}
-                                title="Remove all"
-                                leadingIcon="delete-outline"
-                                style={styles.menuItem}
-                                titleStyle={styles.menuItemText}
-                                iconColor={appColor.darkGray}
-                            />
-                        </Menu>
-                    ),
-                }}
+                
             />
-            <Stack.Screen name="UserBookingScreen" component={UserBookingScreen} />
+            <Stack.Screen
+                name="UserBookingScreen"
+                component={UserBookingScreen}
+            />
         </Stack.Navigator>
     );
 };
@@ -77,8 +49,8 @@ const UserNavigation = () => {
 const styles = StyleSheet.create({
     menu: {
         backgroundColor: '#E0E0E0',
-        height:"90%",
-        justifyContent:"center"
+        height: "90%",
+        justifyContent: "center"
     },
     menuItem: {
         paddingHorizontal: 10,
@@ -89,7 +61,7 @@ const styles = StyleSheet.create({
     },
     line: {
         borderBottomWidth: 0.5,
-      },
+    },
 });
 
 export default UserNavigation;

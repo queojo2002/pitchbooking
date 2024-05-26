@@ -5,9 +5,12 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { loadAllPith } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
+import { Dimensions } from 'react-native';
+import { SharedElement } from 'react-navigation-shared-element';
 
 
 
+const screenWidth = Dimensions.get('window').width;
 
 export default UserHomeScreen = ({ navigation }) => {
 
@@ -15,11 +18,13 @@ export default UserHomeScreen = ({ navigation }) => {
     const [imageLoaded, setImageLoaded] = useState(false);
     const [pitchLoaded, setPitchLoaded] = useState(false);
     const [pitch, setPitch] = useState([]);
+
     const formatPriceToVND = (price) => {
         return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
     }
 
     useEffect(() => {
+
 
         navigation.setOptions({
             headerShown: true,
@@ -38,7 +43,7 @@ export default UserHomeScreen = ({ navigation }) => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{ paddingLeft: 10 }}>
                                 <Image
-                                    source={{ uri: user.avatar ? user.avatar : "https://ui-avatars.com/api/?name=" + user.name + "&size=128"}}
+                                    source={{ uri: user.avatar ? user.avatar : "https://ui-avatars.com/api/?name=" + user.name + "&size=128" }}
                                     style={{ ...styles.logo, borderRadius: 64, aspectRatio: 1 }}
                                     onLoadEnd={() => setImageLoaded(true)}
                                 />
@@ -91,18 +96,21 @@ export default UserHomeScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.item}
             key={item.name}
             onPress={() =>
-                navigation.navigate("UserBookingScreen")
+
+                navigation.navigate("UserBookingScreen", { item: item })
+
             }
-
-
         >
             <Text style={{
                 ...styles.title,
                 color: appColor.blackblue,
             }}>{item.name}</Text>
-            <Image source={{
-                uri: item.imageURL,
-            }} style={styles.image} />
+            <Image
+                source={{
+                    uri: item.imageURL,
+                }}
+                style={styles.image}
+            />
             <Text style={{ marginTop: 10, marginBottom: 5, color: appColor.blackblue, fontSize: 13 }}>Trạng thái: {item.status == 1 ? <Text style={{ color: "red" }}>Đang mở</Text> : <Text style={{ color: "green" }}>Đang đóng</Text>}</Text>
             <Text style={{ color: appColor.blackblue, fontSize: 13 }}>Giá tiền: <Text style={{ color: "blue" }}>{formatPriceToVND(item.price)}</Text></Text>
         </TouchableOpacity>
@@ -192,8 +200,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     image: {
-        width: '100%',
-        height: 100,
+        width: screenWidth - 25,
+        height: 130,
         borderRadius: 5,
         resizeMode: 'cover',
     },

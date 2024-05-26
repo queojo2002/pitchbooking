@@ -1,9 +1,74 @@
 import moment from 'moment';
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { IconButton, Menu } from 'react-native-paper';
 import { appColor } from '../../constants/appColor';
 
-class UserNotificationScreen extends Component {
+
+const data = [
+    {
+        id: '001',
+        title: '@@@@',
+        img: 'https://reactnative.dev/img/tiny_logo.png',
+        username: 'David',
+        notification: 'sent a photo, please check your message',
+        time: 'May 23, 2024 at 10:53:19 PM UTC+7',
+    },
+    {
+        id: '002',
+        title: '@@@@',
+        img: 'https://reactnative.dev/img/tiny_logo.png',
+        username: 'Tom',
+        notification: 'ashud usdh dhasd asdhaj sjd ashdj sj ajsd adj jnđs djasđ án nlsdaj',
+        time: 'May 18, 2024 at 08:30:00 AM UTC+7',
+    },
+];
+
+export default UserNotificationScreen = ({ navigation }) => {
+
+
+    const [menuVisible, setMenuVisible] = useState(false);
+
+    const openMenu = () => setMenuVisible(true);
+    const closeMenu = () => setMenuVisible(false);
+
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            headerStyle: { backgroundColor: appColor.blackblue },
+            headerTintColor: '#fff',
+            headerTitle: 'Thông báo',
+            headerRight: () => (
+                <Menu
+                    visible={menuVisible}
+                    onDismiss={closeMenu}
+                    anchor={<IconButton icon="menu" iconColor="#fff" onPress={openMenu} />}
+                    contentStyle={styles.menu}
+                >
+                    <Menu.Item
+                        onPress={() => { }}
+                        title="Mark all read"
+                        leadingIcon="check"
+                        style={styles.menuItem}
+                        titleStyle={styles.menuItemText}
+                        iconColor={appColor.darkGray}
+
+                    />
+                    <View style={styles.line}></View>
+                    <Menu.Item
+                        onPress={() => { }}
+                        title="Remove all"
+                        leadingIcon="delete-outline"
+                        style={styles.menuItem}
+                        titleStyle={styles.menuItemText}
+                        iconColor={appColor.darkGray}
+                    />
+                </Menu>
+            ),
+        });
+    })
+
     formatTimeDifference = (timestamp) => {
         const formattedTimeString = timestamp.replace('at ', '');
         const time = moment.utc(formattedTimeString, 'MMMM DD, YYYY hh:mm:ss A Z');
@@ -23,65 +88,41 @@ class UserNotificationScreen extends Component {
         }
     }
 
-    render() {
-        const data = [
-            {
-                id: '001',
-                title: '@@@@',
-                img: 'https://reactnative.dev/img/tiny_logo.png',
-                username: 'David',
-                notification: 'sent a photo, please check your message',
-                time: 'May 23, 2024 at 10:53:19 PM UTC+7',
-            },
-            {
-                id: '002',
-                title: '@@@@',
-                img: 'https://reactnative.dev/img/tiny_logo.png',
-                username: 'Tom',
-                notification: 'ashud usdh dhasd asdhaj sjd ashdj sj ajsd adj jnđs djasđ án nlsdaj',
-                time: 'May 18, 2024 at 08:30:00 AM UTC+7',
-            },
-        ];
-
-        return (
 
 
-            <View style={{ flex: 1, backgroundColor: appColor.blackblue }}>
-                {data.length === 0 ? (
-                    <View style={styles.noNotificationContainer}>
-                        <Image
-                            source={require('../../assets/no_notification.png')}
-                            style={styles.noNotificationImage}
-                        />
-                        <Text style={styles.noNotificationText}>No Notification</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => (
-                            <View style={styles.container}>
-                                <Image style={styles.headerLeftImg} source={{ uri: item.img }} />
-                                <View style={styles.contentContainer}>
-                                    <View style={styles.userInfoContainer}>
-                                        <Text style={styles.usernameText}>{item.username}</Text>
-                                        <Text style={styles.timeText}>{this.formatTimeDifference(item.time)}</Text>
-                                    </View>
-                                    <Text style={styles.notificationText}>{item.notification}</Text>
-                                </View>
-                            </View>
-                        )}
+    return (
+        <View style={{ flex: 1, backgroundColor: appColor.blackblue }}>
+            {data.length === 0 ? (
+                <View style={styles.noNotificationContainer}>
+                    <Image
+                        source={require('../../assets/no_notification.png')}
+                        style={styles.noNotificationImage}
                     />
-                )}
+                    <Text style={styles.noNotificationText}>No Notification</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={data}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => (
+                        <View style={styles.container}>
+                            <Image style={styles.headerLeftImg} source={{ uri: item.img }} />
+                            <View style={styles.contentContainer}>
+                                <View style={styles.userInfoContainer}>
+                                    <Text style={styles.usernameText}>{item.username}</Text>
+                                    <Text style={styles.timeText}>{this.formatTimeDifference(item.time)}</Text>
+                                </View>
+                                <Text style={styles.notificationText}>{item.notification}</Text>
+                            </View>
+                        </View>
+                    )}
+                />
+            )}
+        </View>
+    );
 
-
-
-            </View>
-        );
-    }
 }
 
-export default UserNotificationScreen;
 
 const styles = StyleSheet.create({
     container: {
