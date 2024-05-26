@@ -95,24 +95,37 @@ export default UserHomeScreen = ({ navigation }) => {
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.item}
             key={item.name}
-            onPress={() =>
-
-                navigation.navigate("UserBookingScreen", { item: item })
-
-            }
-        >
+            onPress={() => navigation.navigate("UserBookingScreen", { item: item })}>
+            <Text style={{ ...styles.title, color: appColor.blackblue, }}>{item.name}</Text>
+            <Image source={{ uri: item.imageURL, }} style={styles.image} />
             <Text style={{
-                ...styles.title,
+                marginTop: 5,
+                marginBottom: 5,
+                color: appColor.blackblue, fontSize: 13
+            }}>
+                Trạng thái: {item.status == 1 ? <Text style={{ color: "red" }}>Đang mở</Text> : <Text style={{ color: "green" }}>Đang đóng</Text>}
+            </Text>
+            <Text style={{
+                marginBottom: 5,
                 color: appColor.blackblue,
-            }}>{item.name}</Text>
-            <Image
-                source={{
-                    uri: item.imageURL,
-                }}
-                style={styles.image}
-            />
-            <Text style={{ marginTop: 10, marginBottom: 5, color: appColor.blackblue, fontSize: 13 }}>Trạng thái: {item.status == 1 ? <Text style={{ color: "red" }}>Đang mở</Text> : <Text style={{ color: "green" }}>Đang đóng</Text>}</Text>
-            <Text style={{ color: appColor.blackblue, fontSize: 13 }}>Giá tiền: <Text style={{ color: "blue" }}>{formatPriceToVND(item.price)}</Text></Text>
+                fontSize: 13
+            }}>
+                Loại sân:
+                {
+                    item.pitchType == 1 ? <Text style={{ color: "#40035E" }}> Sân 5</Text>:
+                    item.pitchType == 2 ? <Text style={{ color: "#B50163" }}> Sân 7</Text>:
+                    <Text style={{ color: "green" }}>Liên hệ chủ sân để biết thêm chi tiết</Text>
+                }
+            </Text>
+
+            <Text style={{
+                color: appColor.blackblue, fontSize: 13
+            }}>
+                Giá tiền / 1 tiếng: <Text style={{ color: "blue" }}>{formatPriceToVND(item.price)}</Text>
+            </Text>
+
+            
+
         </TouchableOpacity>
     );
 

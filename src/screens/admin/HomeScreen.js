@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -10,18 +10,18 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {Appbar, Menu, IconButton} from 'react-native-paper';
-import {useDispatch, useSelector} from 'react-redux';
-import {logout} from '../../redux/actions/authAction';
+import { Appbar, Menu, IconButton } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../redux/actions/authAction';
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({ navigation }) {
   const [services, setServices] = useState([]);
   const [menuVisible, setMenuVisible] = useState(false);
   const user = useSelector(state => state.auth.userData);
   const dispatch = useDispatch();
 
   const formatPriceToVND = price => {
-    return price.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
+    return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   };
 
   const onLogoutPressed = async () => {
@@ -63,7 +63,7 @@ export default function HomeScreen({navigation}) {
               name="logout"
               size={30}
               color="#fff"
-              style={{marginRight: 15}}
+              style={{ marginRight: 15 }}
             />
           </TouchableOpacity>
         </View>
@@ -76,7 +76,7 @@ export default function HomeScreen({navigation}) {
             alignSelf: 'center',
             alignContent: 'center',
           }}>
-          <Text style={{fontSize: 20, color: 'white'}}>{user.name}</Text>
+          <Text style={{ fontSize: 20, color: 'white' }}>{user.name}</Text>
         </View>
       ),
     });
@@ -105,12 +105,12 @@ export default function HomeScreen({navigation}) {
   const navigateToAddNewPitches = () => {
     setMenuVisible(false);
     navigation.navigate('AddNewPitchesScreen');
-  };  
-  const renderItem = ({item}) => (
+  };
+  const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.serviceItem}
       onPress={() => {
-        navigation.navigate('ServicesDetailScreen', {serviceId: item.key});
+        navigation.navigate('ServicesDetailScreen', { serviceId: item.key });
       }}>
       <Text style={styles.serviceName}>{item.name}</Text>
       <Text style={styles.servicePrice}>
@@ -135,16 +135,16 @@ export default function HomeScreen({navigation}) {
               onPress={() => setMenuVisible(true)}
             />
           }>
-            <Menu.Item onPress={navigateToAddNewServices} title="Add New Service" />
-            <Menu.Item onPress={navigateToAddNewPitches} title="Thêm sân bóng" />
+          <Menu.Item onPress={navigateToAddNewServices} title="Add New Service" />
+          <Menu.Item onPress={navigateToAddNewPitches} title="Thêm sân bóng" />
         </Menu>
       </View>
       <FlatList
-          style={{ flex: 1 }}
-          data={services}
-          keyExtractor={(item) => item.id}
-          
-          renderItem={({ item }) => (
+        style={{ flex: 1 }}
+        data={services}
+        keyExtractor={(item) => item.id}
+
+        renderItem={({ item }) => (
           <Service
             {...item}
           />

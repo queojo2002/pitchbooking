@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, StyleSheet, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Text, TextInput } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
@@ -8,6 +8,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { useSelector } from 'react-redux';
 import { appColor } from '../../constants/appColor';
 import Slides from '../../components/Slides';
+import { Pitches } from '../../model/Pitches';
 
 export default function AddNewPitchesScreen({ navigation }) {
     const [name, setName] = useState('');
@@ -73,18 +74,11 @@ export default function AddNewPitchesScreen({ navigation }) {
         }
         const imageURL = await uploadImage();
         if (imageURL) {
+            const newPitch = new Pitches(name, price, pitchType, status, imageURL, user.email, firestore.FieldValue.serverTimestamp(), firestore.FieldValue.serverTimestamp());
+
             firestore()
                 .collection('pitches')
-                .add({
-                    name: name,
-                    price: Number(price),
-                    pitchType: Number(pitchType),
-                    status: Number(status),
-                    imageURL: imageURL,
-                    creator: user.email,
-                    timeMake: firestore.FieldValue.serverTimestamp(),
-                    timeUpdate: firestore.FieldValue.serverTimestamp(),
-                })
+                .add(newPitch.toObject())
                 .then(() => {
                     Alert.alert('Success', 'Pitch added successfully');
                     setName('');
@@ -101,6 +95,7 @@ export default function AddNewPitchesScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <ScrollView>
               <View style={{marginBottom: 10}}>
                 <Slides />
             </View>
@@ -157,7 +152,7 @@ export default function AddNewPitchesScreen({ navigation }) {
                 Thêm sân bóng
             </Button>
       
-           
+            </ScrollView>
         </View>
     );
 }
@@ -181,6 +176,8 @@ const styles = StyleSheet.create({
     },
     button_add: {
         backgroundColor: "#006769",
+        marginBottom: 30
+
     },
     image: {
         width: 100,

@@ -4,13 +4,12 @@ const db = firestore();
 
 export const loadAllPith = (callback) => {
     try {
-        return db.collection('pitches').onSnapshot((snapshot) => {
+        return db.collection('pitches').orderBy('name').onSnapshot((snapshot) => {
             const pitchCollection = snapshot.docs.map(doc => {
                 return {
                     id: doc.id,
                     ...doc.data()
                 };
-            
             });
             callback({ error: null, data: pitchCollection, idDoc: doc.id });
         }, (error) => {

@@ -13,6 +13,31 @@ const UserProfileScreen = ({ navigation }) => {
     const user = useSelector(state => state.auth.userData);
     const dispatch = useDispatch();
     useEffect(() => {
+
+        navigation.setOptions({
+            headerShown: true,
+            headerStyle: {
+                backgroundColor: appColor.blackblue,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+            headerTitle: () => {
+                return (
+                    <Text style={{
+                        fontSize: 14,
+                        color: 'white',
+                        fontWeight: 'bold',
+                    }}>
+                        Thông tin cá nhân
+                    </Text>
+                );
+            },
+        });
+
+        
         const unsubscribe = subscribeToUser((res) => {
             if (res.error) {
                 console.error("Error1", res.error);
@@ -79,7 +104,7 @@ const styles = StyleSheet.create({
     avatarSection: {
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: appColor.blackblue,
+        backgroundColor: "#8A8A8A",
         height: '30%',
     },
     detailsSection: {

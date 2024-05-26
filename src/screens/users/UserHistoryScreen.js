@@ -1,103 +1,208 @@
-import React, { Component } from 'react';
-import { View, Text, TextInput, StyleSheet ,FlatList,TouchableOpacity,Dimensions} from 'react-native';
+import { CloseSquare, Notification, SearchNormal, SearchNormal1 } from 'iconsax-react-native';
+import React, { Fragment, useEffect, useState } from 'react';
+import { Dimensions, FlatList, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { appColor } from '../../constants/appColor';
 
 const windowWidth = Dimensions.get('window').width;
 const itemWidth = windowWidth / 3
 
-class UserHistoryScreen extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            filterOptions: [
-                { id: 1, label: 'Tất cả' },
-                { id: 2, label: 'Đã thanh toán' },
-                { id: 3, label: 'Đã hủy' }
-            ],
-            selectedFilter: null
-        };
-    }
-    renderFilterItem = ({ item }) => {
+export default UserHistoryScreen = ({ navigation }) => {
+
+    const [selectedFilter, setSelectedFilter] = useState(1); // selectedFilter
+    const [filters, setFilters] = useState([
+        { id: 1, label: 'Tất cả' },
+        { id: 2, label: 'Đã thanh toán' },
+        { id: 3, label: 'Đã hủy' }
+    ]); // filters
+    const [searchText, setSearchText] = useState('');
+    const renderFilterItem = ({ item }) => {
         return (
             <TouchableOpacity
                 style={[
                     styles.filterItem,
-                    this.state.selectedFilter === item.id && styles.selectedFilterItem
                 ]}
-                onPress={() => this.setState({ selectedFilter: item.id })}
+                onPress={() => handleItemPress(item)}
             >
                 <Text style={styles.filterText}>{item.label}</Text>
+                {selectedFilter === item.id && <View style={styles.selectedFilterItem} />}
+
             </TouchableOpacity>
         );
     };
 
-    render() {
-        return (
+    const handleItemPress = (item) => {
+
+        setSelectedFilter(item.id);
+    };
+
+
+    useEffect(() => {
+
+        navigation.setOptions({
+            headerShown: true,
+            headerStyle: {
+                backgroundColor: appColor.blackblue,
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+            headerTitle: () => {
+                return (
+                    <Text style={{
+                        fontSize: 14,
+                        color: 'white',
+                        fontWeight: 'bold',
+                    }}>
+                        Lịch sử đặt sân
+                    </Text>
+                );
+            },
+            /*             headerRight: () => (
+                            <TouchableOpacity
+                                style={{
+                                    marginRight: 5,
+                                    padding: 10
+                                }}
+                                onPress={() => {
+                                    return (
+                                        navigation.navigate("UserNotificationScreen")
+                                    );
+                                }}>
+                                <Notification size="25" color="white" />
+                            </TouchableOpacity>
+                        ), */
+
+        });
+
+    }, []);
+
+
+
+
+    return (
+        <Fragment>
             <View style={styles.container}>
                 <View style={styles.searchContainer}>
-                    <Icon name="search" size={24} color="black" style={styles.searchIcon} />
+                    <SearchNormal1 name="search" size={20} color="#C8C8C8" style={styles.searchIcon} />
                     <TextInput
                         style={styles.input}
-                        placeholder="Search..."
+                        placeholder="Nhập gì đó ..."
                         placeholderTextColor="gray"
+                        value={searchText}
+                        onChangeText={setSearchText}
+
                     />
+                    {searchText.length > 0 && (
+                        <TouchableOpacity onPress={() => {
+                            setSearchText('');
+                        }} style={styles.clearButton}>
+                            <CloseSquare name="close" size={20} color="black" />
+
+                        </TouchableOpacity>)
+                    }
                 </View>
                 <FlatList
-                    data={this.state.filterOptions}
-                    renderItem={this.renderFilterItem}
+                    data={filters}
+                    renderItem={renderFilterItem}
                     keyExtractor={(item) => item.id.toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.filterContainer}
                 />
+
             </View>
-        );
-    }
+
+
+
+            <View style={{
+                flex: 1,
+                backgroundColor: '#F3F3F3',
+                paddingTop: 10,
+                paddingLeft: 10,
+
+            }}>
+
+                <View>
+                    <Text>Đây là màn hình của: {filters[selectedFilter - 1].label}</Text>
+                    <Text>asdsd</Text>
+                </View>
+
+
+            </View>
+        </Fragment>
+    );
+
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: 'center',
-        marginTop: 20,
-        backgroundColor: "#fff",
+        backgroundColor: "#F3F3F3",
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
-        marginBottom: 10,
-        margin: 20,
+        backgroundColor: '#FCFCFC',
         borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 5,
-        
+        borderColor: '#FCFCFC',
+        borderRadius: 15,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        paddingHorizontal: 10,
+        height: 40,
+        margin: 10,
     },
     searchIcon: {
         marginRight: 10,
     },
     input: {
         flex: 1,
-        height: 40,
         color: 'black',
+        fontWeight: 'bold',
+        paddingVertical: 0,
     },
     filterContainer: {
-        backgroundColor: "#fff",
+        backgroundColor: "#FCFCFC",
         width: '100%',
-        height: 30,
-        justifyContent: 'space-between',
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     filterItem: {
         width: itemWidth,
         height: 'auto',
         alignItems: 'center',
+        justifyContent: 'center',
     },
     selectedFilterItem: {
-        backgroundColor: 'gray',
+        width: 40,
+        height: 2,
+        backgroundColor: 'black',
+        alignItems: 'stretch',
     },
     filterText: {
         color: 'black',
+        padding: 5
+    },
+    clearButton: {
+        marginLeft: 10,
     },
 });
 
-export default UserHistoryScreen;
