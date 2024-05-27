@@ -60,20 +60,6 @@ export default UserHistoryScreen = ({ navigation }) => {
                     </Text>
                 );
             },
-            /*             headerRight: () => (
-                            <TouchableOpacity
-                                style={{
-                                    marginRight: 5,
-                                    padding: 10
-                                }}
-                                onPress={() => {
-                                    return (
-                                        navigation.navigate("UserNotificationScreen")
-                                    );
-                                }}>
-                                <Notification size="25" color="white" />
-                            </TouchableOpacity>
-                        ), */
 
         });
 

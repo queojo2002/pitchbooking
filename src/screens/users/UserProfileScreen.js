@@ -63,7 +63,7 @@ const UserProfileScreen = ({ navigation }) => {
                 // Hiển thị chi tiết hồ sơ người dùng
                 <View style={styles.container}>
                     <ScrollView style={styles.detailsSection}>
-                        <TouchableHighlight 
+                        <TouchableHighlight
                             underlayColor="#f2f2f2"
                             onPress={() => navigation.navigate('UserProfileEditScreen')}
                         >
@@ -81,12 +81,12 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Mật khẩu và bảo mật */}
-                        <TouchableHighlight 
+                        <TouchableHighlight
                             underlayColor="#f2f2f2"
                             onPress={() => navigation.navigate('')}
                         >
                             <View style={styles.containerList}>
-                                <SecuritySafe size={24} variant="Bulk" style={{ color: "#cc66ff", marginRight: 20 }} />
+                                <SecuritySafe size={24} variant="Bulk" style={{ color: "#cc66ff", marginRight: 10 }} />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Mật khẩu và bảo mật</Text>
                                 </View>
@@ -95,12 +95,12 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Điều khoản và Quy định */}
-                        <TouchableHighlight 
+                        <TouchableHighlight
                             underlayColor="#f2f2f2"
                             onPress={() => navigation.navigate('UserTermsAndConditionsScreen')}
                         >
                             <View style={styles.containerList}>
-                                <TableDocument size={24} variant="Bulk" style={{ color: appColor.lightBlue, marginRight: 20 }} />
+                                <TableDocument size={24} variant="Bulk" style={{ color: appColor.lightBlue, marginRight: 10 }} />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Điều khoản và Quy định</Text>
                                 </View>
@@ -109,12 +109,12 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Giới thiệu */}
-                        <TouchableHighlight 
+                        <TouchableHighlight
                             underlayColor="#f2f2f2"
                             onPress={() => navigation.navigate('')}
                         >
                             <View style={styles.containerList}>
-                                <InfoCircle size={24} variant="Bulk" style={{ color: "#70db70", marginRight: 20 }} />
+                                <InfoCircle size={24} variant="Bulk" style={{ color: "#70db70", marginRight: 10 }} />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Giới thiệu</Text>
                                 </View>
@@ -123,12 +123,12 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Câu hỏi thường gặp */}
-                        <TouchableHighlight 
+                        <TouchableHighlight
                             underlayColor="#f2f2f2"
                             onPress={() => navigation.navigate('')}
                         >
                             <View style={styles.containerList}>
-                                <MessageQuestion size={24} variant="Bulk" style={{ color: "#29a3a3", marginRight: 20 }} />
+                                <MessageQuestion size={24} variant="Bulk" style={{ color: "#29a3a3", marginRight: 10 }} />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Câu hỏi thường gặp</Text>
                                 </View>
@@ -137,7 +137,7 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Đăng xuất */}
-                        <TouchableHighlight 
+                        <TouchableHighlight
                             underlayColor="#f2f2f2"
                             onPress={async () => { await dispatch(logout()) }}
                         >
@@ -171,12 +171,12 @@ const styles = StyleSheet.create({
     containerList: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingStart:26,
+        paddingHorizontal: 15,
+        paddingStart: 20,
         paddingVertical: 10,
         marginRight: 10,
-        marginTop:5,
-        paddingBottom:15,
+        marginTop: 5,
+        paddingBottom: 15,
         borderColor: '#cccccc',
         borderBottomWidth: 1,
     },
@@ -190,15 +190,19 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderColor: '#cccccc',
         borderBottomWidth: 1,
+        
     },
     details: {
         flex: 1,
         justifyContent: 'center',
+        
+        paddingRight: 20,
     },
     detailName: {
         flex: 1,
         justifyContent: 'center',
         marginLeft: 5,
+        
     },
     title: {
         fontSize: 16,
@@ -214,7 +218,7 @@ const styles = StyleSheet.create({
     },
     logoutIcon: {
         color: "#666666",
-        marginRight: 20,
+        marginRight: 10,
     },
     avatar: {
         width: 50,
