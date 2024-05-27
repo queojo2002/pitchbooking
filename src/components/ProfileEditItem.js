@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
         fontSize: 16,
-        paddingVertical: 5,
+        paddingVertical: 1,
     },
     value: {
         fontSize: 16,

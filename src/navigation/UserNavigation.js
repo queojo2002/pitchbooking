@@ -2,7 +2,7 @@ import { TransitionPresets, createStackNavigator } from '@react-navigation/stack
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { appColor } from '../constants/appColor';
-import { UserBookingScreen, UserHomeScreen, UserNotificationScreen, UserProfileEditScreen } from '../screens';
+import { UserBookingScreen, UserHomeScreen, UserNotificationScreen, UserProfileEditScreen, UserTermsAndConditionsScreen } from '../screens';
 import UserBottomNavigation from './UserBottomNavigation';
 
 
@@ -23,6 +23,16 @@ const UserNavigation = () => {
         >
             <Stack.Screen name="UserBottomNavigation" component={UserBottomNavigation} />
             <Stack.Screen name="UserHomeScreen" component={UserHomeScreen} />
+            <Stack.Screen 
+                name="UserTermsAndConditionsScreen" 
+                component={UserTermsAndConditionsScreen} 
+                options={{
+                    headerShown: true,
+                    headerStyle: { backgroundColor: appColor.blackblue },
+                    headerTintColor: '#fff',
+                    headerTitle: 'Điều khoản và Quy định',
+                }}
+            />
             <Stack.Screen
                 name="UserProfileEditScreen"
                 component={UserProfileEditScreen}

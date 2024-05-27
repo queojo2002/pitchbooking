@@ -81,6 +81,11 @@ const UserProfileEditScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <ScrollView style={styles.detailsSection}>
+                <ProfileDetailItem
+                    icon="mail"
+                    title={user.emailVerified ? "Email - Đã xác thực" : "Email - Chưa xác thực"}
+                    subtitle={user.email}
+                            />
                 <ProfileEditItem
                     icon="person"
                     title="Tên"

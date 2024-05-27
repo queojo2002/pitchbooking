@@ -17,6 +17,7 @@ import CustomerOfAdminScreen from "./admin/CustomerOfAdminScreen"
 import AddNewPitchesScreen from "./admin/AddNewPitchesScreen"
 import OnboardingScreen from "./OnboardingScreen"
 import UserProfileEditScreen from "./users/UserProfileEditScreen"
+import UserTermsAndConditionsScreen from "./users/UserTermsAndConditionsScreen"
 export {
     LoginScreen,
     RegisterScreen,
@@ -37,4 +38,5 @@ export {
     AddNewPitchesScreen,
     UserBookingScreen,
     UserProfileEditScreen,
+    UserTermsAndConditionsScreen,
 }
