@@ -82,7 +82,7 @@ const UserProfileEditScreen = ({ navigation }) => {
             </View>
             <ScrollView style={styles.detailsSection}>
                 <ProfileDetailItem
-                    icon="mail"
+                    
                     title={user.emailVerified ? "Email - Đã xác thực" : "Email - Chưa xác thực"}
                     subtitle={user.email}
                             />
@@ -102,7 +102,7 @@ const UserProfileEditScreen = ({ navigation }) => {
                 />
             </ScrollView>
             <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                <Text style={styles.saveButtonText}>Save Changes</Text>
+                <Text style={styles.saveButtonText}>Cập nhật</Text>
             </TouchableOpacity>
         </View>
     );
