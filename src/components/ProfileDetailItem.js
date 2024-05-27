@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 export default DetailListItem = (props) => {
 
     const {
-        icon = "mail",
+        accuracy= "@@",
         title = "Email",
         subtitle = "ducln339@gmail.com"
     } = props;
@@ -16,10 +15,12 @@ export default DetailListItem = (props) => {
     return (
         <TouchableHighlight underlayColor="#606060">
             <View style={styles.container}>
-                <Icon name={icon} size={24} style={{ color: "black", marginRight: 20 }} />
                 <View style={styles.details}>
-                    <Text style={styles.name}>{title}</Text>
-                    <Text style={styles.phoneNumber}>{subtitle}</Text>
+                <Text style={styles.name}>
+                    {title}
+                    <Text style={styles.required}>*</Text>
+                </Text>
+                    <Text style={styles.phoneNumber}>{subtitle}<Text>{accuracy}</Text></Text>
                 </View>
             </View>
         </TouchableHighlight>
@@ -35,30 +36,29 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        marginHorizontal: 10,
+        paddingVertical: 5,
         marginVertical: 5,
-        borderColor: 'black',
-        borderBottomWidth: 1,
+        borderBottomColor: '#dcdcdc',
         
-    },
-    image: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 16,
     },
     details: {
         flex: 1,
     },
     name: {
         fontSize: 16,
-        fontWeight: 'bold',
-        paddingBottom: 3,
+        color: 'black',
+        marginBottom: 5,
     },
     phoneNumber: {
+        borderWidth: 1,
+        borderColor: '#bfbfbf',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
         fontSize: 16,
-        color: '#555',
+        color: 'gray',
+    },
+    required: {
+        color: 'red',
     },
 });

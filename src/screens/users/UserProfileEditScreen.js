@@ -73,29 +73,32 @@ const UserProfileEditScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.avatarSection}>
-                <TouchableOpacity onPress={handleImageUpload}>
+                <TouchableOpacity onPress={handleImageUpload} style={styles.avatarContainer}>
                     <Image
                         source={{ uri: avatar || `https://ui-avatars.com/api/?name=${name}&size=128` }}
                         style={styles.avatar}
                     />
+                    <View style={styles.editTextContainer}>
+                        <Text style={styles.editText}>Sửa</Text>
+                    </View>
                 </TouchableOpacity>
             </View>
             <ScrollView style={styles.detailsSection}>
                 <ProfileDetailItem
-                    
-                    title={user.emailVerified ? "Email - Đã xác thực" : "Email - Chưa xác thực"}
+                    title="Email "
                     subtitle={user.email}
-                            />
+                    accuracy={user.emailVerified ? " (Đã xác thực)" : " (Chưa xác thực)"}
+                />
                 <ProfileEditItem
                     icon="person"
-                    title="Tên"
+                    title="Tên "
                     editable
                     value={name}
                     onChangeText={setName}
                 />
                 <ProfileEditItem
                     icon="location-on"
-                    title="Địa chỉ"
+                    title="Địa chỉ "
                     editable
                     value={address}
                     onChangeText={setAddress}
@@ -116,7 +119,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: appColor.blackblue,
-        height: '30%',
+        height: '25%',
+    },
+    avatarContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     detailsSection: {
         flex: 1,
@@ -127,13 +135,10 @@ const styles = StyleSheet.create({
         backgroundColor: appColor.blackblue,
         padding: 10,
         borderRadius: 5,
-        marginHorizontal:30,
-        borderRadius: 20,
+        marginHorizontal: 20,
         marginBottom: 10,
-        alignItems:'center',
-        justifyContent:'center',
-        height:'10%',
         alignItems: 'center',
+        justifyContent: 'center',
     },
     saveButtonText: {
         color: '#fff',
@@ -141,11 +146,23 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     avatar: {
-        width: 90,
-        height: 90,
-        borderRadius: 45,
+        width: 100,
+        height: 100,
+        borderRadius: 50,
         borderColor: 'white',
         borderWidth: 2,
+    },
+    editTextContainer: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        alignItems: 'center',
+        paddingVertical: 4,
+    },
+    editText: {
+        color: '#fff',
+        fontSize: 16,
     },
 });
 
