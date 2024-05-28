@@ -69,7 +69,7 @@ export default function AddNewPitchesScreen({ navigation }) {
 
     const addPitch = async () => {
         if (name === '' || price === '' || pitchType === '' || status === '' || !imageUri) {
-            Alert.alert('Error', 'Please fill all fields and select an image');
+            Alert.alert('Lỗi', 'Vui lòng điền vào tất cả các ô và chọn một hình ảnh');
             return;
         }
         const imageURL = await uploadImage();
@@ -80,7 +80,7 @@ export default function AddNewPitchesScreen({ navigation }) {
                 .collection('pitches')
                 .add(newPitch.toObject())
                 .then(() => {
-                    Alert.alert('Success', 'Pitch added successfully');
+                    Alert.alert('Thành công', 'Sân đã được thêm thành công');
                     setName('');
                     setPrice('');
                     setPitchType('');

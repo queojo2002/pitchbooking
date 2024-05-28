@@ -10,14 +10,13 @@ import UserBookingScreen from "./users/UserBookingScreen"
 import HomeScreen from "./admin/HomeScreen"
 import SettingsScreen from "./admin/SettingsScreen"
 import TransactionScreen from "./admin/TransactionScreen"
-import AddNewServicesScreen from "./admin/AddNewServicesScreen"
-import ServicesDetailScreen from "./admin/ServicesDetailScreen"
-import UpdateServicesScreen from "./admin/UpdateServicesScreen"
 import CustomerOfAdminScreen from "./admin/CustomerOfAdminScreen"
 import AddNewPitchesScreen from "./admin/AddNewPitchesScreen"
 import OnboardingScreen from "./OnboardingScreen"
 import UserProfileEditScreen from "./users/UserProfileEditScreen"
 import UserTermsAndConditionsScreen from "./users/UserTermsAndConditionsScreen"
+import PitchesDetailScreen from "./admin/PitchesDetailScreen"
+import UpdatePitchesScreen from "./admin/UpdatePitchesScreen"
 export {
     LoginScreen,
     RegisterScreen,
@@ -26,9 +25,6 @@ export {
     UserHomeScreen,
     TransactionScreen,
     SettingsScreen,
-    AddNewServicesScreen,
-    UpdateServicesScreen,
-    ServicesDetailScreen,
     CustomerOfAdminScreen,
     UserHistoryScreen,
     UserNotificationScreen,
@@ -39,4 +35,6 @@ export {
     UserBookingScreen,
     UserProfileEditScreen,
     UserTermsAndConditionsScreen,
+    PitchesDetailScreen,
+    UpdatePitchesScreen
 }

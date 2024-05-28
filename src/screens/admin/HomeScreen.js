@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback,Fragment } from 'react';
 import {
   Alert,
   FlatList,
@@ -8,14 +8,16 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Appbar, Menu, IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 import { logout } from '../../redux/actions/authAction';
 
 export default function HomeScreen({ navigation }) {
-  const [services, setServices] = useState([]);
+  const [pitches, setPitches] = useState([]);
   const [menuVisible, setMenuVisible] = useState(false);
   const user = useSelector(state => state.auth.userData);
   const dispatch = useDispatch();
@@ -82,48 +84,50 @@ export default function HomeScreen({ navigation }) {
     });
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('services')
-      .onSnapshot(querySnapshot => {
-        const servicesList = [];
-        querySnapshot.forEach(documentSnapshot => {
-          servicesList.push({
-            ...documentSnapshot.data(),
-            key: documentSnapshot.id,
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = firestore()
+        .collection('pitches')
+        .onSnapshot(querySnapshot => {
+          const pitchesList = [];
+          querySnapshot.forEach(documentSnapshot => {
+            pitchesList.push({
+              ...documentSnapshot.data(),
+              key: documentSnapshot.id,
+            });
           });
+          setPitches(pitchesList);
         });
-        setServices(servicesList);
-      });
 
-    return () => unsubscribe();
-  }, []);
-  const navigateToAddNewServices = () => {
-    setMenuVisible(false);
-    navigation.navigate('AddNewServicesScreen');
-  };
+      return () => unsubscribe();
+    }, [])
+  );
+
   const navigateToAddNewPitches = () => {
     setMenuVisible(false);
     navigation.navigate('AddNewPitchesScreen');
   };
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.serviceItem}
+      style={styles.pitchItem}
       onPress={() => {
-        navigation.navigate('ServicesDetailScreen', { serviceId: item.key });
+        navigation.navigate('PitchesDetailScreen', { pitchId: item.key });
       }}>
-      <Text style={styles.serviceName}>{item.name}</Text>
-      <Text style={styles.servicePrice}>
+      <Image src={item.imageURL} style={styles.image}></Image>
+      <Text style={styles.pitchName}>{item.name}</Text>
+      <Text style={styles.pitchPrice}>
         {formatPriceToVND(parseFloat(item.price))}
       </Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <Fragment>
+<View style={styles.container}>
       <Image source={require('../../assets/logodth.png')} style={styles.logo} />
       <View style={styles.headerRow}>
-        <Text style={styles.serviceListTitle}>Danh sách dịch vụ</Text>
+        <Text style={styles.pitchListTitle}>Danh sách sân bóng</Text>
         <Menu
           visible={menuVisible}
           onDismiss={() => setMenuVisible(false)}
@@ -135,22 +139,22 @@ export default function HomeScreen({ navigation }) {
               onPress={() => setMenuVisible(true)}
             />
           }>
-          <Menu.Item onPress={navigateToAddNewServices} title="Add New Service" />
           <Menu.Item onPress={navigateToAddNewPitches} title="Thêm sân bóng" />
         </Menu>
       </View>
       <FlatList
         style={{ flex: 1 }}
-        data={services}
-        keyExtractor={(item) => item.id}
-
-        renderItem={({ item }) => (
-          <Service
-            {...item}
-          />
-        )}
+        data={pitches}
+        keyExtractor={(item) => item.key}
+        renderItem={renderItem}
+        contentContainerStyle={styles.flatListContainer}
+        showsVerticalScrollIndicator={false}
       />
     </View>
+    </Fragment>
+
+
+    
   );
 }
 
@@ -173,14 +177,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
   },
-  serviceListTitle: {
+  pitchListTitle: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  serviceList: {
+  pitchList: {
     paddingHorizontal: 10,
   },
-  serviceItem: {
+  pitchItem: {
     backgroundColor: '#fff',
     padding: 15,
     marginVertical: 5,
@@ -190,16 +194,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 1,
   },
-  serviceName: {
+  pitchName: {
+    position: 'absolute',
+    left: 120,
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
   },
-  servicePrice: {
+  pitchPrice: {
     fontSize: 16,
     color: '#666',
   },
   addButton: {
     marginRight: 10,
   },
+  image:{
+    width: 100,
+    height: 50,
+  },
+  flatListContainer:{
+    paddingBottom: 70,
+  }
 });
