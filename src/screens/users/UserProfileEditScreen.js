@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { appColor } from '../../constants/appColor';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-import { launchImageLibrary } from 'react-native-image-picker';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import ProfileEditItem from '../../components/ProfileEditItem';
 import ProfileDetailItem from '../../components/ProfileDetailItem';
 
@@ -47,23 +47,22 @@ const UserProfileEditScreen = ({ navigation }) => {
 
     const handleImageUpload = async () => {
         try {
-            const options = {
-                mediaType: 'photo',
-                quality: 0.5,
-                allowsEditing: true,
-                aspect: [1, 1]
-            };
-            launchImageLibrary(options, async (response) => {
-                console.log("ImagePicker response:", response);
-                if (!response.didCancel) {
-                    const { uri } = response.assets[0];
-                    const imageName = `avatar_${user.uid}`;
-                    const storageRef = storage().ref().child(`avatars/${imageName}`);
-                    await storageRef.putFile(uri);
-                    const downloadURL = await storageRef.getDownloadURL();
-                    console.log("Download URL:", downloadURL);
-                    setAvatar(downloadURL);
-                }
+            ImageCropPicker.openPicker({
+                width: 300,
+                height: 300,
+                cropping: true,
+                cropperCircleOverlay: true,
+                compressImageQuality: 0.5,
+            }).then(async (image) => {
+                const uri = image.path;
+                const imageName = `avatar_${user.uid}`;
+                const storageRef = storage().ref().child(`avatars/${imageName}`);
+                await storageRef.putFile(uri);
+                const downloadURL = await storageRef.getDownloadURL();
+                console.log("Download URL:", downloadURL);
+                setAvatar(downloadURL);
+            }).catch(error => {
+                console.log('Error picking image: ', error);
             });
         } catch (error) {
             console.log('Error uploading image: ', error);
