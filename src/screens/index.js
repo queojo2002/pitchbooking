@@ -17,6 +17,7 @@ import UserProfileEditScreen from "./users/UserProfileEditScreen"
 import UserTermsAndConditionsScreen from "./users/UserTermsAndConditionsScreen"
 import PitchesDetailScreen from "./admin/PitchesDetailScreen"
 import UpdatePitchesScreen from "./admin/UpdatePitchesScreen"
+import AddNotificationScreen from './admin/AddNotificationScreen';
 export {
     LoginScreen,
     RegisterScreen,
@@ -36,5 +37,6 @@ export {
     UserProfileEditScreen,
     UserTermsAndConditionsScreen,
     PitchesDetailScreen,
-    UpdatePitchesScreen
+    UpdatePitchesScreen,
+    AddNotificationScreen,
 }

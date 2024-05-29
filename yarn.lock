@@ -2770,6 +2770,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-firebase/messaging@npm:^20.0.0":
+  version: 20.0.0
+  resolution: "@react-native-firebase/messaging@npm:20.0.0"
+  peerDependencies:
+    "@react-native-firebase/app": 20.0.0
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 0175e08260318942bce0efbc8633478ce565eb23c8625209a4355be9dfcf492bdbb2359988dca7d046ef794708d733410948373dd6c261a803ebfdbc7bfd95c0
+  languageName: node
+  linkType: hard
+
 "@react-native-firebase/storage@npm:^20.0.0":
   version: 20.0.0
   resolution: "@react-native-firebase/storage@npm:20.0.0"
@@ -8719,6 +8732,7 @@ __metadata:
     "@react-native-firebase/app": ^19.2.2
     "@react-native-firebase/auth": ^19.2.2
     "@react-native-firebase/firestore": ^19.2.2
+    "@react-native-firebase/messaging": ^20.0.0
     "@react-native-firebase/storage": ^20.0.0
     "@react-native-picker/picker": ^2.7.6
     "@react-native-vector-icons/material-icons": ^0.0.1-alpha.9
