@@ -38,5 +38,5 @@ export {
     UserTermsAndConditionsScreen,
     PitchesDetailScreen,
     UpdatePitchesScreen,
-    UserConfirmBooking
+    UserConfirmBooking,
 }

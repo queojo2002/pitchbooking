@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AddNewServicesScreen, Dashboard,AddNewPitchesScreen,PitchesDetailScreen,UpdatePitchesScreen} from '../screens';
 import AdminBottomNavigation from './AdminBottomNavigation';
+import { appColor } from '../constants/appColor';
 
 
 
