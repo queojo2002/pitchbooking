@@ -3,6 +3,8 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { appColor } from '../../constants/appColor';
+import { LoadPitchesBooking } from '../../api/pitch-api';
+import { useSelector } from 'react-redux';
 
 const windowWidth = Dimensions.get('window').width;
 const itemWidth = windowWidth / 3
@@ -15,6 +17,8 @@ export default UserHistoryScreen = ({ navigation }) => {
         { id: 2, label: 'Đã thanh toán' },
         { id: 3, label: 'Đã hủy' }
     ]); // filters
+    const user = useSelector(state => state.auth.userData);
+
     const [searchText, setSearchText] = useState('');
     const renderFilterItem = ({ item }) => {
         return (
@@ -61,6 +65,11 @@ export default UserHistoryScreen = ({ navigation }) => {
                 );
             },
 
+        });
+
+
+        LoadPitchesBooking(user.email, (data) => {
+            console.log(data);
         });
 
     }, []);

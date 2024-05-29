@@ -7,6 +7,7 @@ import UserNotificationScreen from "./users/UserNotificationScreen"
 import UserProfileScreen from "./users/UserProfileScreen"
 import UserChatScreen from "./users/UserChatScreen"
 import UserBookingScreen from "./users/UserBookingScreen"
+import UserConfirmBooking from "./users/UserConfirmBooking"
 import HomeScreen from "./admin/HomeScreen"
 import SettingsScreen from "./admin/SettingsScreen"
 import TransactionScreen from "./admin/TransactionScreen"
@@ -36,5 +37,6 @@ export {
     UserProfileEditScreen,
     UserTermsAndConditionsScreen,
     PitchesDetailScreen,
-    UpdatePitchesScreen
+    UpdatePitchesScreen,
+    UserConfirmBooking
 }

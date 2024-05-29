@@ -2,14 +2,14 @@ import { TransitionPresets, createStackNavigator } from '@react-navigation/stack
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { appColor } from '../constants/appColor';
-import { UserBookingScreen, UserHomeScreen, UserNotificationScreen, UserProfileEditScreen, UserTermsAndConditionsScreen } from '../screens';
+import { UserBookingScreen, UserConfirmBooking, UserHomeScreen, UserNotificationScreen, UserProfileEditScreen, UserTermsAndConditionsScreen } from '../screens';
 import UserBottomNavigation from './UserBottomNavigation';
 
 
 const Stack = createStackNavigator();
 
 const UserNavigation = () => {
-    
+
 
     return (
         <Stack.Navigator
@@ -23,9 +23,9 @@ const UserNavigation = () => {
         >
             <Stack.Screen name="UserBottomNavigation" component={UserBottomNavigation} />
             <Stack.Screen name="UserHomeScreen" component={UserHomeScreen} />
-            <Stack.Screen 
-                name="UserTermsAndConditionsScreen" 
-                component={UserTermsAndConditionsScreen} 
+            <Stack.Screen
+                name="UserTermsAndConditionsScreen"
+                component={UserTermsAndConditionsScreen}
                 options={{
                     headerShown: true,
                     headerStyle: { backgroundColor: appColor.blackblue },
@@ -46,11 +46,16 @@ const UserNavigation = () => {
             <Stack.Screen
                 name="UserNotificationScreen"
                 component={UserNotificationScreen}
-                
+
             />
             <Stack.Screen
                 name="UserBookingScreen"
                 component={UserBookingScreen}
+            />
+
+            <Stack.Screen
+                name="UserConfirmBooking"
+                component={UserConfirmBooking}
             />
         </Stack.Navigator>
     );
