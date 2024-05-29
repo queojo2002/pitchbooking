@@ -1,48 +1,37 @@
-import { CloseSquare, Notification, SearchNormal, SearchNormal1 } from 'iconsax-react-native';
+import { CloseSquare, SearchNormal1 } from 'iconsax-react-native';
 import React, { Fragment, useEffect, useState } from 'react';
-import { Dimensions, FlatList, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { appColor } from '../../constants/appColor';
-import { LoadPitchesBooking } from '../../api/pitch-api';
+import { Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { loadPitchesBookingByEmail } from '../../api/pitch-api';
+import { appColor } from '../../constants/appColor';
 
 const windowWidth = Dimensions.get('window').width;
-const itemWidth = windowWidth / 3
+const itemWidth = windowWidth / 3;
 
 export default UserHistoryScreen = ({ navigation }) => {
-
     const [selectedFilter, setSelectedFilter] = useState(1); // selectedFilter
     const [filters, setFilters] = useState([
         { id: 1, label: 'Tất cả' },
         { id: 2, label: 'Đã thanh toán' },
-        { id: 3, label: 'Đã hủy' }
+        { id: 3, label: 'Đã hủy' },
     ]); // filters
-    const user = useSelector(state => state.auth.userData);
+    const user = useSelector((state) => state.auth.userData);
 
     const [searchText, setSearchText] = useState('');
     const renderFilterItem = ({ item }) => {
         return (
-            <TouchableOpacity
-                style={[
-                    styles.filterItem,
-                ]}
-                onPress={() => handleItemPress(item)}
-            >
+            <TouchableOpacity style={[styles.filterItem]} onPress={() => handleItemPress(item)}>
                 <Text style={styles.filterText}>{item.label}</Text>
                 {selectedFilter === item.id && <View style={styles.selectedFilterItem} />}
-
             </TouchableOpacity>
         );
     };
 
     const handleItemPress = (item) => {
-
         setSelectedFilter(item.id);
     };
 
-
     useEffect(() => {
-
         navigation.setOptions({
             headerShown: true,
             headerStyle: {
@@ -55,27 +44,24 @@ export default UserHistoryScreen = ({ navigation }) => {
             headerTitleAlign: 'center',
             headerTitle: () => {
                 return (
-                    <Text style={{
-                        fontSize: 14,
-                        color: 'white',
-                        fontWeight: 'bold',
-                    }}>
+                    <Text
+                        style={{
+                            fontSize: 14,
+                            color: 'white',
+                            fontWeight: 'bold',
+                        }}
+                    >
                         Lịch sử đặt sân
                     </Text>
                 );
             },
-
         });
 
-
-        LoadPitchesBooking(user.email, (data) => {
+        loadPitchesBookingByEmail(user.email, (data) => {
+            console.log(user.email);
             console.log(data);
         });
-
     }, []);
-
-
-
 
     return (
         <Fragment>
@@ -88,16 +74,17 @@ export default UserHistoryScreen = ({ navigation }) => {
                         placeholderTextColor="gray"
                         value={searchText}
                         onChangeText={setSearchText}
-
                     />
                     {searchText.length > 0 && (
-                        <TouchableOpacity onPress={() => {
-                            setSearchText('');
-                        }} style={styles.clearButton}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                setSearchText('');
+                            }}
+                            style={styles.clearButton}
+                        >
                             <CloseSquare name="close" size={20} color="black" />
-
-                        </TouchableOpacity>)
-                    }
+                        </TouchableOpacity>
+                    )}
                 </View>
                 <FlatList
                     data={filters}
@@ -107,35 +94,29 @@ export default UserHistoryScreen = ({ navigation }) => {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.filterContainer}
                 />
-
             </View>
 
-
-
-            <View style={{
-                flex: 1,
-                backgroundColor: '#F3F3F3',
-                paddingTop: 10,
-                paddingLeft: 10,
-
-            }}>
-
+            <View
+                style={{
+                    flex: 1,
+                    backgroundColor: '#F3F3F3',
+                    paddingTop: 10,
+                    paddingLeft: 10,
+                }}
+            >
                 <View>
                     <Text>Đây là màn hình của: {filters[selectedFilter - 1].label}</Text>
                     <Text>asdsd</Text>
                 </View>
-
-
             </View>
         </Fragment>
     );
-
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: "#F3F3F3",
+        backgroundColor: '#F3F3F3',
     },
     searchContainer: {
         flexDirection: 'row',
@@ -144,7 +125,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#FCFCFC',
         borderRadius: 15,
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 2,
@@ -166,12 +147,12 @@ const styles = StyleSheet.create({
         paddingVertical: 0,
     },
     filterContainer: {
-        backgroundColor: "#FCFCFC",
+        backgroundColor: '#FCFCFC',
         width: '100%',
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: "#000000",
+        shadowColor: '#000000',
         shadowOffset: {
             width: 0,
             height: 2,
@@ -194,10 +175,9 @@ const styles = StyleSheet.create({
     },
     filterText: {
         color: 'black',
-        padding: 5
+        padding: 5,
     },
     clearButton: {
         marginLeft: 10,
     },
 });
-

@@ -1,14 +1,14 @@
+import { ArrowRight2, InfoCircle, Logout, MessageQuestion, SecuritySafe, TableDocument } from 'iconsax-react-native';
 import React, { Fragment, useEffect } from 'react';
-import { ScrollView, StyleSheet, TouchableHighlight, View, Image } from 'react-native';
+import { Image, ScrollView, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { appColor } from '../../constants/appColor';
 import { subscribeToUser } from '../../api/user-api';
+import { appColor } from '../../constants/appColor';
 import { logout, updateUsers } from '../../redux/actions/authAction';
-import { TableDocument, ArrowRight2, Logout, SecuritySafe, InfoCircle, MessageQuestion } from 'iconsax-react-native';
 
 const UserProfileScreen = ({ navigation }) => {
-    const user = useSelector(state => state.auth.userData);
+    const user = useSelector((state) => state.auth.userData);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -23,22 +23,20 @@ const UserProfileScreen = ({ navigation }) => {
                 fontWeight: 'bold',
             },
             headerTitleAlign: 'center',
-            headerTitle: () => (
-                <Text style={styles.headerTitle}>
-                    Thông tin cá nhân
-                </Text>
-            ),
+            headerTitle: () => <Text style={styles.headerTitle}>Thông tin cá nhân</Text>,
         });
 
         // Đăng ký cập nhật dữ liệu người dùng
         const unsubscribe = subscribeToUser((res) => {
             if (res.error) {
-                console.error("Error1", res.error);
+                console.error('Error1', res.error);
             } else {
-                dispatch(updateUsers({
-                    ...res.data,
-                    emailVerified: res.emailVerified,
-                }));
+                dispatch(
+                    updateUsers({
+                        ...res.data,
+                        emailVerified: res.emailVerified,
+                    }),
+                );
             }
         });
         return () => unsubscribe();
@@ -69,7 +67,9 @@ const UserProfileScreen = ({ navigation }) => {
                         >
                             <View style={styles.containerInfo}>
                                 <Image
-                                    source={{ uri: user.avatar || `https://ui-avatars.com/api/?name=${user.name}&size=128` }}
+                                    source={{
+                                        uri: user.avatar || `https://ui-avatars.com/api/?name=${user.name}&size=128`,
+                                    }}
                                     style={styles.avatar}
                                 />
                                 <View style={styles.detailName}>
@@ -81,12 +81,9 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Mật khẩu và bảo mật */}
-                        <TouchableHighlight
-                            underlayColor="#f2f2f2"
-                            onPress={() => navigation.navigate('')}
-                        >
+                        <TouchableHighlight underlayColor="#f2f2f2" onPress={() => navigation.navigate('')}>
                             <View style={styles.containerList}>
-                                <SecuritySafe size={24} variant="Bulk" style={{ color: "#cc66ff", marginRight: 10 }} />
+                                <SecuritySafe size={24} variant="Bulk" style={{ color: '#cc66ff', marginRight: 10 }} />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Mật khẩu và bảo mật</Text>
                                 </View>
@@ -100,7 +97,11 @@ const UserProfileScreen = ({ navigation }) => {
                             onPress={() => navigation.navigate('UserTermsAndConditionsScreen')}
                         >
                             <View style={styles.containerList}>
-                                <TableDocument size={24} variant="Bulk" style={{ color: appColor.lightBlue, marginRight: 10 }} />
+                                <TableDocument
+                                    size={24}
+                                    variant="Bulk"
+                                    style={{ color: appColor.lightBlue, marginRight: 10 }}
+                                />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Điều khoản và Quy định</Text>
                                 </View>
@@ -109,12 +110,9 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Giới thiệu */}
-                        <TouchableHighlight
-                            underlayColor="#f2f2f2"
-                            onPress={() => navigation.navigate('')}
-                        >
+                        <TouchableHighlight underlayColor="#f2f2f2" onPress={() => navigation.navigate('')}>
                             <View style={styles.containerList}>
-                                <InfoCircle size={24} variant="Bulk" style={{ color: "#70db70", marginRight: 10 }} />
+                                <InfoCircle size={24} variant="Bulk" style={{ color: '#70db70', marginRight: 10 }} />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Giới thiệu</Text>
                                 </View>
@@ -123,12 +121,13 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Câu hỏi thường gặp */}
-                        <TouchableHighlight
-                            underlayColor="#f2f2f2"
-                            onPress={() => navigation.navigate('')}
-                        >
+                        <TouchableHighlight underlayColor="#f2f2f2" onPress={() => navigation.navigate('')}>
                             <View style={styles.containerList}>
-                                <MessageQuestion size={24} variant="Bulk" style={{ color: "#29a3a3", marginRight: 10 }} />
+                                <MessageQuestion
+                                    size={24}
+                                    variant="Bulk"
+                                    style={{ color: '#29a3a3', marginRight: 10 }}
+                                />
                                 <View style={styles.details}>
                                     <Text style={styles.title}>Câu hỏi thường gặp</Text>
                                 </View>
@@ -139,7 +138,9 @@ const UserProfileScreen = ({ navigation }) => {
                         {/* Tùy chọn Đăng xuất */}
                         <TouchableHighlight
                             underlayColor="#f2f2f2"
-                            onPress={async () => { await dispatch(logout()) }}
+                            onPress={async () => {
+                                await dispatch(logout());
+                            }}
                         >
                             <View style={styles.containerList}>
                                 <Logout variant="Bulk" size={24} style={styles.logoutIcon} />
@@ -190,19 +191,17 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderColor: '#cccccc',
         borderBottomWidth: 1,
-        
     },
     details: {
         flex: 1,
         justifyContent: 'center',
-        
+
         paddingRight: 20,
     },
     detailName: {
         flex: 1,
         justifyContent: 'center',
         marginLeft: 5,
-        
     },
     title: {
         fontSize: 16,
@@ -214,10 +213,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     arrowIcon: {
-        color: "#666666",
+        color: '#666666',
     },
     logoutIcon: {
-        color: "#666666",
+        color: '#666666',
         marginRight: 10,
     },
     avatar: {

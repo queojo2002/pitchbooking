@@ -1,10 +1,11 @@
 export class PitchesBooking {
-    constructor(timeBooking, timeStart, timeEnd, userBooking, statusBooking, pitches) {
+    constructor(timeBooking, timeStart, timeEnd, priceFinal, user, statusBooking, pitches) {
         this.timeBooking = timeBooking;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
-        this.userBooking = userBooking;
+        this.user = user;
         this.statusBooking = statusBooking;
+        this.priceFinal = priceFinal;
         this.pitches = pitches;
     }
 
@@ -13,9 +14,9 @@ export class PitchesBooking {
             timeBooking: this.timeBooking,
             timeStart: this.timeStart,
             timeEnd: this.timeEnd,
-            userBooking: this.userBooking,
+            user: this.user,
             statusBooking: this.statusBooking,
-            pitches: this.pitches
+            pitches: this.pitches,
         };
     }
 }

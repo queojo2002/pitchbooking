@@ -4,23 +4,27 @@ const db = firestore();
 
 export const loadAllPith = (callback) => {
     try {
-        return db.collection('pitches').orderBy('name').onSnapshot((snapshot) => {
-            const pitchCollection = snapshot.docs.map(doc => {
-                return {
-                    id: doc.id,
-                    ...doc.data()
-                };
-            });
-            callback({ error: null, data: pitchCollection, idDoc: doc.id });
-        }, (error) => {
-            callback({ error: error.message });
-        });
+        return db
+            .collection('pitches')
+            .orderBy('name')
+            .onSnapshot(
+                (snapshot) => {
+                    const pitchCollection = snapshot.docs.map((doc) => {
+                        return {
+                            id: doc.id,
+                            ...doc.data(),
+                        };
+                    });
+                    callback({ error: null, data: pitchCollection, idDoc: doc.id });
+                },
+                (error) => {
+                    callback({ error: error.message });
+                },
+            );
     } catch (error) {
         callback({ error: error.message });
     }
 };
-
-
 
 export const addNewPitchBooking = async (pitch, callback) => {
     try {
@@ -33,21 +37,20 @@ export const addNewPitchBooking = async (pitch, callback) => {
     } catch (error) {
         callback({ error: error.message });
     }
-}
-
+};
 
 export const checkPitchIsConflict = async (timeStart, timeEnd, callback) => {
     try {
         const snapshot = await db.collection('pitchesBooking').get();
 
-        const pitchCollection = snapshot.docs.map(doc => {
+        const pitchCollection = snapshot.docs.map((doc) => {
             return {
                 id: doc.id,
-                ...doc.data()
+                ...doc.data(),
             };
         });
 
-        const conflictingPitches = pitchCollection.filter(pitch => {
+        const conflictingPitches = pitchCollection.filter((pitch) => {
             return pitch.timeStart < timeEnd && pitch.timeEnd > timeStart;
         });
 
@@ -55,22 +58,49 @@ export const checkPitchIsConflict = async (timeStart, timeEnd, callback) => {
     } catch (error) {
         callback({ error: error.message });
     }
-}
+};
 
-export const LoadPitchesBooking = (email, callback) => {
+export const loadPitchesBookingByEmail = (email, callback) => {
     try {
-        return db.collection('pitchesBooking').where('userBooking', '==', email).onSnapshot((snapshot) => {
-            const pitchCollection = snapshot.docs.map(doc => {
-                return {
-                    id: doc.id,
-                    ...doc.data()
-                };
-            });
-            callback({ error: null, data: pitchCollection });
-        }, (error) => {
-            callback({ error: error.message });
-        });
+        return db
+            .collection('pitchesBooking')
+            .where('user.email', '==', email)
+            .onSnapshot(
+                (snapshot) => {
+                    const pitchCollection = snapshot.docs.map((doc) => {
+                        return {
+                            id: doc.id,
+                            ...doc.data(),
+                        };
+                    });
+                    callback({ error: null, data: pitchCollection });
+                },
+                (error) => {
+                    callback({ error: error.message });
+                },
+            );
     } catch (error) {
         callback({ error: error.message });
     }
-}
+};
+
+export const loadPitchesBookingAll = (callback) => {
+    try {
+        return db.collection('pitchesBooking').onSnapshot(
+            (snapshot) => {
+                const pitchCollection = snapshot.docs.map((doc) => {
+                    return {
+                        id: doc.id,
+                        ...doc.data(),
+                    };
+                });
+                callback({ error: null, data: pitchCollection });
+            },
+            (error) => {
+                callback({ error: error.message });
+            },
+        );
+    } catch (error) {
+        callback({ error: error.message });
+    }
+};

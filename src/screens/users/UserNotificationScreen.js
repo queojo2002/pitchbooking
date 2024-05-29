@@ -4,7 +4,6 @@ import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { IconButton, Menu } from 'react-native-paper';
 import { appColor } from '../../constants/appColor';
 
-
 const data = [
     {
         id: '001',
@@ -25,13 +24,10 @@ const data = [
 ];
 
 export default UserNotificationScreen = ({ navigation }) => {
-
-
     const [menuVisible, setMenuVisible] = useState(false);
 
     const openMenu = () => setMenuVisible(true);
     const closeMenu = () => setMenuVisible(false);
-
 
     useEffect(() => {
         navigation.setOptions({
@@ -47,17 +43,16 @@ export default UserNotificationScreen = ({ navigation }) => {
                     contentStyle={styles.menu}
                 >
                     <Menu.Item
-                        onPress={() => { }}
+                        onPress={() => {}}
                         title="Mark all read"
                         leadingIcon="check"
                         style={styles.menuItem}
                         titleStyle={styles.menuItemText}
                         iconColor={appColor.darkGray}
-
                     />
                     <View style={styles.line}></View>
                     <Menu.Item
-                        onPress={() => { }}
+                        onPress={() => {}}
                         title="Remove all"
                         leadingIcon="delete-outline"
                         style={styles.menuItem}
@@ -67,7 +62,7 @@ export default UserNotificationScreen = ({ navigation }) => {
                 </Menu>
             ),
         });
-    })
+    });
 
     formatTimeDifference = (timestamp) => {
         const formattedTimeString = timestamp.replace('at ', '');
@@ -86,18 +81,13 @@ export default UserNotificationScreen = ({ navigation }) => {
         } else {
             return time.format('DD MMM, YYYY');
         }
-    }
-
-
+    };
 
     return (
         <View style={{ flex: 1, backgroundColor: appColor.blackblue }}>
             {data.length === 0 ? (
                 <View style={styles.noNotificationContainer}>
-                    <Image
-                        source={require('../../assets/no_notification.png')}
-                        style={styles.noNotificationImage}
-                    />
+                    <Image source={require('../../assets/no_notification.png')} style={styles.noNotificationImage} />
                     <Text style={styles.noNotificationText}>No Notification</Text>
                 </View>
             ) : (
@@ -120,14 +110,12 @@ export default UserNotificationScreen = ({ navigation }) => {
             )}
         </View>
     );
-
-}
-
+};
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         padding: 10,
         backgroundColor: appColor.blackblue,
     },
@@ -146,16 +134,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     usernameText: {
-        color: "#fff",
+        color: '#fff',
         fontSize: 15,
         fontWeight: 'bold',
     },
     timeText: {
-        color: "#fff",
+        color: '#fff',
         fontSize: 15,
     },
     notificationText: {
-        color: "#fff",
+        color: '#fff',
         fontWeight: 'normal',
         fontSize: 15,
         marginTop: 5,

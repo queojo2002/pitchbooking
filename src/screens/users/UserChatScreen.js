@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
-class UserChatScreen  extends Component {
+class UserChatScreen extends Component {
     render() {
         return (
             <View>

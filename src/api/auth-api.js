@@ -2,8 +2,6 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { User } from '../model/User';
 
-
-
 export const loginUser = async ({ email, password }) => {
     try {
         const userCredential = await auth().signInWithEmailAndPassword(email.toLowerCase(), password);
@@ -13,10 +11,9 @@ export const loginUser = async ({ email, password }) => {
     }
 };
 
-
 export const logoutUser = () => {
     return auth().signOut();
-}
+};
 
 export const signUpUser = async ({ name, email, password }) => {
     try {
@@ -37,11 +34,9 @@ export const signUpUser = async ({ name, email, password }) => {
     }
 };
 
-
 export const getCurrenUser = () => {
     try {
-
-    }catch (error) {
+    } catch (error) {
         return { error: error.message };
     }
-}
+};

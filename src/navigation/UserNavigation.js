@@ -1,19 +1,23 @@
 import { TransitionPresets, createStackNavigator } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import { appColor } from '../constants/appColor';
-import { UserBookingScreen, UserConfirmBooking, UserHomeScreen, UserNotificationScreen, UserProfileEditScreen, UserTermsAndConditionsScreen } from '../screens';
+import {
+    UserBookingScreen,
+    UserConfirmBooking,
+    UserHomeScreen,
+    UserNotificationScreen,
+    UserProfileEditScreen,
+    UserTermsAndConditionsScreen,
+} from '../screens';
 import UserBottomNavigation from './UserBottomNavigation';
-
 
 const Stack = createStackNavigator();
 
 const UserNavigation = () => {
-
-
     return (
         <Stack.Navigator
-            initialRouteName='UserBottomNavigation'
+            initialRouteName="UserBottomNavigation"
             screenOptions={{
                 headerShown: false,
                 gestureEnabled: true,
@@ -43,20 +47,10 @@ const UserNavigation = () => {
                     headerTitle: 'Cập nhật thông tin',
                 }}
             />
-            <Stack.Screen
-                name="UserNotificationScreen"
-                component={UserNotificationScreen}
+            <Stack.Screen name="UserNotificationScreen" component={UserNotificationScreen} />
+            <Stack.Screen name="UserBookingScreen" component={UserBookingScreen} />
 
-            />
-            <Stack.Screen
-                name="UserBookingScreen"
-                component={UserBookingScreen}
-            />
-
-            <Stack.Screen
-                name="UserConfirmBooking"
-                component={UserConfirmBooking}
-            />
+            <Stack.Screen name="UserConfirmBooking" component={UserConfirmBooking} />
         </Stack.Navigator>
     );
 };
@@ -64,8 +58,8 @@ const UserNavigation = () => {
 const styles = StyleSheet.create({
     menu: {
         backgroundColor: '#E0E0E0',
-        height: "90%",
-        justifyContent: "center"
+        height: '90%',
+        justifyContent: 'center',
     },
     menuItem: {
         paddingHorizontal: 10,

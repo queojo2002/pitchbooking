@@ -1,30 +1,21 @@
 import { Notification } from 'iconsax-react-native';
 import React, { Fragment, useEffect, useState } from 'react';
-import { Alert, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { loadAllPith } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
-import { Dimensions } from 'react-native';
-import { SharedElement } from 'react-navigation-shared-element';
 import { formatPriceToVND } from '../../helpers/formatPriceToVND';
-
-
 
 const screenWidth = Dimensions.get('window').width;
 
 export default UserHomeScreen = ({ navigation }) => {
-
-    const user = useSelector(state => state.auth.userData);
+    const user = useSelector((state) => state.auth.userData);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [pitchLoaded, setPitchLoaded] = useState(false);
     const [pitch, setPitch] = useState([]);
 
-  
-
     useEffect(() => {
-
-
         navigation.setOptions({
             headerShown: true,
             headerStyle: {
@@ -42,17 +33,23 @@ export default UserHomeScreen = ({ navigation }) => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <View style={{ paddingLeft: 10 }}>
                                 <Image
-                                    source={{ uri: user.avatar ? user.avatar : "https://ui-avatars.com/api/?name=" + user.name + "&size=128" }}
+                                    source={{
+                                        uri: user.avatar
+                                            ? user.avatar
+                                            : 'https://ui-avatars.com/api/?name=' + user.name + '&size=128',
+                                    }}
                                     style={{ ...styles.logo, borderRadius: 64, aspectRatio: 1 }}
                                     onLoadEnd={() => setImageLoaded(true)}
                                 />
                             </View>
-                            <Text style={{
-                                fontSize: 14,
-                                color: 'white',
-                                fontWeight: 'bold',
-                                paddingLeft: 5,
-                            }}>
+                            <Text
+                                style={{
+                                    fontSize: 14,
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    paddingLeft: 5,
+                                }}
+                            >
                                 {user.name}
                             </Text>
                         </View>
@@ -63,23 +60,20 @@ export default UserHomeScreen = ({ navigation }) => {
                 <TouchableOpacity
                     style={{
                         marginRight: 5,
-                        padding: 10
+                        padding: 10,
                     }}
                     onPress={() => {
-                        return (
-                            navigation.navigate("UserNotificationScreen")
-                        );
-                    }}>
+                        return navigation.navigate('UserNotificationScreen');
+                    }}
+                >
                     <Notification size="25" color="white" />
                 </TouchableOpacity>
             ),
-
         });
-
 
         const unsubscribe = loadAllPith((res) => {
             if (res.error) {
-                Alert.alert("Error", res.error);
+                Alert.alert('Error', res.error);
             } else {
                 setPitch(res.data);
                 setPitchLoaded(true);
@@ -87,84 +81,108 @@ export default UserHomeScreen = ({ navigation }) => {
         });
 
         return () => unsubscribe();
-
-
     }, [user]);
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.item}
+        <TouchableOpacity
+            style={styles.item}
             key={item.name}
-            onPress={() => navigation.navigate("UserBookingScreen", { item: item })}>
-            <Text style={{ ...styles.title, color: appColor.blackblue, }}>{item.name}</Text>
-            <Image source={{ uri: item.imageURL, }} style={styles.image} />
-            <Text style={{
-                marginTop: 5,
-                marginBottom: 5,
-                color: appColor.blackblue, fontSize: 13
-            }}>
-                Trạng thái: {item.status == 1 ? <Text style={{ color: "red" }}>Đang mở</Text> : <Text style={{ color: "green" }}>Đang đóng</Text>}
+            onPress={() => navigation.navigate('UserBookingScreen', { item: item })}
+        >
+            <Text style={{ ...styles.title, color: appColor.blackblue }}>{item.name}</Text>
+            <Image source={{ uri: item.imageURL }} style={styles.image} />
+            <Text
+                style={{
+                    marginTop: 5,
+                    marginBottom: 5,
+                    color: appColor.blackblue,
+                    fontSize: 13,
+                }}
+            >
+                Trạng thái:{' '}
+                {item.status == 1 ? (
+                    <Text style={{ color: 'red' }}>Đang mở</Text>
+                ) : (
+                    <Text style={{ color: 'green' }}>Đang đóng</Text>
+                )}
             </Text>
-            <Text style={{
-                marginBottom: 5,
-                color: appColor.blackblue,
-                fontSize: 13
-            }}>
+
+            <Text
+                style={{
+                    marginBottom: 5,
+                    color: appColor.blackblue,
+                    fontSize: 13,
+                }}
+            >
                 Loại sân:
-                {
-                    item.pitchType == 1 ? <Text style={{ color: "#40035E" }}> Sân 5</Text>:
-                    item.pitchType == 2 ? <Text style={{ color: "#B50163" }}> Sân 7</Text>:
-                    <Text style={{ color: "green" }}>Liên hệ chủ sân để biết thêm chi tiết</Text>
-                }
+                {item.pitchType == 1 ? (
+                    <Text style={{ color: 'red' }}> Sân 5</Text>
+                ) : item.pitchType == 2 ? (
+                    <Text style={{ color: '#B50163' }}> Sân 7</Text>
+                ) : (
+                    <Text style={{ color: 'green' }}>Liên hệ chủ sân để biết thêm chi tiết</Text>
+                )}
             </Text>
 
-            <Text style={{
-                color: appColor.blackblue, fontSize: 13
-            }}>
-                Giá tiền / 1 tiếng: <Text style={{ color: "blue" }}>{formatPriceToVND(item.price)}</Text>
+            <Text
+                style={{
+                    color: appColor.blackblue,
+                    fontSize: 13,
+                }}
+            >
+                Giá tiền / 1 tiếng: <Text style={{ color: 'blue' }}>{formatPriceToVND(item.price)}</Text>
             </Text>
-
-            
-
         </TouchableOpacity>
     );
 
     return (
         <Fragment>
-            {(!imageLoaded || !pitchLoaded || !user) ? <ActivityIndicator style={{ flex: 1 }} />
-                : (
-                    <View style={styles.background}>
-                        <View style={{
-                            ...styles.address, flexDirection: 'row', alignItems: 'center',
-                        }}>
-                            <Image source={require('../../assets/logodth.png')} style={styles.logo} />
-                            <View style={{ flexDirection: 'column', paddingLeft: 10, flex: 1 }}>
-                                <Text style={{
+            {!imageLoaded || !pitchLoaded || !user ? (
+                <ActivityIndicator style={{ flex: 1 }} />
+            ) : (
+                <View style={styles.background}>
+                    <View
+                        style={{
+                            ...styles.address,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Image source={require('../../assets/logodth.png')} style={styles.logo} />
+                        <View style={{ flexDirection: 'column', paddingLeft: 10, flex: 1 }}>
+                            <Text
+                                style={{
                                     ...styles.text,
                                     fontSize: 16,
-                                    color: "green",
+                                    color: 'green',
                                     fontStyle: 'italic',
-                                }}>Sân bóng đá ĐTH</Text>
-                                <Text style={{
+                                }}
+                            >
+                                Sân bóng đá ĐTH
+                            </Text>
+                            <Text
+                                style={{
                                     fontSize: 12,
                                     color: appColor.blackblue,
                                     fontFamily: 'italic',
                                     flexShrink: 1,
-                                }}>223 Đường Huỳnh Văn Lũy, Phú Hòa, Thành Phố Thủ Dầu Một, Bình Dương</Text>
-                            </View>
+                                }}
+                            >
+                                223 Đường Huỳnh Văn Lũy, Phú Hòa, Thành Phố Thủ Dầu Một, Bình Dương
+                            </Text>
                         </View>
-
-                        <FlatList
-                            data={pitch}
-                            renderItem={renderItem}
-                            keyExtractor={item => item.name}
-                            numColumns={1}
-                            contentContainerStyle={styles.flatListContainer}
-                            showsVerticalScrollIndicator={false}
-
-                        />
                     </View>
-                )
-            }
+
+                    <FlatList
+                        data={pitch}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.name}
+                        numColumns={1}
+                        contentContainerStyle={styles.flatListContainer}
+                        showsVerticalScrollIndicator={false}
+                    />
+                </View>
+            )}
         </Fragment>
     );
 };
@@ -178,7 +196,7 @@ const styles = StyleSheet.create({
     address: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: "white",
+        backgroundColor: 'white',
         justifyContent: 'space-between',
         paddingHorizontal: 10,
         paddingVertical: 10,
@@ -186,12 +204,12 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 13,
         marginRight: 30,
-        color: "#ccc",
+        color: '#ccc',
     },
     logo: {
         width: 85,
         height: 30,
-        resizeMode: "contain",
+        resizeMode: 'contain',
     },
     flatListContainer: {
         paddingBottom: 20,
@@ -218,7 +236,3 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
     },
 });
-
-
-
-

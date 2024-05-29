@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet, Image, Alert, TouchableOpacity, Text } from 'react-native';
-import { useSelector } from 'react-redux';
-import { appColor } from '../../constants/appColor';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import React, { useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import ProfileEditItem from '../../components/ProfileEditItem';
+import { useSelector } from 'react-redux';
 import ProfileDetailItem from '../../components/ProfileDetailItem';
+import ProfileEditItem from '../../components/ProfileEditItem';
+import { appColor } from '../../constants/appColor';
 
 const UserProfileEditScreen = ({ navigation }) => {
-    const user = useSelector(state => state.auth.userData);
+    const user = useSelector((state) => state.auth.userData);
     const [name, setName] = useState(user.name);
     const [phone, setPhone] = useState(user.phone);
     const [address, setAddress] = useState(user.address);
@@ -21,26 +21,22 @@ const UserProfileEditScreen = ({ navigation }) => {
                 name: name,
                 phone: phone,
                 address: address,
-                avatar: avatar
+                avatar: avatar,
             });
             Alert.alert(
                 'Thông báo',
                 'Cập nhật thông tin thành công.',
-                [
-                    { text: 'OK', onPress: () => console.log('OK Pressed') }
-                ],
-                { cancelable: false }
+                [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+                { cancelable: false },
             );
             navigation.goBack();
         } catch (error) {
-            console.log("Error updating profile: ", error);
+            console.log('Error updating profile: ', error);
             Alert.alert(
                 'Thông báo',
                 'Có lỗi xảy ra. Vui lòng thử lại sau.',
-                [
-                    { text: 'OK', onPress: () => console.log('OK Pressed') }
-                ],
-                { cancelable: false }
+                [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+                { cancelable: false },
             );
         }
     };
@@ -53,17 +49,19 @@ const UserProfileEditScreen = ({ navigation }) => {
                 cropping: true,
                 cropperCircleOverlay: true,
                 compressImageQuality: 0.5,
-            }).then(async (image) => {
-                const uri = image.path;
-                const imageName = `avatar_${user.uid}`;
-                const storageRef = storage().ref().child(`avatars/${imageName}`);
-                await storageRef.putFile(uri);
-                const downloadURL = await storageRef.getDownloadURL();
-                console.log("Download URL:", downloadURL);
-                setAvatar(downloadURL);
-            }).catch(error => {
-                console.log('Error picking image: ', error);
-            });
+            })
+                .then(async (image) => {
+                    const uri = image.path;
+                    const imageName = `avatar_${user.uid}`;
+                    const storageRef = storage().ref().child(`avatars/${imageName}`);
+                    await storageRef.putFile(uri);
+                    const downloadURL = await storageRef.getDownloadURL();
+                    console.log('Download URL:', downloadURL);
+                    setAvatar(downloadURL);
+                })
+                .catch((error) => {
+                    console.log('Error picking image: ', error);
+                });
         } catch (error) {
             console.log('Error uploading image: ', error);
         }
@@ -86,15 +84,9 @@ const UserProfileEditScreen = ({ navigation }) => {
                 <ProfileDetailItem
                     title="Email "
                     subtitle={user.email}
-                    accuracy={user.emailVerified ? " (Đã xác thực)" : " (Chưa xác thực)"}
+                    accuracy={user.emailVerified ? ' (Đã xác thực)' : ' (Chưa xác thực)'}
                 />
-                <ProfileEditItem
-                    icon="person"
-                    title="Tên "
-                    editable
-                    value={name}
-                    onChangeText={setName}
-                />
+                <ProfileEditItem icon="person" title="Tên " editable value={name} onChangeText={setName} />
                 <ProfileEditItem
                     icon="location-on"
                     title="Địa chỉ "
@@ -115,8 +107,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     avatarSection: {
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: appColor.blackblue,
         height: '25%',
     },
