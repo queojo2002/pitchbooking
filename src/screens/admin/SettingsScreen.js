@@ -39,19 +39,6 @@ export default SettingsScreen = ({ navigation }) => {
     }
     return (
         <View style={styles.container}>
-            <View style={{marginBottom: 100}}>
-                <TouchableOpacity
-                        style={{
-                            padding: 10
-                        }}
-                        onPress={() => {
-                            return (
-                                navigation.navigate("AddNotificationScreen")
-                            );
-                        }}>
-                        <Text>Send notification</Text>
-                    </TouchableOpacity>
-            </View>
             <Text>Test sử dụng lấy dữ liệu Redux</Text>
             <Text>Xin chào {user.name}</Text>
 

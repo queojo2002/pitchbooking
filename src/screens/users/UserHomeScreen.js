@@ -7,6 +7,7 @@ import { loadAllPith } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
 import { Dimensions } from 'react-native';
 import { SharedElement } from 'react-navigation-shared-element';
+import { formatPriceToVND } from '../../helpers/formatPriceToVND';
 
 
 
@@ -19,9 +20,7 @@ export default UserHomeScreen = ({ navigation }) => {
     const [pitchLoaded, setPitchLoaded] = useState(false);
     const [pitch, setPitch] = useState([]);
 
-    const formatPriceToVND = (price) => {
-        return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-    }
+  
 
     useEffect(() => {
 

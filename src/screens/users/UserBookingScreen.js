@@ -1,25 +1,109 @@
 import { ArrowDown } from 'iconsax-react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, ImageBackground, ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import { IconButton, Text, TextInput } from 'react-native-paper';
-
+import { Button, IconButton, Paragraph, Snackbar, Text, TextInput } from 'react-native-paper';
+import { useSelector } from 'react-redux';
+import { addNewPitchBooking, checkPitchIsConflict } from '../../api/pitch-api';
+import { convertDateTimeToVN } from '../../helpers/convertDateTimeToVN';
+import { formatPriceToVND } from '../../helpers/formatPriceToVND';
+import { getDateTimeVN } from '../../helpers/getDateTime';
+import { PitchesBooking } from '../../model/PitchesBooking';
 
 export default function UserBookingScreen({ navigation, route }) {
 
+    const user = useSelector(state => state.auth.userData);
     const { item } = route.params;
-    const [selectedFilter, setSelectedFilter] = useState(1);
+    const [selectedFilter, setSelectedFilter] = useState(1); // này dùng để kiểm tra trạng thái của tab đặt sân và xem khung giờ đã đặt
     const [fromTime, setFromTime] = useState(new Date())
     const [toTime, setToTime] = useState(new Date())
-    const [openFromTime, setOpenFromTime] = useState(false)
-    const [openToTime, setOpenToTime] = useState(false)
-
-
+    const [openFromTime, setOpenFromTime] = useState(false) // mở modal chọn thời gian bắt đầu
+    const [openToTime, setOpenToTime] = useState(false) // mở modal chọn thời gian kết thúc
+    const [timeFinal, setTimeFinal] = useState(0) // thời gian cuối dùng để tính tiền - tính dưới dạng giây (ví dụ: 3600 giây là 1 tiếng)
+    const [moneyFinal, setMoneyFinal] = useState(0) // tính số tiền tùy theo thời gian đặt
+    const [minumumToTime, setMinumumToTime] = useState(new Date()) // thời gian tối thiểu cho người dùng chọn thời gian kết thúc
+    const [visible, setVisible] = useState(false); // quản lý hiển thị snackbar
+    const [notificationSB, setNotificationSB] = useState(''); // hiển thị thông báo lỗi
 
     const handleTab = (tab) => {
         setSelectedFilter(tab);
     };
 
+
+    const handleFromTime = (fromTime) => {
+        const newTime = new Date(fromTime.getTime());
+        newTime.setHours(fromTime.getHours() + 1); // tự động cộng 1 tiếng cho người dùng lun
+        setOpenFromTime(false)
+        setFromTime(fromTime)
+        setToTime(newTime);
+        setTimeFinal((newTime.getTime() - fromTime.getTime()) / 1000)
+        setMinumumToTime(newTime)
+    }
+
+    const handleToTime = (toTime) => {
+        setOpenToTime(false)
+        setToTime(toTime)
+    }
+
+    const handleAcceptBooking = () => {
+        if (timeFinal < 3600) {
+            setNotificationSB('Hệ thống chỉ chấp nhận đặt từ 1 tiếng trở lên, vui lòng chọn lại thời gian!')
+            setVisible(true);
+            return;
+        }
+
+        checkPitchIsConflict(convertDateTimeToVN(fromTime), convertDateTimeToVN(toTime), (result) => {
+            if (result.error) {
+                console.log(result.error)
+                setNotificationSB('Đã xảy ra lỗi, vui lòng thử lại sau!. ' + result.error)
+                setVisible(true);
+                return;
+            }
+            if (result.data.length > 0) {
+                setNotificationSB('Khung giờ bạn chọn đã bị đặt, vui lòng chọn khung giờ khác!')
+                setVisible(true);
+                return;
+            }
+
+            const pitchBooking = new PitchesBooking(getDateTimeVN(), convertDateTimeToVN(fromTime), convertDateTimeToVN(toTime), user.email, 'pending', item)
+
+            addNewPitchBooking(pitchBooking.toObject(), (result) => {
+                if (result.error) {
+                    console.log(result.error)
+                    setNotificationSB('Đã xảy ra lỗi, vui lòng thử lại sau!. ' + result.error)
+                    setVisible(true);
+                    return;
+                }
+                navigation.navigate('UserHistoryScreen')
+            })
+        })
+
+
+    }
+
+    useEffect(() => {
+        let diff = toTime.getTime() - fromTime.getTime();
+        let hours = Math.floor(diff / (1000 * 60 * 60));
+        let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        if (seconds >= 30) {
+            minutes++;
+        }
+        if (minutes < 0) {
+            hours--;
+            minutes = 60 + minutes;
+        }
+        if (hours < 0 || minutes < 0) {
+            setTimeFinal(0)
+        } else {
+            setTimeFinal((hours * 3600) + (minutes * 60));
+        }
+    }, [toTime]);
+
+
+    useEffect(() => {
+        setMoneyFinal((item.price) * (timeFinal / 3600));
+    }, [timeFinal]);
 
 
     return (
@@ -91,9 +175,10 @@ export default function UserBookingScreen({ navigation, route }) {
                     </TouchableOpacity>
                 </View>
             </View>
+
+
             <View style={{
-                flex: 1,
-                marginTop: StatusBar.currentHeight + 150,
+                marginTop: StatusBar.currentHeight + 120,
                 borderTopLeftRadius: 30,
                 borderTopRightRadius: 30,
                 backgroundColor: "white",
@@ -139,9 +224,12 @@ export default function UserBookingScreen({ navigation, route }) {
 
 
                 </View>
+
+
                 <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 10, marginLeft: 3 }}>
                     {selectedFilter == 1 ? (
                         <View>
+
 
 
                             <View style={{
@@ -154,6 +242,7 @@ export default function UserBookingScreen({ navigation, route }) {
                                 margin: 10
                             }}>
                                 <Text variant="titleSmall"
+
                                     style={{
                                         paddingBottom: 2,
                                         fontSize: 15,
@@ -165,7 +254,7 @@ export default function UserBookingScreen({ navigation, route }) {
                                         paddingBottom: 10,
                                         fontWeight: 'bold',
                                         fontFamily: 'Roboto-Bold',
-                                    }}>Vui lòng chọn khung giờ muốn đặt: </Text>
+                                    }}>Vui lòng chọn khung giờ muốn đặt: {'\n'} (Lưu ý: Hệ thống chỉ chấp nhận đặt từ 1 tiếng trở đi, dưới 1 tiếng sẽ không nhận)</Text>
 
                                 <TouchableOpacity
                                     style={{
@@ -187,7 +276,8 @@ export default function UserBookingScreen({ navigation, route }) {
                                         }}
                                         value={
                                             fromTime.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' - ' +
-                                            `${fromTime.getHours().toString().padStart(2, '0')}:${fromTime.getMinutes().toString().padStart(2, '0')}`}
+                                            `${fromTime.getHours().toString().padStart(2, '0')}:${fromTime.getMinutes().toString().padStart(2, '0')}`
+                                        }
                                         disabled={true}
                                         textColor='#006B83'
                                     />
@@ -234,13 +324,13 @@ export default function UserBookingScreen({ navigation, route }) {
                                     date={fromTime}
                                     mode="datetime"
                                     onConfirm={(fromTime) => {
-                                        setOpenFromTime(false)
-                                        setFromTime(fromTime)
+                                        handleFromTime(fromTime)
                                     }}
                                     onCancel={() => {
                                         setOpenFromTime(false)
                                     }}
                                     locale='vi-VN'
+                                    minimumDate={new Date()}
                                 />
 
 
@@ -251,16 +341,67 @@ export default function UserBookingScreen({ navigation, route }) {
                                     date={toTime}
                                     mode="datetime"
                                     onConfirm={(toTime) => {
-                                        setOpenToTime(false)
-                                        setToTime(toTime)
+                                        handleToTime(toTime)
                                     }}
                                     onCancel={() => {
                                         setOpenToTime(false)
                                     }}
                                     locale='vi-VN'
-                                    minimumDate={fromTime}
+                                    minimumDate={minumumToTime}
                                 />
                             </View>
+
+                            <Paragraph>Bạn đang đặt <Text style={{ color: 'green', fontWeight: 'bold' }}>{item.name}</Text> với thời gian là: {'\n'}
+                                <Paragraph style={{
+                                    fontWeight: 'bold',
+                                    color: 'red'
+                                }}>
+                                    {
+                                        fromTime.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' lúc ' +
+                                        `${fromTime.getHours().toString().padStart(2, '0')}:${fromTime.getMinutes().toString().padStart(2, '0')}`
+                                    }
+                                </Paragraph>
+                                {'\n'}
+                                đến
+                                {'\n'}
+                                <Paragraph style={{
+                                    fontWeight: 'bold',
+                                    color: 'red'
+                                }}>
+                                    {
+                                        toTime.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' lúc ' +
+                                        `${toTime.getHours().toString().padStart(2, '0')}:${toTime.getMinutes().toString().padStart(2, '0')}`
+                                    }
+                                </Paragraph>
+                                {'\n'}
+                                Với tổng thời gian là:
+                                {'\n'}
+                                <Paragraph style={{
+                                    fontWeight: 'bold',
+                                    color: 'blue'
+                                }}>
+                                    {
+                                        `${Math.floor(timeFinal / 3600)} giờ ${Math.floor((timeFinal % 3600) / 60)} phút - ${formatPriceToVND(moneyFinal)} VNĐ`
+                                    }
+                                </Paragraph>
+                            </Paragraph>
+                            <Button
+                                style={{
+                                    marginTop: 20,
+                                    backgroundColor: 'green',
+                                }}
+                                icon="arrow-right"
+                                mode="contained"
+                                onPress={handleAcceptBooking}>
+                                Đặt sân
+                            </Button>
+
+                            <Snackbar
+                                visible={visible}
+                                onDismiss={() => { setVisible(false) }}
+                                action={{ label: 'Tắt' }}>
+                                {notificationSB}
+                            </Snackbar>
 
 
                         </View>
@@ -273,6 +414,8 @@ export default function UserBookingScreen({ navigation, route }) {
 
                 </ScrollView>
             </View>
+
+
         </View>
     );
 }

@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { Button, Text, TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { appColor } from '../../constants/appColor';
 import Slides from '../../components/Slides';
 
 export default function UpdatePitchesScreen({ route, navigation }) {
