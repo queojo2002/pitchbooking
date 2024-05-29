@@ -1,23 +1,40 @@
 import { CloseSquare, SearchNormal1 } from 'iconsax-react-native';
 import React, { Fragment, useEffect, useState } from 'react';
-import { Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    Dimensions,
+    FlatList,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    ScrollView,
+    Modal,
+    Button,
+    Image,
+} from 'react-native';
 import { useSelector } from 'react-redux';
 import { loadPitchesBookingByEmail } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
+import { formatDateToVND } from '../../helpers/formatDateToVND';
 
 const windowWidth = Dimensions.get('window').width;
 const itemWidth = windowWidth / 3;
 
 export default UserHistoryScreen = ({ navigation }) => {
-    const [selectedFilter, setSelectedFilter] = useState(1); // selectedFilter
+    const [selectedFilter, setSelectedFilter] = useState(1);
+    const [bookingData, setBookingData] = useState([]);
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
     const [filters, setFilters] = useState([
         { id: 1, label: 'Tất cả' },
         { id: 2, label: 'Đã thanh toán' },
         { id: 3, label: 'Đã hủy' },
-    ]); // filters
+    ]);
     const user = useSelector((state) => state.auth.userData);
 
     const [searchText, setSearchText] = useState('');
+
     const renderFilterItem = ({ item }) => {
         return (
             <TouchableOpacity style={[styles.filterItem]} onPress={() => handleItemPress(item)}>
@@ -57,11 +74,19 @@ export default UserHistoryScreen = ({ navigation }) => {
             },
         });
 
-        loadPitchesBookingByEmail(user.email, (data) => {
-            console.log(user.email);
-            console.log(data);
+        loadPitchesBookingByEmail(user.email, (response) => {
+            if (response.error) {
+                console.log('Lỗi không thể load được dữ liệu', response.error);
+            } else {
+                setBookingData(response.data || []);
+            }
         });
-    }, []);
+    }, [user.email]);
+
+    const handleDetailsPress = (booking) => {
+        setSelectedBooking(booking);
+        setModalVisible(true);
+    };
 
     return (
         <Fragment>
@@ -76,12 +101,7 @@ export default UserHistoryScreen = ({ navigation }) => {
                         onChangeText={setSearchText}
                     />
                     {searchText.length > 0 && (
-                        <TouchableOpacity
-                            onPress={() => {
-                                setSearchText('');
-                            }}
-                            style={styles.clearButton}
-                        >
+                        <TouchableOpacity onPress={() => setSearchText('')} style={styles.clearButton}>
                             <CloseSquare name="close" size={20} color="black" />
                         </TouchableOpacity>
                     )}
@@ -96,19 +116,52 @@ export default UserHistoryScreen = ({ navigation }) => {
                 />
             </View>
 
-            <View
-                style={{
-                    flex: 1,
-                    backgroundColor: '#F3F3F3',
-                    paddingTop: 10,
-                    paddingLeft: 10,
-                }}
-            >
-                <View>
-                    <Text>Đây là màn hình của: {filters[selectedFilter - 1].label}</Text>
-                    <Text>asdsd</Text>
-                </View>
+            <View style={{ flex: 1, backgroundColor: '#F3F3F3', paddingTop: 10, paddingLeft: 10 }}>
+                <ScrollView>
+                    {bookingData.length > 0 ? (
+                        bookingData.map((booking, index) => (
+                            <View key={index} style={styles.bookingItem}>
+                                <Image source={{ uri: booking.pitches.imageURL }} style={{ width: 80, height: 80, borderRadius: 5}} />
+                                <View style={{ marginLeft: 10 }}>
+                                    <Text style={styles.labelBold}>Tên sân:</Text>
+                                    <Text style={styles.label}>{booking.pitches.name}</Text>
+                                    <Text style={styles.labelBold}>Ngày đặt:</Text>
+                                    <Text style={styles.label}>{formatDateToVND(booking.timeBooking)}</Text>
+                                </View>
+                                <TouchableOpacity onPress={() => handleDetailsPress(booking)}>
+                                    <Text style={styles.link}>Chi tiết</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))
+                    ) : (
+                        <Text>Loading...</Text>
+                    )}
+                </ScrollView>
             </View>
+
+            {selectedBooking && (
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalTitle}>Chi tiết đặt sân</Text>
+                            <Text style={styles.labelBold}>Trạng thái: </Text>
+                            <Text style={styles.label}> {selectedBooking.statusBooking}</Text>
+                            <Text style={styles.labelBold}>Thời gian bắt đầu:</Text>
+                            <Text style={styles.label}> {formatDateToVND(selectedBooking.timeStart)} </Text>
+                            <Text style={styles.labelBold}>Thời gian kết thúc:</Text>
+                            <Text style={styles.label}> {formatDateToVND(selectedBooking.timeEnd)}</Text>
+                            <Text style={styles.labelBold}>Người đặt</Text>
+                            <Text style={styles.label}> {selectedBooking.user.email}</Text>
+                            <Button title="Close" onPress={() => setModalVisible(false)} />
+                        </View>
+                    </View>
+                </Modal>
+            )}
         </Fragment>
     );
 };
@@ -179,5 +232,50 @@ const styles = StyleSheet.create({
     },
     clearButton: {
         marginLeft: 10,
+    },
+    bookingItem: {
+        flexDirection: 'row',
+        alignItems: 'left',
+        padding: 5,
+        marginBottom: 20,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 5,
+    },
+    labelBold: {
+        fontWeight: 'bold',
+        marginRight: 5,
+    },
+    label: {
+        marginBottom: 5,
+    },
+    link: {
+        color: 'blue',
+        textDecorationLine: 'underline',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalTitle: {
+        color: 'blue',
+        fontSize: 18,
+        paddingBottom: 10,
+        fontWeight: 'bold',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
 });
