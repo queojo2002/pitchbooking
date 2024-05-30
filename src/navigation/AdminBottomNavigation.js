@@ -2,12 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {
-    CustomerOfAdminScreen,
-    HomeScreen,
-    SettingsScreen,
-    TransactionScreen
-} from '../screens';
+import { CustomerOfAdminScreen, HomeScreen, SettingsScreen, TransactionScreen } from '../screens';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,31 +13,37 @@ export default function AdminBottomNavigation({ navigation }) {
             activeColor="#e91e63"
             screenOptions={({ route }) => ({
                 headerStyle: {
-                    height: 50
+                    height: 50,
                 },
-                headerTitleAlign: "center",
-                headerRight: () => {
-
-                },
+                headerTitleAlign: 'center',
+                headerRight: () => {},
                 headerTitle: () => {
                     return (
-                        <View style={{ height: 20, justifyContent: "center", alignItems: "center", alignSelf: "center", alignContent: "center" }}>
-                            <Text>{(route.name)}</Text>
+                        <View
+                            style={{
+                                height: 20,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                alignSelf: 'center',
+                                alignContent: 'center',
+                            }}
+                        >
+                            <Text>{route.name}</Text>
                         </View>
                     );
                 },
                 tabBarStyle: {
-                    position: "absolute",
-                    backgroundColor: "#ffffff",
+                    position: 'absolute',
+                    backgroundColor: '#ffffff',
                     borderRadius: 5,
                     height: 60,
                 },
                 tabBarItemStyle: {
                     marginBottom: 5,
-                    paddingTop: 5
+                    paddingTop: 5,
                 },
-                tabBarActiveTintColor: "#0071ff",
-                tabBarInactiveTintColor: "gray",
+                tabBarActiveTintColor: '#0071ff',
+                tabBarInactiveTintColor: 'gray',
             })}
             barStyle={{
                 backgroundColor: 'white',
@@ -52,11 +53,8 @@ export default function AdminBottomNavigation({ navigation }) {
                 name="Home"
                 component={HomeScreen}
                 options={{
-
                     tabBarLabel: 'Home',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="home" color={color} size={26} />
-                    ),
+                    tabBarIcon: ({ color }) => <MaterialCommunityIcons name="home" color={color} size={26} />,
                 }}
             />
             <Tab.Screen
@@ -64,9 +62,7 @@ export default function AdminBottomNavigation({ navigation }) {
                 component={TransactionScreen}
                 options={{
                     tabBarLabel: 'Transaction',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="bank" color={color} size={26} />
-                    ),
+                    tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bank" color={color} size={26} />,
                 }}
             />
             <Tab.Screen
@@ -74,9 +70,7 @@ export default function AdminBottomNavigation({ navigation }) {
                 component={CustomerOfAdminScreen}
                 options={{
                     tabBarLabel: 'Customer',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="account" color={color} size={26} />
-                    ),
+                    tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
                 }}
             />
             <Tab.Screen
@@ -90,5 +84,5 @@ export default function AdminBottomNavigation({ navigation }) {
                 }}
             />
         </Tab.Navigator>
-    )
+    );
 }

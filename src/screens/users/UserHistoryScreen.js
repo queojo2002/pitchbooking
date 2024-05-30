@@ -1,17 +1,17 @@
 import { CloseSquare, SearchNormal1 } from 'iconsax-react-native';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
+    Button,
     Dimensions,
     FlatList,
+    Image,
+    Modal,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
     View,
-    ScrollView,
-    Modal,
-    Button,
-    Image,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { loadPitchesBookingByEmail } from '../../api/pitch-api';
@@ -27,9 +27,9 @@ export default UserHistoryScreen = ({ navigation }) => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [filters, setFilters] = useState([
-        { id: 1, label: 'Tất cả' },
-        { id: 2, label: 'Đã thanh toán' },
-        { id: 3, label: 'Đã hủy' },
+        { id: 1, status: 'pending', label: 'Chờ duyệt' },
+        { id: 2, status: 'success', label: 'Đặt thành công' },
+        { id: 3, status: 'cancel', label: 'Đã hủy' },
     ]);
     const user = useSelector((state) => state.auth.userData);
 
@@ -74,14 +74,14 @@ export default UserHistoryScreen = ({ navigation }) => {
             },
         });
 
-        loadPitchesBookingByEmail(user.email, (response) => {
+        loadPitchesBookingByEmail(filters[selectedFilter - 1].status, user.email, (response) => {
             if (response.error) {
                 console.log('Lỗi không thể load được dữ liệu', response.error);
             } else {
                 setBookingData(response.data || []);
             }
         });
-    }, [user.email]);
+    }, [user.email, selectedFilter]);
 
     const handleDetailsPress = (booking) => {
         setSelectedBooking(booking);
@@ -116,25 +116,44 @@ export default UserHistoryScreen = ({ navigation }) => {
                 />
             </View>
 
-            <View style={{ flex: 1, backgroundColor: '#F3F3F3', paddingTop: 10, paddingLeft: 10 }}>
-                <ScrollView>
+            <View style={{ flex: 1, backgroundColor: '#F3F3F3', paddingTop: 10, paddingLeft: 5, marginBottom: 50 }}>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     {bookingData.length > 0 ? (
                         bookingData.map((booking, index) => (
                             <View key={index} style={styles.bookingItem}>
-                                <Image source={{ uri: booking.pitches.imageURL }} style={{ width: 80, height: 80, borderRadius: 5}} />
+                                <Image
+                                    source={{ uri: booking.pitches.imageURL }}
+                                    style={{ width: 80, height: 80, borderRadius: 5, backgroundColor: 'red' }}
+                                />
                                 <View style={{ marginLeft: 10 }}>
                                     <Text style={styles.labelBold}>Tên sân:</Text>
                                     <Text style={styles.label}>{booking.pitches.name}</Text>
                                     <Text style={styles.labelBold}>Ngày đặt:</Text>
                                     <Text style={styles.label}>{formatDateToVND(booking.timeBooking)}</Text>
+                                    <Text style={styles.labelBold}>Trạng thái:</Text>
+                                    <Text
+                                        style={{
+                                            ...styles.label,
+                                            color: booking.statusBooking === 'paid' ? 'green' : 'red',
+                                        }}
+                                    >
+                                        {booking.statusBooking.toUpperCase()}
+                                    </Text>
                                 </View>
-                                <TouchableOpacity onPress={() => handleDetailsPress(booking)}>
+                                <TouchableOpacity
+                                    style={{
+                                        position: 'absolute',
+                                        right: 0,
+                                        paddingRight: 5,
+                                    }}
+                                    onPress={() => handleDetailsPress(booking)}
+                                >
                                     <Text style={styles.link}>Chi tiết</Text>
                                 </TouchableOpacity>
                             </View>
                         ))
                     ) : (
-                        <Text>Loading...</Text>
+                        <Text>Không có dữ liệu...</Text>
                     )}
                 </ScrollView>
             </View>
@@ -237,7 +256,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'left',
         padding: 5,
-        marginBottom: 20,
+        marginBottom: 10,
         backgroundColor: '#f0f0f0',
         borderRadius: 5,
     },
@@ -251,6 +270,7 @@ const styles = StyleSheet.create({
     link: {
         color: 'blue',
         textDecorationLine: 'underline',
+        marginRight: 15,
     },
     modalContainer: {
         flex: 1,

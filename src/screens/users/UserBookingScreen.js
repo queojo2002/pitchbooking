@@ -4,7 +4,12 @@ import { Alert, ImageBackground, ScrollView, StatusBar, StyleSheet, TouchableOpa
 import DatePicker from 'react-native-date-picker';
 import { Button, Card, IconButton, Paragraph, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { addNewPitchBooking, checkPitchIsConflict, loadPitchesBookingAll } from '../../api/pitch-api';
+import {
+    addNewPitchBooking,
+    checkPitchIsConflict,
+    loadPitchesBookingAll,
+    loadPitchesBookingByID,
+} from '../../api/pitch-api';
 import { convertDateTimeToVN } from '../../helpers/convertDateTimeToVN';
 import { formatDateToVND } from '../../helpers/formatDateToVND';
 import { formatPriceToVND } from '../../helpers/formatPriceToVND';
@@ -111,7 +116,7 @@ export default function UserBookingScreen({ navigation, route }) {
     }, [timeFinal]);
 
     useEffect(() => {
-        loadPitchesBookingAll((result) => {
+        loadPitchesBookingByID(item.id, (result) => {
             if (result.error) {
                 console.log(result.error);
                 return;
@@ -494,9 +499,17 @@ export default function UserBookingScreen({ navigation, route }) {
                                       return (
                                           <Card style={{ marginBottom: 10 }} key={index}>
                                               <Card.Title
-                                                  title={<Text style={{ fontSize: 14 }}>{item.user.name}</Text>}
+                                                  title={
+                                                      <Text
+                                                          style={{
+                                                              fontSize: 13,
+                                                          }}
+                                                      >
+                                                          {item.user.name}
+                                                      </Text>
+                                                  }
                                                   subtitle={
-                                                      <Text style={{ fontSize: 12, color: 'blue' }}>
+                                                      <Text style={{ fontSize: 11, color: 'blue' }}>
                                                           {formatPriceToVND(item.pitches.price)}
                                                       </Text>
                                                   }
@@ -507,9 +520,10 @@ export default function UserBookingScreen({ navigation, route }) {
                                                       return (
                                                           <Text
                                                               style={{
-                                                                  fontSize: 12,
-                                                                  width: 150,
+                                                                  fontSize: 11,
+                                                                  width: 170,
                                                                   textAlign: 'center',
+                                                                  paddingRight: 5,
                                                               }}
                                                               numberOfLines={6}
                                                           >

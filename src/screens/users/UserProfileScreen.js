@@ -1,6 +1,6 @@
 import { ArrowRight2, InfoCircle, Logout, MessageQuestion, SecuritySafe, TableDocument } from 'iconsax-react-native';
 import React, { Fragment, useEffect } from 'react';
-import { Image, ScrollView, StyleSheet, TouchableHighlight, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { subscribeToUser } from '../../api/user-api';
@@ -81,7 +81,10 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Mật khẩu và bảo mật */}
-                        <TouchableHighlight underlayColor="#f2f2f2" onPress={() => navigation.navigate('')}>
+                        <TouchableHighlight
+                            underlayColor="#f2f2f2"
+                            onPress={() => Alert.alert('Thông báo', 'Tính năng đang phát triển')}
+                        >
                             <View style={styles.containerList}>
                                 <SecuritySafe size={24} variant="Bulk" style={{ color: '#cc66ff', marginRight: 10 }} />
                                 <View style={styles.details}>
@@ -110,7 +113,10 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Giới thiệu */}
-                        <TouchableHighlight underlayColor="#f2f2f2" onPress={() => navigation.navigate('')}>
+                        <TouchableHighlight
+                            underlayColor="#f2f2f2"
+                            onPress={() => Alert.alert('Thông báo', 'Tính năng đang phát triển')}
+                        >
                             <View style={styles.containerList}>
                                 <InfoCircle size={24} variant="Bulk" style={{ color: '#70db70', marginRight: 10 }} />
                                 <View style={styles.details}>
@@ -121,7 +127,10 @@ const UserProfileScreen = ({ navigation }) => {
                         </TouchableHighlight>
 
                         {/* Tùy chọn Câu hỏi thường gặp */}
-                        <TouchableHighlight underlayColor="#f2f2f2" onPress={() => navigation.navigate('')}>
+                        <TouchableHighlight
+                            underlayColor="#f2f2f2"
+                            onPress={() => Alert.alert('Thông báo', 'Tính năng đang phát triển')}
+                        >
                             <View style={styles.containerList}>
                                 <MessageQuestion
                                     size={24}
