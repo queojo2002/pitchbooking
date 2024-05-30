@@ -4,12 +4,7 @@ import { Alert, ImageBackground, ScrollView, StatusBar, StyleSheet, TouchableOpa
 import DatePicker from 'react-native-date-picker';
 import { Button, Card, IconButton, Paragraph, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import {
-    addNewPitchBooking,
-    checkPitchIsConflict,
-    loadPitchesBookingAll,
-    loadPitchesBookingByID,
-} from '../../api/pitch-api';
+import { addNewPitchBooking, checkPitchIsConflict, loadPitchesBookingByID } from '../../api/pitch-api';
 import { convertDateTimeToVN } from '../../helpers/convertDateTimeToVN';
 import { formatDateToVND } from '../../helpers/formatDateToVND';
 import { formatPriceToVND } from '../../helpers/formatPriceToVND';
@@ -57,7 +52,7 @@ export default function UserBookingScreen({ navigation, route }) {
             return;
         }
 
-        checkPitchIsConflict(convertDateTimeToVN(fromTime), convertDateTimeToVN(toTime), (result) => {
+        checkPitchIsConflict(item.id, convertDateTimeToVN(fromTime), convertDateTimeToVN(toTime), (result) => {
             if (result.error) {
                 console.log(result.error);
                 setNotificationSB('Đã xảy ra lỗi, vui lòng thử lại sau!. ' + result.error);

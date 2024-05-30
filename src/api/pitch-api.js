@@ -39,9 +39,9 @@ export const addNewPitchBooking = async (pitch, callback) => {
     }
 };
 
-export const checkPitchIsConflict = async (timeStart, timeEnd, callback) => {
+export const checkPitchIsConflict = async (id, timeStart, timeEnd, callback) => {
     try {
-        const snapshot = await db.collection('pitchesBooking').get();
+        const snapshot = await db.collection('pitchesBooking').where('pitches.id', '==', id).get();
 
         const pitchCollection = snapshot.docs.map((doc) => {
             return {

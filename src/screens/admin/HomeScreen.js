@@ -62,7 +62,7 @@ export default function HomeScreen({ navigation }) {
                         alignContent: 'center',
                     }}
                 >
-                    <Text style={{ fontSize: 20, color: 'white' }}>{user.name}</Text>
+                    <Text style={{ fontSize: 16, color: 'white' }}>{user.name}</Text>
                 </View>
             ),
         });

@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { CustomerOfAdminScreen, HomeScreen, SettingsScreen, TransactionScreen } from '../screens';
+import { ManagerUser, HomeScreen, SettingsScreen, ManagePitchesScreen } from '../screens';
 
 const Tab = createBottomTabNavigator();
 
@@ -59,17 +59,17 @@ export default function AdminBottomNavigation({ navigation }) {
             />
             <Tab.Screen
                 name="Transaction"
-                component={TransactionScreen}
+                component={ManagePitchesScreen}
                 options={{
-                    tabBarLabel: 'Transaction',
+                    tabBarLabel: 'Quản lý đặt sân',
                     tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bank" color={color} size={26} />,
                 }}
             />
             <Tab.Screen
-                name="Customer"
-                component={CustomerOfAdminScreen}
+                name="ManagerUser"
+                component={ManagerUser}
                 options={{
-                    tabBarLabel: 'Customer',
+                    tabBarLabel: 'Quản lý người dùng',
                     tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
                 }}
             />
