@@ -1,6 +1,7 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { User } from '../model/User';
+import messaging from '@react-native-firebase/messaging';
 
 export const loginUser = async ({ email, password }) => {
     try {
@@ -39,4 +40,9 @@ export const getCurrenUser = () => {
     } catch (error) {
         return { error: error.message };
     }
+};
+
+export const getToken = async () => {
+    const token = await messaging().getToken();
+    console.log(token);
 };
