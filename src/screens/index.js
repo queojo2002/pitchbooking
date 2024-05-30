@@ -10,8 +10,13 @@ import UserBookingScreen from './users/UserBookingScreen';
 import UserConfirmBooking from './users/UserConfirmBooking';
 import HomeScreen from './admin/HomeScreen';
 import SettingsScreen from './admin/SettingsScreen';
+<<<<<<< HEAD
 import ManagePitchesScreen from './admin/ManagePitchesScreen';
 import ManagerUser from './admin/ManageUser';
+=======
+import TransactionScreen from './admin/TransactionScreen';
+import CustomerOfAdminScreen from './admin/CustomerOfAdminScreen';
+>>>>>>> 2f4cfb61386f656710264f320965556db8aeafcf
 import AddNewPitchesScreen from './admin/AddNewPitchesScreen';
 import OnboardingScreen from './OnboardingScreen';
 import UserProfileEditScreen from './users/UserProfileEditScreen';
