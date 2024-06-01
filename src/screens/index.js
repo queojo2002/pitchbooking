@@ -9,8 +9,6 @@ import UserBookingScreen from "./users/UserBookingScreen"
 import UserConfirmBooking from "./users/UserConfirmBooking"
 import HomeScreen from "./admin/HomeScreen"
 import SettingsScreen from "./admin/SettingsScreen"
-import TransactionScreen from "./admin/TransactionScreen"
-import CustomerOfAdminScreen from "./admin/CustomerOfAdminScreen"
 import AddNewPitchesScreen from "./admin/AddNewPitchesScreen"
 import OnboardingScreen from "./OnboardingScreen"
 import UserProfileEditScreen from "./users/UserProfileEditScreen"
@@ -20,15 +18,14 @@ import UpdatePitchesScreen from "./admin/UpdatePitchesScreen"
 import UserChatScreen from "./users/UserChatScreen"
 import ChatScreen from "./ChatScreen"
 import AdminChatScreen from "./admin/AdminChatScreen"
+import ManagePitchesScreen from './admin/ManagePitchesScreen'
 export {
     LoginScreen,
     RegisterScreen,
     ResetPasswordScreen,
     HomeScreen,
     UserHomeScreen,
-    TransactionScreen,
     SettingsScreen,
-    CustomerOfAdminScreen,
     UserHistoryScreen,
     UserNotificationScreen,
     UserProfileScreen,
@@ -43,4 +40,5 @@ export {
     UserChatScreen,
     ChatScreen,
     AdminChatScreen,
+    ManagePitchesScreen,
 }

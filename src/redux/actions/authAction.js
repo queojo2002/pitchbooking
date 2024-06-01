@@ -1,5 +1,5 @@
 import { CLEAR_ERROR, LOGIN_FAILURE, LOGIN_SUCCESS, LOGOUT, LOGOUT_FAILURE, UPDATE_PROFILE } from '.';
-import { loginUser, logoutUser } from '../../api/auth-api';
+import { getToken, loginUser, logoutUser } from '../../api/auth-api';
 import { loadUser } from '../../api/user-api';
 
 export const login =
@@ -8,6 +8,7 @@ export const login =
         try {
             const result = await loginUser({ email, password });
             if (result.user) {
+                getToken();
                 if (result.user.emailVerified === false) {
                     dispatch({
                         type: LOGIN_FAILURE,
@@ -57,10 +58,12 @@ export const logout = () => async (dispatch) => {
     }
 };
 
-export const updateUsers = (users) => ({
-    type: UPDATE_PROFILE,
-    payload: users,
-});
+export const updateUsers = (users) => {
+    return {
+        type: UPDATE_PROFILE,
+        payload: users,
+    };
+};
 
 export const clearError = () => ({
     type: CLEAR_ERROR,
