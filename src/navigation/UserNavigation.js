@@ -9,6 +9,8 @@ import {
     UserNotificationScreen,
     UserProfileEditScreen,
     UserTermsAndConditionsScreen,
+    UserChatScreen,
+    ChatScreen,
 } from '../screens';
 import UserBottomNavigation from './UserBottomNavigation';
 
@@ -49,8 +51,12 @@ const UserNavigation = () => {
             />
             <Stack.Screen name="UserNotificationScreen" component={UserNotificationScreen} />
             <Stack.Screen name="UserBookingScreen" component={UserBookingScreen} />
-
             <Stack.Screen name="UserConfirmBooking" component={UserConfirmBooking} />
+            <Stack.Screen name='UserChatScreen' component={UserChatScreen} />
+            <Stack.Screen name='ChatScreen' component={ChatScreen} />
+
+
+            
         </Stack.Navigator>
     );
 };

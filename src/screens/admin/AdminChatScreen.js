@@ -1,45 +1,22 @@
-import React, { useEffect, useState,Fragment} from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator,Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { appColor } from '../../constants/appColor';
-const UserChatScreen = ({ navigation }) => {
-    const [admins, setAdmins] = useState([]);
+
+const AdminChatScreen = ({ navigation }) => {
+    const [users, setUser] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        navigation.setOptions({
-            headerShown: true,
-            headerStyle: {
-                backgroundColor: appColor.blackblue,
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-            },
-            headerTitleAlign: 'center',
-            headerTitle: () => {
-                return (
-                    <Text
-                        style={{
-                            fontSize: 14,
-                            color: 'white',
-                            fontWeight: 'bold',
-                        }}>
-                       Nhắn tin
-                    </Text>
-                );
-            },
-        });
-
         const fetchAdmins = async () => {
             try {
                 const snapshot = await firestore()
                     .collection('users')
-                    .where('role', '==', 'admin')
+                    .where('role', '==', 'user')
                     .get();
 
-                const admins = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setAdmins(admins);
+                const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setUser(users);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching admins: ", error);
@@ -50,9 +27,10 @@ const UserChatScreen = ({ navigation }) => {
         fetchAdmins();
     }, []);
 
-    const handleAdminPress = (admin) => {
-        navigation.navigate('ChatScreen', { admin });
+    const handleAdminPress = (user) => {
+        navigation.navigate('ChatScreen', { user });
     };
+
     const renderAdminItem = ({ item }) => (
         <TouchableOpacity style={styles.adminItem} onPress={() => handleAdminPress(item)}>
             <View style={styles.contentContainer}>
@@ -74,40 +52,28 @@ const UserChatScreen = ({ navigation }) => {
     }
 
     return (
-        <Fragment>
-            <View style={styles.container}>
+        <View style={styles.container}>
             <FlatList
-                data={admins}
+                data={users}
                 renderItem={renderAdminItem}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.filterContainer}
                 keyExtractor={(item) => item.id}
             />
-            </View>
-        </Fragment>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'left',
-
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#FEFAF6',
+        paddingTop: 20,
     },
     filterContainer: {
-        backgroundColor: '#FEFAF6',
         width: '100%',
         paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 10,
-        shadowColor: '#000000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.5,
-        shadowRadius: 3.84,
-        elevation: 5,
-       
     },
     adminItem: {
         width: '100%',
@@ -138,4 +104,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default UserChatScreen;
+export default AdminChatScreen;

@@ -6,7 +6,7 @@ import {
     CustomerOfAdminScreen,
     HomeScreen,
     SettingsScreen,
-    TransactionScreen
+    AdminChatScreen,
 } from '../screens';
 
 const Tab = createBottomTabNavigator();
@@ -59,16 +59,7 @@ export default function AdminBottomNavigation({ navigation }) {
                     ),
                 }}
             />
-            <Tab.Screen
-                name="Transaction"
-                component={TransactionScreen}
-                options={{
-                    tabBarLabel: 'Transaction',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="bank" color={color} size={26} />
-                    ),
-                }}
-            />
+        
             <Tab.Screen
                 name="Customer"
                 component={CustomerOfAdminScreen}
@@ -76,6 +67,16 @@ export default function AdminBottomNavigation({ navigation }) {
                     tabBarLabel: 'Customer',
                     tabBarIcon: ({ color }) => (
                         <MaterialCommunityIcons name="account" color={color} size={26} />
+                    ),
+                }}
+            />
+             <Tab.Screen
+                name="AdminChatScreen"
+                component={AdminChatScreen}
+                options={{
+                    tabBarLabel: 'Chat',
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="chat" color={color} size={26} />
                     ),
                 }}
             />

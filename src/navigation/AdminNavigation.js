@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AddNewServicesScreen, Dashboard,AddNewPitchesScreen,PitchesDetailScreen,UpdatePitchesScreen} from '../screens';
+import { AddNewServicesScreen, Dashboard,AddNewPitchesScreen,PitchesDetailScreen,UpdatePitchesScreen,AdminChatScreen,ChatScreen} from '../screens';
 import AdminBottomNavigation from './AdminBottomNavigation';
 import { appColor } from '../constants/appColor';
 
@@ -15,6 +15,8 @@ export default AdminNavigation = () => {
             <Stack.Screen name="AddNewPitchesScreen" component={AddNewPitchesScreen} />
             <Stack.Screen name="PitchesDetailScreen" component={PitchesDetailScreen} />
             <Stack.Screen name="UpdatePitchesScreen" component={UpdatePitchesScreen} />
+            <Stack.Screen name="AdminChatScreen" component={AdminChatScreen} />
+            <Stack.Screen name="ChatScreen" component={ChatScreen} />
 
             
         </Stack.Navigator>
