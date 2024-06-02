@@ -1,51 +1,55 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default DetailListItem = (props) => {
-    const { title = 'Email', subtitle = 'ducln339@gmail.com' } = props;
+const DetailListItem = (props) => {
+    const { title = 'Email', subtitle = 'ducln339@gmail.com', editable, onChangeText, icon } = props;
+    const [text, setText] = useState(subtitle);
+
+    const handleChangeText = (newValue) => {
+        setText(newValue);
+        onChangeText(newValue);
+    };
 
     return (
-        <TouchableHighlight underlayColor="#606060">
-            <View style={styles.container}>
-                <View style={styles.details}>
-                    <Text style={styles.name}>
-                        {title}
-                        <Text style={styles.required}>*</Text>
-                    </Text>
-                    <Text style={styles.phoneNumber}>{subtitle}</Text>
-                </View>
+        <View style={styles.itemContainer}>
+            <View style={styles.iconContainer}>
+                <Icon name={icon} size={25} />
             </View>
-        </TouchableHighlight>
+            <View style={styles.inputContainer}>
+                {editable ? (
+                    <TextInput style={styles.input} value={text} onChangeText={handleChangeText} />
+                ) : (
+                    <Text style={styles.value}>{text}</Text>
+                )}
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    itemContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 5,
-        marginVertical: 5,
-        borderBottomColor: '#dcdcdc',
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
     },
-    details: {
+    iconContainer: {
+        marginRight: 10,
+    },
+    inputContainer: {
         flex: 1,
     },
-    name: {
-        fontSize: 16,
-        color: 'black',
-        marginBottom: 5,
-    },
-    phoneNumber: {
+    input: {
         borderWidth: 1,
-        borderColor: '#bfbfbf',
+        borderColor: '#ccc',
+        padding: 5,
         borderRadius: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        fontSize: 16,
-        color: 'gray',
     },
-    required: {
-        color: 'red',
+    value: {
+        fontSize: 16,
     },
 });
+
+export default DetailListItem;

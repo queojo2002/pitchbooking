@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ProfileEditItem = ({title, editable, value, onChangeText }) => {
+const ProfileEditItem = ({ icon, value, editable, onChangeText }) => {
+    const [text, setText] = useState(value);
+
+    const handleChangeText = (newValue) => {
+        setText(newValue);
+        onChangeText(newValue);
+    };
+
     return (
-        <View style={styles.container}>
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>{title}<Text style={styles.required}>*</Text></Text>
+        <View style={styles.itemContainer}>
+            <View style={styles.iconContainer}>
+                <Icon name={icon} size={25} />
+            </View>
+            <View style={styles.inputContainer}>
                 {editable ? (
-                    <TextInput
-                        style={styles.input}
-                        value={value}
-                        onChangeText={onChangeText}
-                    />
+                    <TextInput style={styles.input} value={text} onChangeText={handleChangeText} />
                 ) : (
-                    <Text style={styles.value}>{value}</Text>
+                    <Text style={styles.value}>{text}</Text>
                 )}
             </View>
         </View>
@@ -21,33 +27,27 @@ const ProfileEditItem = ({title, editable, value, onChangeText }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
+    itemContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 5,
-        marginVertical: 5,
-        borderColor: 'black',
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
     },
-    textContainer: {
+    iconContainer: {
+        marginRight: 10,
+    },
+    inputContainer: {
         flex: 1,
-    },
-    title: {
-        fontSize: 16,
-        color:"black",
     },
     input: {
         borderWidth: 1,
-        borderColor: '#bfbfbf',
+        borderColor: '#ccc',
+        padding: 7,
         borderRadius: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
     },
     value: {
         fontSize: 16,
-        color: '#666',
-    },
-    required: {
-        color: 'red',
     },
 });
 

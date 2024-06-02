@@ -1,6 +1,6 @@
 import storage from '@react-native-firebase/storage';
 import React, { useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../../api/user-api';
@@ -35,10 +35,9 @@ const UserProfileEditScreen = ({ navigation }) => {
             Alert.alert(
                 'Thông báo',
                 'Cập nhật thông tin thành công.',
-                [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+                [{ text: 'OK', onPress: () => navigation.goBack() }],
                 { cancelable: false },
             );
-            navigation.goBack();
         } catch (error) {
             console.log('Error updating profile: ', error);
             Alert.alert('Thông báo', error.message, [{ text: 'OK', onPress: () => console.log('OK Pressed') }], {
@@ -91,39 +90,30 @@ const UserProfileEditScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <ScrollView style={styles.detailsSection}>
-                <ProfileDetailItem title="Email " subtitle={user.email} />
+                <ProfileDetailItem title="Email" subtitle={user.email} icon="email" />
                 <ProfileEditItem
-                    icon="person"
-                    title="Họ và tên "
+                    icon="account"
+                    title="Họ và tên"
                     editable
                     value={fullname}
                     onChangeText={setFullName}
                 />
                 <ProfileEditItem
-                    icon="location-on"
-                    title="Địa chỉ "
+                    icon="map-marker-radius"
+                    title="Địa chỉ"
                     editable
                     value={address}
                     onChangeText={setAddress}
                 />
-                <ProfileEditItem icon="phone" title="Số điện thoại " editable value={phone} onChangeText={setPhone} />
+                <ProfileEditItem icon="phone" title="Số điện thoại" editable value={phone} onChangeText={setPhone} />
             </ScrollView>
-            {loadingImageURL ? (
-                <TouchableOpacity
-                    style={{
-                        ...styles.saveButton,
-                        backgroundColor: 'red',
-                    }}
-                    onPress={handleSaveChanges}
-                    disabled={loadingImageURL}
-                >
-                    <Text style={styles.saveButtonText}>Chờ tải hình ảnh</Text>
-                </TouchableOpacity>
-            ) : (
-                <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges} disabled={loadingImageURL}>
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges} disabled={loadingImageURL}>
+                {loadingImageURL ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                ) : (
                     <Text style={styles.saveButtonText}>Cập nhật</Text>
-                </TouchableOpacity>
-            )}
+                )}
+            </TouchableOpacity>
         </View>
     );
 };
@@ -131,55 +121,67 @@ const UserProfileEditScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#f9f9f9',
     },
     avatarSection: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: appColor.blackblue,
-        height: '25%',
+        backgroundColor: appColor.lightBlue,
+        height: '30%',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        paddingTop: 10,
     },
     avatarContainer: {
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    detailsSection: {
-        flex: 1,
-        marginHorizontal: 20,
-        marginTop: 10,
-    },
-    saveButton: {
-        backgroundColor: appColor.blackblue,
-        padding: 10,
-        borderRadius: 5,
-        marginHorizontal: 20,
-        marginBottom: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    saveButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5,
     },
     avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 120,
+        height: 120,
+        borderRadius: 60,
         borderColor: 'white',
-        borderWidth: 2,
+        borderWidth: 3,
     },
     editTextContainer: {
         position: 'absolute',
         bottom: 0,
         width: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: 'rgba(16, 179, 196, 0.4)',
         alignItems: 'center',
         paddingVertical: 4,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
     },
     editText: {
         color: '#fff',
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    detailsSection: {
+        flex: 1,
+        marginHorizontal: 20,
+        paddingVertical: 5,
+    },
+    saveButton: {
+        backgroundColor: appColor.lightBlue,
+        padding: 10,
+        borderRadius: 10,
+        marginHorizontal: 20,
+        marginBottom: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    saveButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
 
