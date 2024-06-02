@@ -2,35 +2,23 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-
 export default DetailListItem = (props) => {
-
-    const {
-        accuracy= "@@",
-        title = "Email",
-        subtitle = "ducln339@gmail.com"
-    } = props;
-
+    const { title = 'Email', subtitle = 'ducln339@gmail.com' } = props;
 
     return (
         <TouchableHighlight underlayColor="#606060">
             <View style={styles.container}>
                 <View style={styles.details}>
-                <Text style={styles.name}>
-                    {title}
-                    <Text style={styles.required}>*</Text>
-                </Text>
-                    <Text style={styles.phoneNumber}>{subtitle}<Text>{accuracy}</Text></Text>
+                    <Text style={styles.name}>
+                        {title}
+                        <Text style={styles.required}>*</Text>
+                    </Text>
+                    <Text style={styles.phoneNumber}>{subtitle}</Text>
                 </View>
             </View>
         </TouchableHighlight>
-
     );
-
-}
-
-
-
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -39,7 +27,6 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         marginVertical: 5,
         borderBottomColor: '#dcdcdc',
-        
     },
     details: {
         flex: 1,

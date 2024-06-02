@@ -1,11 +1,11 @@
-import 'react-native-gesture-handler';
-import React, { useEffect } from 'react';
-import { Provider } from 'react-redux';
-import MainNavigation from './src/navigation/MainNavigation';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { store, persistor } from './src/redux/store';
-import { PersistGate } from 'redux-persist/integration/react';
 import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import 'react-native-gesture-handler';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import MainNavigation from './src/navigation/MainNavigation';
+import { persistor, store } from './src/redux/store';
 
 export default function App() {
     return (

@@ -4,12 +4,9 @@ import { Alert, ImageBackground, ScrollView, StatusBar, StyleSheet, TouchableOpa
 import DatePicker from 'react-native-date-picker';
 import { Button, Card, IconButton, Paragraph, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { addNewPitchBooking, checkPitchIsConflict, loadPitchesBookingByID } from '../../api/pitch-api';
-import { convertDateTimeToVN } from '../../helpers/convertDateTimeToVN';
+import { addNewPitchesBooking, loadPitchesBookingByID } from '../../api/pitch-api';
 import { formatDateToVND } from '../../helpers/formatDateToVND';
 import { formatPriceToVND } from '../../helpers/formatPriceToVND';
-import { getDateTimeVN } from '../../helpers/getDateTime';
-import { PitchesBooking } from '../../model/PitchesBooking';
 
 export default function UserBookingScreen({ navigation, route }) {
     const user = useSelector((state) => state.auth.userData);
@@ -41,50 +38,33 @@ export default function UserBookingScreen({ navigation, route }) {
     };
 
     const handleToTime = (toTime) => {
+        console.log(toTime.getTime());
         setOpenToTime(false);
         setToTime(toTime);
     };
 
-    const handleAcceptBooking = () => {
-        if (timeFinal < 3600) {
-            setNotificationSB('Hệ thống chỉ chấp nhận đặt từ 1 tiếng trở lên, vui lòng chọn lại thời gian!');
-            setVisible(true);
-            return;
-        }
+    const handleAcceptBooking = async () => {
+        console.log(Math.floor(fromTime.getTime() / 1000), Math.floor(toTime.getTime() / 1000));
 
-        checkPitchIsConflict(item.id, convertDateTimeToVN(fromTime), convertDateTimeToVN(toTime), (result) => {
-            if (result.error) {
-                console.log(result.error);
-                setNotificationSB('Đã xảy ra lỗi, vui lòng thử lại sau!. ' + result.error);
-                setVisible(true);
-                return;
-            }
-            if (result.data.length > 0) {
-                setNotificationSB('Khung giờ bạn chọn đã bị đặt, vui lòng chọn khung giờ khác!');
-                setVisible(true);
-                return;
-            }
-
-            const pitchBooking = new PitchesBooking(
-                getDateTimeVN(),
-                convertDateTimeToVN(fromTime),
-                convertDateTimeToVN(toTime),
-                moneyFinal,
-                user,
-                'pending',
-                item,
-            );
-
-            addNewPitchBooking(pitchBooking.toObject(), (result) => {
-                if (result.error) {
-                    console.log(result.error);
-                    setNotificationSB('Đã xảy ra lỗi, vui lòng thử lại sau!. ' + result.error);
-                    setVisible(true);
-                    return;
-                }
-                navigation.navigate('UserHistoryScreen');
+        try {
+            const bookingPitches = await addNewPitchesBooking({
+                pitchesID: item.id,
+                timeStart: Math.floor(fromTime.getTime() / 1000),
+                timeEnd: Math.floor(toTime.getTime() / 1000),
             });
-        });
+            if (bookingPitches.status === 1) {
+                setNotificationSB('Đã đặt sân thành công!');
+                setVisible(true);
+                navigation.navigate('UserHistoryScreen');
+            } else {
+                setNotificationSB(bookingPitches.message);
+                setVisible(true);
+                return;
+            }
+        } catch (error) {
+            setNotificationSB('Đã xảy ra lỗi, vui lòng thử lại sau!. ' + error);
+            setVisible(true);
+        }
     };
 
     useEffect(() => {
@@ -111,14 +91,24 @@ export default function UserBookingScreen({ navigation, route }) {
     }, [timeFinal]);
 
     useEffect(() => {
-        loadPitchesBookingByID(item.id, (result) => {
-            if (result.error) {
-                console.log(result.error);
-                return;
+        const loadPitches = async (id) => {
+            try {
+                const result = await loadPitchesBookingByID(id);
+                if (result.status === 1) {
+                    setLoading(false);
+                    setPitchesBookingData(result.data);
+                } else {
+                    setLoading(false);
+                    setPitchesBookingData(null);
+                    console.log(result.message, 1);
+                    return;
+                }
+            } catch (error) {
+                console.log(error, 2);
             }
-            setLoading(false);
-            setPitchesBookingData(result.data);
-        });
+        };
+
+        loadPitches(item.id);
     }, []);
 
     return (
@@ -480,59 +470,63 @@ export default function UserBookingScreen({ navigation, route }) {
                                 showsVerticalScrollIndicator: false,
                             }}
                         >
-                            {!loading
-                                ? pitchesBookingData.map((item, index) => {
-                                      let today = new Date();
-                                      let startDay = new Date(item.timeStart);
-                                      if (
-                                          startDay.getDate() !== today.getDate() ||
-                                          startDay.getMonth() !== today.getMonth() ||
-                                          startDay.getFullYear() !== today.getFullYear()
-                                      ) {
-                                          return null;
-                                      }
-                                      return (
-                                          <Card style={{ marginBottom: 10 }} key={index}>
-                                              <Card.Title
-                                                  title={
-                                                      <Text
-                                                          style={{
-                                                              fontSize: 13,
-                                                          }}
-                                                      >
-                                                          {item.user.name}
-                                                      </Text>
-                                                  }
-                                                  subtitle={
-                                                      <Text style={{ fontSize: 11, color: 'blue' }}>
-                                                          {formatPriceToVND(item.pitches.price)}
-                                                      </Text>
-                                                  }
-                                                  left={() => {
-                                                      return <TimerStart size={32} color="green" />;
-                                                  }}
-                                                  right={() => {
-                                                      return (
-                                                          <Text
-                                                              style={{
-                                                                  fontSize: 11,
-                                                                  width: 170,
-                                                                  textAlign: 'center',
-                                                                  paddingRight: 5,
-                                                              }}
-                                                              numberOfLines={6}
-                                                          >
-                                                              {formatDateToVND(item.timeStart)}
-                                                              {'\n'}
-                                                              {formatDateToVND(item.timeEnd)}
-                                                          </Text>
-                                                      );
-                                                  }}
-                                              />
-                                          </Card>
-                                      );
-                                  })
-                                : null}
+                            {!loading ? (
+                                !pitchesBookingData || pitchesBookingData.length <= 0 ? (
+                                    <Text>Không có dữ liệu</Text>
+                                ) : (
+                                    pitchesBookingData.map((item, index) => {
+                                        let today = new Date();
+                                        let startDay = new Date(item.timeStart * 1000);
+                                        if (
+                                            startDay.getDate() !== today.getDate() ||
+                                            startDay.getMonth() !== today.getMonth() ||
+                                            startDay.getFullYear() !== today.getFullYear()
+                                        ) {
+                                            return null;
+                                        }
+                                        return (
+                                            <Card style={{ marginBottom: 10 }} key={index}>
+                                                <Card.Title
+                                                    title={
+                                                        <Text
+                                                            style={{
+                                                                fontSize: 13,
+                                                            }}
+                                                        >
+                                                            {item.fullname}
+                                                        </Text>
+                                                    }
+                                                    subtitle={
+                                                        <Text style={{ fontSize: 11, color: 'blue' }}>
+                                                            {formatPriceToVND(item.amount)}
+                                                        </Text>
+                                                    }
+                                                    left={() => {
+                                                        return <TimerStart size={32} color="green" />;
+                                                    }}
+                                                    right={() => {
+                                                        return (
+                                                            <Text
+                                                                style={{
+                                                                    fontSize: 11,
+                                                                    width: 170,
+                                                                    textAlign: 'center',
+                                                                    paddingRight: 5,
+                                                                }}
+                                                                numberOfLines={6}
+                                                            >
+                                                                {formatDateToVND(item.timeStart * 1000)}
+                                                                {'\n'}
+                                                                {formatDateToVND(item.timeEnd * 1000)}
+                                                            </Text>
+                                                        );
+                                                    }}
+                                                />
+                                            </Card>
+                                        );
+                                    })
+                                )
+                            ) : null}
                         </ScrollView>
                     )}
                 </ScrollView>

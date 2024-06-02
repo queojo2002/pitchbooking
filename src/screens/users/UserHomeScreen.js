@@ -34,9 +34,9 @@ export default UserHomeScreen = ({ navigation }) => {
                             <View style={{ paddingLeft: 10 }}>
                                 <Image
                                     source={{
-                                        uri: user.avatar
-                                            ? user.avatar
-                                            : 'https://ui-avatars.com/api/?name=' + user.name + '&size=128',
+                                        uri: user.imageURL
+                                            ? user.imageURL
+                                            : 'https://ui-avatars.com/api/?name=' + user.fullname + '&size=128',
                                     }}
                                     style={{ ...styles.logo, borderRadius: 64, aspectRatio: 1 }}
                                     onLoadEnd={() => setImageLoaded(true)}
@@ -50,7 +50,7 @@ export default UserHomeScreen = ({ navigation }) => {
                                     paddingLeft: 5,
                                 }}
                             >
-                                {user.name}
+                                {user.fullname}
                             </Text>
                         </View>
                     </View>
@@ -62,7 +62,7 @@ export default UserHomeScreen = ({ navigation }) => {
                         marginRight: 5,
                         padding: 10,
                     }}
-                    onPress={() => {
+                    onPress={async () => {
                         return navigation.navigate('UserNotificationScreen');
                     }}
                 >
@@ -71,16 +71,20 @@ export default UserHomeScreen = ({ navigation }) => {
             ),
         });
 
-        const unsubscribe = loadAllPith((res) => {
-            if (res.error) {
-                Alert.alert('Error', res.error);
-            } else {
-                setPitch(res.data);
-                setPitchLoaded(true);
+        const loadPitch = async () => {
+            try {
+                const res = await loadAllPith();
+                if (res.error) {
+                    console.warn('Error', res.error);
+                } else {
+                    setPitch(res.data);
+                    setPitchLoaded(true);
+                }
+            } catch (error) {
+                console.warn('Error', error.message);
             }
-        });
-
-        return () => unsubscribe();
+        };
+        loadPitch();
     }, [user]);
 
     const renderItem = ({ item }) => (
@@ -100,7 +104,7 @@ export default UserHomeScreen = ({ navigation }) => {
                 }}
             >
                 Trạng thái:{' '}
-                {item.status == 1 ? (
+                {item.status == 0 ? (
                     <Text style={{ color: 'red' }}>Đang mở</Text>
                 ) : (
                     <Text style={{ color: 'green' }}>Đang đóng</Text>
@@ -115,10 +119,12 @@ export default UserHomeScreen = ({ navigation }) => {
                 }}
             >
                 Loại sân:
-                {item.pitchType == 1 ? (
+                {item.type == 0 ? (
                     <Text style={{ color: 'red' }}> Sân 5</Text>
-                ) : item.pitchType == 2 ? (
+                ) : item.type == 1 ? (
                     <Text style={{ color: '#B50163' }}> Sân 7</Text>
+                ) : item.type == 2 ? (
+                    <Text style={{ color: '#329606' }}> Sân 11</Text>
                 ) : (
                     <Text style={{ color: 'green' }}>Liên hệ chủ sân để biết thêm chi tiết</Text>
                 )}

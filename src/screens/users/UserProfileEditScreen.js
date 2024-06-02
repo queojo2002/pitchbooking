@@ -1,28 +1,37 @@
-import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser } from '../../api/user-api';
 import ProfileDetailItem from '../../components/ProfileDetailItem';
 import ProfileEditItem from '../../components/ProfileEditItem';
 import { appColor } from '../../constants/appColor';
+import { User } from '../../model/User';
+import { loginSuccess } from '../../redux/actions/authAction';
 
 const UserProfileEditScreen = ({ navigation }) => {
     const user = useSelector((state) => state.auth.userData);
-    const [name, setName] = useState(user.name);
+    const [fullname, setFullName] = useState(user.fullname);
     const [phone, setPhone] = useState(user.phone);
     const [address, setAddress] = useState(user.address);
-    const [avatar, setAvatar] = useState(user.avatar);
+    const [imageURL, setImageURL] = useState(user.imageURL);
+    const [loadingImageURL, setLoadingImageURL] = useState(false);
+    const dispatch = useDispatch();
 
     const handleSaveChanges = async () => {
         try {
-            await firestore().collection('users').doc(user.email).update({
-                name: name,
-                phone: phone,
-                address: address,
-                avatar: avatar,
-            });
+            const modelUpdateUser = new User(fullname, '', '', phone, address, imageURL, '');
+            await updateUser(modelUpdateUser.toObjectUpdate());
+            await dispatch(
+                loginSuccess({
+                    ...user,
+                    fullname: modelUpdateUser.fullname,
+                    phone: modelUpdateUser.phone,
+                    address: modelUpdateUser.address,
+                    imageURL: modelUpdateUser.imageURL,
+                }),
+            );
             Alert.alert(
                 'Thông báo',
                 'Cập nhật thông tin thành công.',
@@ -32,16 +41,14 @@ const UserProfileEditScreen = ({ navigation }) => {
             navigation.goBack();
         } catch (error) {
             console.log('Error updating profile: ', error);
-            Alert.alert(
-                'Thông báo',
-                'Có lỗi xảy ra. Vui lòng thử lại sau.',
-                [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-                { cancelable: false },
-            );
+            Alert.alert('Thông báo', error.message, [{ text: 'OK', onPress: () => console.log('OK Pressed') }], {
+                cancelable: false,
+            });
         }
     };
 
     const handleImageUpload = async () => {
+        setLoadingImageURL(true);
         try {
             ImageCropPicker.openPicker({
                 width: 300,
@@ -52,17 +59,20 @@ const UserProfileEditScreen = ({ navigation }) => {
             })
                 .then(async (image) => {
                     const uri = image.path;
-                    const imageName = `avatar_${user.uid}`;
+                    const imageName = `avatar_${user.email}`;
                     const storageRef = storage().ref().child(`avatars/${imageName}`);
                     await storageRef.putFile(uri);
                     const downloadURL = await storageRef.getDownloadURL();
                     console.log('Download URL:', downloadURL);
-                    setAvatar(downloadURL);
+                    setImageURL(downloadURL);
+                    setLoadingImageURL(false);
                 })
                 .catch((error) => {
+                    setLoadingImageURL(false);
                     console.log('Error picking image: ', error);
                 });
         } catch (error) {
+            setLoadingImageURL(false);
             console.log('Error uploading image: ', error);
         }
     };
@@ -72,7 +82,7 @@ const UserProfileEditScreen = ({ navigation }) => {
             <View style={styles.avatarSection}>
                 <TouchableOpacity onPress={handleImageUpload} style={styles.avatarContainer}>
                     <Image
-                        source={{ uri: avatar || `https://ui-avatars.com/api/?name=${name}&size=128` }}
+                        source={{ uri: imageURL || `https://ui-avatars.com/api/?name=${fullname}&size=128` }}
                         style={styles.avatar}
                     />
                     <View style={styles.editTextContainer}>
@@ -81,12 +91,14 @@ const UserProfileEditScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <ScrollView style={styles.detailsSection}>
-                <ProfileDetailItem
-                    title="Email "
-                    subtitle={user.email}
-                    accuracy={user.emailVerified ? ' (Đã xác thực)' : ' (Chưa xác thực)'}
+                <ProfileDetailItem title="Email " subtitle={user.email} />
+                <ProfileEditItem
+                    icon="person"
+                    title="Họ và tên "
+                    editable
+                    value={fullname}
+                    onChangeText={setFullName}
                 />
-                <ProfileEditItem icon="person" title="Tên " editable value={name} onChangeText={setName} />
                 <ProfileEditItem
                     icon="location-on"
                     title="Địa chỉ "
@@ -94,10 +106,24 @@ const UserProfileEditScreen = ({ navigation }) => {
                     value={address}
                     onChangeText={setAddress}
                 />
+                <ProfileEditItem icon="phone" title="Số điện thoại " editable value={phone} onChangeText={setPhone} />
             </ScrollView>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                <Text style={styles.saveButtonText}>Cập nhật</Text>
-            </TouchableOpacity>
+            {loadingImageURL ? (
+                <TouchableOpacity
+                    style={{
+                        ...styles.saveButton,
+                        backgroundColor: 'red',
+                    }}
+                    onPress={handleSaveChanges}
+                    disabled={loadingImageURL}
+                >
+                    <Text style={styles.saveButtonText}>Chờ tải hình ảnh</Text>
+                </TouchableOpacity>
+            ) : (
+                <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges} disabled={loadingImageURL}>
+                    <Text style={styles.saveButtonText}>Cập nhật</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
@@ -120,7 +146,7 @@ const styles = StyleSheet.create({
     detailsSection: {
         flex: 1,
         marginHorizontal: 20,
-        marginTop: 20,
+        marginTop: 10,
     },
     saveButton: {
         backgroundColor: appColor.blackblue,

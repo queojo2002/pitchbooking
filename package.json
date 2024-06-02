@@ -26,6 +26,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@react-navigation/stack": "^6.3.29",
+    "axios": "^1.7.2",
     "eslint-plugin-simple-import-sort": "^12.1.0",
     "expo-status-bar": "^1.12.1",
     "iconsax-react-native": "^0.0.8",

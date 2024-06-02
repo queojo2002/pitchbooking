@@ -1,48 +1,38 @@
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import { User } from '../model/User';
-import messaging from '@react-native-firebase/messaging';
+import { axiosAuth } from './index';
 
 export const loginUser = async ({ email, password }) => {
     try {
-        const userCredential = await auth().signInWithEmailAndPassword(email.toLowerCase(), password);
-        return { user: userCredential.user };
-    } catch (error) {
-        return { error: error.message };
-    }
-};
-
-export const logoutUser = () => {
-    return auth().signOut();
-};
-
-export const signUpUser = async ({ name, email, password }) => {
-    try {
-        const userCredential = await auth().createUserWithEmailAndPassword(email.toLowerCase(), password);
-        const user = userCredential.user;
-        await auth().currentUser.updateProfile({
-            displayName: name,
+        const loginApi = await axiosAuth.post('/login.php', {
+            email: email,
+            password: password,
         });
-        const userModel = new User(name, email);
-        const userModelAdd = userModel.toObject();
-        await firestore().collection('users').doc(email.toLowerCase()).set(userModelAdd);
-        await user.sendEmailVerification();
-        await auth().signOut();
 
-        return { user };
+        if (loginApi.status === 200 && loginApi.data) {
+            return loginApi.data;
+        } else {
+            throw new Error('An error has occurred');
+        }
     } catch (error) {
-        return { error: error.message };
+        throw new Error(error.message);
     }
 };
 
-export const getCurrenUser = () => {
+export const signUpUser = async ({ fullname, email, password }) => {
     try {
-    } catch (error) {
-        return { error: error.message };
-    }
-};
+        console.log(fullname, email, password);
+        const signUpApi = await axiosAuth.put('/userApi.php', {
+            fullname: fullname,
+            email: email,
+            password: password,
+        });
+        console.log(signUpApi.data);
 
-export const getToken = async () => {
-    const token = await messaging().getToken();
-    console.log(token);
+        if (signUpApi.data) {
+            return signUpApi.data;
+        } else {
+            throw new Error('An error has occurred');
+        }
+    } catch (error) {
+        throw new Error(error.message);
+    }
 };
