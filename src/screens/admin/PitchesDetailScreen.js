@@ -1,16 +1,38 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, Fragment, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, Alert, ScrollView } from 'react-native';
 import { IconButton, Menu, Divider } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { appColor } from '../../constants/appColor';
+import { adminLoadPitchesByID } from '../../api/pitch-api';
+import { formatDateToVND } from '../../helpers/formatDateToVND';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PitchesDetailScreen({ route, navigation }) {
     const { pitchId } = route.params;
     const [pitch, setPitch] = useState(null);
 
     moment.locale('vi');
+
+    const loadPitchByID = async () => {
+        try {
+            const pitchesData = await adminLoadPitchesByID(pitchId);
+            if (pitchesData.status === 1) {
+                setPitch(pitchesData.data);
+            } else {
+                throw new Error(pitchesData.message);
+            }
+        } catch (error) {
+            Alert.alert('Error', error.message);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            loadPitchByID();
+        }, []),
+    );
 
     useEffect(() => {
         navigation.setOptions({
@@ -22,46 +44,33 @@ export default function PitchesDetailScreen({ route, navigation }) {
             headerTitleStyle: {
                 fontWeight: 'bold',
             },
-            headerRight: () => (
-                <HeaderActions navigation={navigation} pitchId={pitchId} />
-            ),
+            headerRight: () => <HeaderActions navigation={navigation} pitchId={pitchId} />,
             headerTitle: () => (
                 <View>
-                    <Text style={{ fontSize: 20, color: "white" }}>Chi tiết sân</Text>
+                    <Text style={{ fontSize: 20, color: 'white' }}>Chi tiết sân</Text>
                 </View>
             ),
         });
     }, [navigation, pitchId]);
 
-    useEffect(() => {
-        const unsubscribe = firestore()
-            .collection('pitches')
-            .doc(pitchId)
-            .onSnapshot((documentSnapshot) => {
-                if (documentSnapshot.exists) {
-                    setPitch(documentSnapshot.data());
-                }
-            });
-
-        return () => unsubscribe();
-    }, [pitchId]);
-
     const renderPitchType = (pitchType) => {
-        switch(pitchType) {
-            case 1:
+        switch (pitchType) {
+            case '0':
                 return 'Sân 5';
-            case 2:
+            case '1':
                 return 'Sân 7';
+            case '2':
+                return 'Sân 11';
             default:
                 return 'Unknown';
         }
     };
 
     const renderStatus = (status) => {
-        switch(status) {
-            case 1:
+        switch (status) {
+            case '0':
                 return 'Đang mở cửa';
-            case 2:
+            case '1':
                 return 'Đang đóng cửa';
             default:
                 return 'Unknown';
@@ -72,20 +81,25 @@ export default function PitchesDetailScreen({ route, navigation }) {
         <ScrollView style={styles.container}>
             {pitch ? (
                 <Fragment>
-                    {pitch.imageURL && (
-                        <Image source={{ uri: pitch.imageURL }} style={styles.image} />
-                    )}
-                    <Text style={styles.label}><Text style={styles.labelBold}>Tên sân:</Text> {pitch.name}</Text>
-                    <Text style={styles.label}><Text style={styles.labelBold}>Giá:</Text> {pitch.price}</Text>
-                    <Text style={styles.label}><Text style={styles.labelBold}>Loại sân:</Text> {renderPitchType(pitch.pitchType)}</Text>
-                    <Text style={styles.label}><Text style={styles.labelBold}>Trạng thái:</Text> {renderStatus(pitch.status)}</Text>
+                    {pitch.imageURL && <Image source={{ uri: pitch.imageURL }} style={styles.image} />}
+                    <Text style={styles.label}>
+                        <Text style={styles.labelBold}>Tên sân:</Text> {pitch.name}
+                    </Text>
+                    <Text style={styles.label}>
+                        <Text style={styles.labelBold}>Giá:</Text> {pitch.price}
+                    </Text>
+                    <Text style={styles.label}>
+                        <Text style={styles.labelBold}>Loại sân:</Text> {renderPitchType(pitch.type)}
+                    </Text>
+                    <Text style={styles.label}>
+                        <Text style={styles.labelBold}>Trạng thái:</Text> {renderStatus(pitch.status)}
+                    </Text>
                     <View style={styles.PitchesContainer}>
-                    <Text style={styles.label}><Text style={styles.labelBold}>Người thêm:</Text> {pitch.creator}</Text>
-                    <Text style={styles.label}><Text style={styles.labelBold}>Người cập nhật:</Text> {pitch.updatedBy}</Text>
-                    <Text style={styles.label}><Text style={styles.labelBold}>Thời gian tạo:</Text> {pitch.timeMake ? moment(pitch.timeMake.toDate()).format('LLL') : 'Unknown'}</Text>
-                    <Text style={styles.label}><Text style={styles.labelBold}>Thời gian cập nhật:</Text> {pitch.updatedAt ? moment(pitch.updatedAt.toDate()).format('LLL') : 'Unknown'}</Text>
+                        <Text style={styles.label}>
+                            <Text style={styles.labelBold}>Thời gian cập nhật gần đây:</Text>{' '}
+                            {pitch.timeUpdate ? formatDateToVND(pitch.timeUpdate * 1000) : 'Unknown'}
+                        </Text>
                     </View>
-                   
                 </Fragment>
             ) : (
                 <Text>Đợi một xíu nghen...</Text>
@@ -107,34 +121,30 @@ function HeaderActions({ navigation, pitchId }) {
     };
 
     const handleDelete = () => {
-        Alert.alert(
-            'Xóa sân',
-            'Bạn có chắc muốn xóa sân này không ?',
-            [
-                { text: 'Cancel', style: 'cancel', onPress: closeMenu },
-                { text: 'Confirm', onPress: deletePitch, style: 'destructive' },
-            ]
-        );
+        Alert.alert('Xóa sân', 'Bạn có chắc muốn xóa sân này không ?', [
+            { text: 'Cancel', style: 'cancel', onPress: closeMenu },
+            { text: 'Confirm', onPress: deletePitch, style: 'destructive' },
+        ]);
     };
 
     const deletePitch = () => {
-        firestore()
-            .collection('pitches')
-            .doc(pitchId)
-            .delete()
-            .then(() => {
-                navigation.goBack();
-            })
-            .catch((error) => {
-                Alert.alert('Error', error.message);
-            });
+        alert('Tính năng đang phát triển, vui lòng thử lại sau');
     };
 
     return (
-        <Menu style={{position: 'absolute', top: 60}}
+        <Menu
+            style={{ position: 'absolute', top: 60 }}
             visible={visible}
             onDismiss={closeMenu}
-            anchor={<IconButton size={22} style={{ paddingLeft: 23 }} icon="dots-vertical" color="#fff" onPress={openMenu} />}
+            anchor={
+                <IconButton
+                    size={22}
+                    style={{ paddingLeft: 23 }}
+                    icon="dots-vertical"
+                    color="#fff"
+                    onPress={openMenu}
+                />
+            }
         >
             <Menu.Item onPress={handleEdit} title="Sửa" />
             <Divider />
@@ -166,10 +176,10 @@ const styles = StyleSheet.create({
     },
     PitchesContainer: {
         marginTop: 20,
-        backgroundColor: "#FCFCFC",
+        backgroundColor: '#FCFCFC',
         width: '100%',
         height: '100%',
-        shadowColor: "#000000",
+        shadowColor: '#000000',
         shadowOffset: {
             width: 0,
             height: 2,

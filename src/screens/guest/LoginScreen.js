@@ -1,73 +1,76 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import IconButton from 'react-native-vector-icons/FontAwesome6';
-import { useDispatch, useSelector } from 'react-redux';
-import { BackButton, Background, Button, Header, TextInput } from "../../components";
-import { theme } from "../../core/theme";
-import { emailValidator, passwordValidator } from "../../helpers";
-import { clearError, login } from "../../redux/actions/authAction";
-
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../api/auth-api';
+import { loadUser } from '../../api/user-api';
+import { BackButton, Background, Button, Header, TextInput } from '../../components';
+import { theme } from '../../core/theme';
+import { emailValidator, passwordValidator } from '../../helpers';
+import { loginSuccess, setAccessToken } from '../../redux/actions/authAction';
 
 export default LoginScreen = ({ navigation }) => {
-    const [email, setEmail] = useState({ value: "", error: "" })
-    const [password, setPassword] = useState({ value: "", error: "" })
+    const [email, setEmail] = useState({ value: '', error: '' });
+    const [password, setPassword] = useState({ value: '', error: '' });
     const [loading, setLoading] = useState(false);
-    const errorLogin = useSelector(state => state.auth.error);
+    const [errorLogin, setErrorLogin] = useState('');
 
     const dispatch = useDispatch();
 
-
     const onLoginPressed = async () => {
         setLoading(true);
-        const emailError = emailValidator(email.value)
-        const passwordError = passwordValidator(password.value)
+
+        const emailError = emailValidator(email.value);
+        const passwordError = passwordValidator(password.value);
         if (emailError || passwordError) {
-            setEmail({ ...email, error: emailError })
-            setPassword({ ...password, error: passwordError })
-            setLoading(false)
-            return
+            setEmail({ ...email, error: emailError });
+            setPassword({ ...password, error: passwordError });
+            setLoading(false);
+            return;
         }
 
         try {
-            await dispatch(login({
-                email: email.value,
-                password: password.value
-            }));
+            const login = await loginUser({ email: email.value.toLowerCase(), password: password.value });
+            if (login.status === 0) {
+                setErrorLogin(login.message);
+                return;
+            }
+            await dispatch(
+                setAccessToken({ accessToken: login.data.accessToken, refreshToken: login.data.refreshToken }),
+            );
+            const user = await loadUser();
+            if (user.status === 1) {
+                await dispatch(loginSuccess(user.data));
+            } else {
+                setErrorLogin(user.message);
+            }
         } catch (error) {
-            await dispatch({
-                type: 'LOGIN_FAILURE',
-                payload: error.message,
-            });
+            setErrorLogin(error.message);
         }
         setLoading(false);
-
-
-    }
-
+    };
 
     useEffect(() => {
-        setEmail({ value: "ducln339@gmail.com", error: '' })
-        setPassword({ value: "123456789Duc@@", error: '' })
-         /* setEmail({ value: "AnhTu080302@gmail.com", error: '' })
+        setEmail({ value: 'ducln339@gmail.com', error: '' });
+        setPassword({ value: '123456789Duc@@', error: '' });
+        /* setEmail({ value: "AnhTu080302@gmail.com", error: '' })
          setPassword({ value: "AnhTu$123", error: '' }) */
         if (errorLogin) {
-            dispatch(clearError());
+            setErrorLogin('');
         }
-    }, [])
-
+    }, []);
 
     return (
-
         <Background>
-            <BackButton goBack={() => {
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'OnboardingScreen' }],
-
-                })
-
-            }} />
+            <BackButton
+                goBack={() => {
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'OnboardingScreen' }],
+                    });
+                }}
+            />
             <Header>Welcome back</Header>
             <TextInput
                 label="Email"
@@ -80,7 +83,6 @@ export default LoginScreen = ({ navigation }) => {
                 autoCompleteType="email"
                 textContentType="emailAddress"
                 keyboardType="email-address"
-
             />
             <TextInput
                 label="Password"
@@ -90,13 +92,10 @@ export default LoginScreen = ({ navigation }) => {
                 error={!!password.error}
                 errorText={password.error}
                 secureTextEntryProp
-
             />
             {errorLogin ? <Text>{errorLogin}</Text> : null}
             <View style={styles.forgotPassword}>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('ResetPasswordScreen')}
-                >
+                <TouchableOpacity onPress={() => navigation.navigate('ResetPasswordScreen')}>
                     <Text style={styles.forgot}>Forgot your password?</Text>
                 </TouchableOpacity>
             </View>
@@ -104,7 +103,7 @@ export default LoginScreen = ({ navigation }) => {
             {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
-                <Button mode="contained" onPress={onLoginPressed} style={{ backgroundcolor: "red" }}>
+                <Button mode="contained" onPress={onLoginPressed} style={{ backgroundcolor: 'red' }}>
                     Login
                 </Button>
             )}
@@ -114,50 +113,47 @@ export default LoginScreen = ({ navigation }) => {
                     <Text style={styles.link}>Sign up</Text>
                 </TouchableOpacity>
             </View>
-            <Button mode="contained" onPress={onLoginPressed} icon={() => {
-                return (
-                    <IconButton
-                        name="google"
-                        color="#4285F4"
-                        size={20}
-                        onPress={() => console.log('Pressed')}
-                    />
-                );
-            }} style={{
-                backgroundColor: "#F3F3F3",
-            }}>
+            <Button
+                mode="contained"
+                onPress={() => {
+                    return Alert.alert('Thông báo', 'Chức năng đang phát triển');
+                }}
+                icon={() => {
+                    return (
+                        <IconButton name="google" color="#4285F4" size={20} onPress={() => console.log('Pressed')} />
+                    );
+                }}
+                style={{
+                    backgroundColor: '#F3F3F3',
+                }}
+            >
                 <Text style={{ marginLeft: 25 }}>Login with Google</Text>
             </Button>
 
-
-            <Button mode="contained" onPress={onLoginPressed} icon={() => {
-                return (
-                    <IconButton
-                        name="phone"
-                        color="green"
-                        size={20}
-                        onPress={() => console.log('Pressed')}
-                    />
-                );
-            }} style={{
-                backgroundColor: "#F3F3F3",
-            }}>
+            <Button
+                mode="contained"
+                onPress={() => {
+                    return Alert.alert('Thông báo', 'Chức năng đang phát triển');
+                }}
+                icon={() => {
+                    return <IconButton name="phone" color="green" size={20} onPress={() => console.log('Pressed')} />;
+                }}
+                style={{
+                    backgroundColor: '#F3F3F3',
+                }}
+            >
                 <Text style={{ marginLeft: 25 }}>Login with Phone</Text>
             </Button>
-
         </Background>
-
-
     );
-}
-
+};
 
 const styles = StyleSheet.create({
     forgotPassword: {
         width: '100%',
         alignItems: 'flex-end',
         marginBottom: 5,
-        color: "#ffff"
+        color: '#ffff',
     },
     row: {
         flexDirection: 'row',
@@ -170,8 +166,6 @@ const styles = StyleSheet.create({
     link: {
         fontWeight: 'bold',
         color: theme.colors.primary,
-        padding: 10
+        padding: 10,
     },
-
-})
-
+});

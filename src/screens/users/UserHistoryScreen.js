@@ -1,4 +1,4 @@
-import { ArrowDown, CloseSquare, SearchNormal1 } from 'iconsax-react-native';
+import { CloseSquare, SearchNormal1 } from 'iconsax-react-native';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
     Button,
@@ -12,7 +12,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { ActivityIndicator, Divider, Modal, Portal } from 'react-native-paper';
+import { Modal, Portal } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { loadPitchesBookingByEmail } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
@@ -28,18 +28,16 @@ export default UserHistoryScreen = ({ navigation }) => {
     const [pitchesNameData, setPitchesNameData] = useState([]);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const [filters, setFilters] = useState([
-        { id: 1, status: 'pending', label: 'Chờ duyệt' },
-        { id: 2, status: 'success', label: 'Đặt thành công' },
-        { id: 3, status: 'cancel', label: 'Đã hủy' },
-    ]);
     const [type, setType] = useState('TimTheoSan');
-
-    const [visible, setVisible] = React.useState(false);
+    const [visible, setVisible] = useState(false);
     const hideModal = () => setVisible(false);
-    const user = useSelector((state) => state.auth.userData);
-
     const [searchText, setSearchText] = useState('');
+    const user = useSelector((state) => state.auth.userData);
+    const [filters, setFilters] = useState([
+        { id: 1, status: 0, label: 'Chờ xác nhận' },
+        { id: 2, status: 1, label: 'Đặt thành công' },
+        { id: 3, status: 2, label: 'Đã hủy' },
+    ]);
 
     const renderFilterItem = ({ item }) => {
         return (
@@ -52,17 +50,6 @@ export default UserHistoryScreen = ({ navigation }) => {
 
     const handleItemPress = (item) => {
         setSelectedFilter(item.id);
-    };
-
-    const handleSearchPress = (type, item) => {
-        setType(type);
-        if (type === 'TimTheoSan') {
-            const filteredData = bookingDataTemp.filter((item_1) => item_1.pitches.id === item.pitches.id);
-            setBookingData(filteredData);
-            setVisible(false);
-        } else {
-            setType('');
-        }
     };
 
     useEffect(() => {
@@ -90,29 +77,24 @@ export default UserHistoryScreen = ({ navigation }) => {
                 );
             },
         });
-        const unsubscribe = loadPitchesBookingByEmail(filters[selectedFilter - 1].status, user.email, (response) => {
-            if (response.error) {
-                console.log('Lỗi không thể load được dữ liệu', response.error);
-            } else {
-                const uniquePitchesName = response.data.reduce((acc, current) => {
-                    const x = acc.find((item) => item.pitches.name === current.pitches.name);
-                    if (!x) {
-                        return acc.concat([current]);
-                    } else {
-                        return acc;
-                    }
-                }, []);
 
-                uniquePitchesName.sort((a, b) => a.pitches.name.localeCompare(b.pitches.name));
-
-                setPitchesNameData(uniquePitchesName);
-                setBookingData(response.data || []);
-                setBookingDataTemp(response.data || []);
+        const loadPitchesByEmail = async () => {
+            try {
+                const response = await loadPitchesBookingByEmail();
+                if (response.status !== 1) {
+                    console.log('Lỗi không thể load được dữ liệu', response.error);
+                }
+                const filteredData = response.data.filter((item) => {
+                    return item.status === filters[selectedFilter - 1].status && item.name.includes(searchText);
+                });
+                setBookingData(filteredData);
+            } catch (error) {
+                console.log('Lỗi không thể load được dữ liệu', error);
             }
-        });
+        };
 
-        return () => unsubscribe();
-    }, [selectedFilter]);
+        loadPitchesByEmail();
+    }, [selectedFilter, searchText]);
 
     const handleDetailsPress = (booking) => {
         setSelectedBooking(booking);
@@ -147,8 +129,8 @@ export default UserHistoryScreen = ({ navigation }) => {
                 />
             </View>
 
-            <View style={{ flex: 1, backgroundColor: '#F3F3F3', paddingLeft: 5, marginBottom: 50 }}>
-                <View
+            <View style={{ flex: 1, backgroundColor: '#F3F3F3', paddingLeft: 5, marginBottom: 50, marginTop: 10 }}>
+                {/* <View
                     style={{
                         width: '100%',
                         height: 60,
@@ -188,28 +170,36 @@ export default UserHistoryScreen = ({ navigation }) => {
                             <ArrowDown size={18} color="black" />
                         </TouchableOpacity>
                     </View>
-                </View>
+                </View> */}
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {bookingData.length > 0 ? (
                         bookingData.map((booking, index) => (
                             <View key={index} style={styles.bookingItem}>
                                 <Image
-                                    source={{ uri: booking.pitches.imageURL }}
+                                    source={{ uri: booking.imageURL }}
                                     style={{ width: 80, height: 80, borderRadius: 5, backgroundColor: 'red' }}
                                 />
                                 <View style={{ marginLeft: 10 }}>
                                     <Text style={styles.labelBold}>Tên sân:</Text>
-                                    <Text style={styles.label}>{booking.pitches.name}</Text>
+                                    <Text style={styles.label}>{booking.name}</Text>
                                     <Text style={styles.labelBold}>Ngày đặt:</Text>
-                                    <Text style={styles.label}>{formatDateToVND(booking.timeBooking)}</Text>
+                                    <Text style={styles.label}>{formatDateToVND(booking.timeCreate * 1000)}</Text>
                                     <Text style={styles.labelBold}>Trạng thái:</Text>
                                     <Text
                                         style={{
                                             ...styles.label,
-                                            color: booking.statusBooking === 'pending' ? 'red' : 'green',
+                                            color: {
+                                                0: 'blue',
+                                                1: 'green',
+                                                2: 'red',
+                                            }[booking.status],
                                         }}
                                     >
-                                        {booking.statusBooking === 'pending' ? 'Chờ xác nhận' : 'Đặt thành công'}
+                                        {booking.status === 0
+                                            ? 'Chờ xác nhận'
+                                            : booking.status === 1
+                                            ? 'Đặt thành công'
+                                            : 'Đã hủy'}
                                     </Text>
                                 </View>
                                 <TouchableOpacity
@@ -242,14 +232,18 @@ export default UserHistoryScreen = ({ navigation }) => {
                             <Text style={styles.modalTitle}>Chi tiết đặt sân</Text>
                             <Text style={styles.labelBold}>Trạng thái: </Text>
                             <Text style={styles.label}>
-                                {selectedBooking.statusBooking === 'pending' ? 'Chờ xác nhận' : 'Đặt thành công'}
+                                {selectedBooking.status === 0
+                                    ? 'Chờ xác nhận'
+                                    : selectedBooking.status === 1
+                                    ? 'Đã đặt'
+                                    : 'Đã hủy'}
                             </Text>
                             <Text style={styles.labelBold}>Thời gian bắt đầu:</Text>
                             <Text style={styles.label}> {formatDateToVND(selectedBooking.timeStart)} </Text>
                             <Text style={styles.labelBold}>Thời gian kết thúc:</Text>
                             <Text style={styles.label}> {formatDateToVND(selectedBooking.timeEnd)}</Text>
                             <Text style={styles.labelBold}>Người đặt</Text>
-                            <Text style={styles.label}> {selectedBooking.user.email}</Text>
+                            <Text style={styles.label}> {selectedBooking.email}</Text>
                             <Button title="Close" onPress={() => setModalVisible(false)} />
                         </View>
                     </View>

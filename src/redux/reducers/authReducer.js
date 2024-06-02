@@ -1,47 +1,34 @@
+import { LOGIN_SUCCESS, LOGOUT, SET_ACCESS_TOKEN } from '../actions';
+
 const initialState = {
     isAuthenticated: false,
     userData: null,
     error: null,
+    accessToken: null,
+    refreshToken: null,
 };
-
 
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'LOGIN_SUCCESS':
+        case LOGIN_SUCCESS:
             return {
                 ...state,
                 isAuthenticated: true,
                 userData: action.payload,
                 error: null,
             };
-        case 'LOGIN_FAILURE':
-            return {
-                ...state,
-                isAuthenticated: false,
-                userData: null,
-                error: action.payload,
-            };
-        case 'LOGOUT':
+        case LOGOUT:
             return {
                 ...state,
                 isAuthenticated: false,
                 userData: null,
                 error: null,
             };
-        case 'LOGOUT_FAILURE':
+        case SET_ACCESS_TOKEN:
             return {
                 ...state,
-                error: action.payload,
-            };
-        case 'CLEAR_ERROR':
-            return {
-                ...state,
-                error: null,
-            };
-        case 'UPDATE_PROFILE':
-            return {
-                ...state,
-                userData: action.payload,
+                accessToken: action.payload.accessToken,
+                refreshToken: action.payload.refreshToken,
             };
         default:
             return state;

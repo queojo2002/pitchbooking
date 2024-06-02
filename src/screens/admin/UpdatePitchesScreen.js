@@ -7,6 +7,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { Button, Text, TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import Slides from '../../components/Slides';
+import { adminLoadPitchesByID, adminUpdatePitches } from '../../api/pitch-api';
 
 export default function UpdatePitchesScreen({ route, navigation }) {
     const { pitchId } = route.params;
@@ -16,7 +17,7 @@ export default function UpdatePitchesScreen({ route, navigation }) {
     const [status, setStatus] = useState('');
     const [imageUri, setImageUri] = useState(null);
     const [initialImageUri, setInitialImageUri] = useState(null);
-    const user = useSelector(state => state.auth.userData);
+    const user = useSelector((state) => state.auth.userData);
 
     useEffect(() => {
         navigation.setOptions({
@@ -30,23 +31,30 @@ export default function UpdatePitchesScreen({ route, navigation }) {
             },
             headerTitle: () => {
                 return (
-                    <View style={{ height: 30, justifyContent: "center", alignItems: "center", alignSelf: "center", alignContent: "center" }}>
-                        <Text style={{ fontSize: 20, color: "white" }}>Cập nhật sân bóng</Text>
+                    <View
+                        style={{
+                            height: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
+                        <Text style={{ fontSize: 20, color: 'white' }}>Cập nhật sân bóng</Text>
                     </View>
                 );
             },
         });
         const fetchPitchData = async () => {
             try {
-                const pitchDoc = await firestore().collection('pitches').doc(pitchId).get();
-                if (pitchDoc.exists) {
-                    const pitchData = pitchDoc.data();
-                    setName(pitchData.name);
-                    setPrice(String(pitchData.price));
-                    setPitchType(String(pitchData.pitchType));
-                    setStatus(String(pitchData.status));
-                    setInitialImageUri(pitchData.imageURL);
-                    setImageUri(pitchData.imageURL);
+                const pitchData = await adminLoadPitchesByID(pitchId);
+                if (pitchData.status === 1) {
+                    setName(pitchData.data.name);
+                    setPrice(String(pitchData.data.price));
+                    setPitchType(String(pitchData.data.type));
+                    setStatus(String(pitchData.data.status));
+                    setInitialImageUri(pitchData.data.imageURL);
+                    setImageUri(pitchData.data.imageURL);
                 }
             } catch (error) {
                 console.log(error);
@@ -58,7 +66,7 @@ export default function UpdatePitchesScreen({ route, navigation }) {
     }, [navigation, pitchId]);
 
     const selectImage = () => {
-        launchImageLibrary({ mediaType: 'photo' }, response => {
+        launchImageLibrary({ mediaType: 'photo' }, (response) => {
             if (response.didCancel) {
                 console.log('Người dùng hủy chọn ảnh');
             } else if (response.error) {
@@ -94,27 +102,24 @@ export default function UpdatePitchesScreen({ route, navigation }) {
 
         const imageURL = await uploadImage();
         if (imageURL) {
-            const updatedPitch = {
-                name,
-                price: parseFloat(price), 
-                pitchType: parseInt(pitchType, 10),
-                status: parseInt(status, 10), 
-                imageURL,
-                updatedBy: user.email,
-                updatedAt: firestore.FieldValue.serverTimestamp(),
-            };
-
-            firestore()
-                .collection('pitches')
-                .doc(pitchId)
-                .update(updatedPitch)
-                .then(() => {
-                    Alert.alert('Thành công', 'Dữ liệu sân banh đã được cập nhật');
-                    navigation.goBack();
-                })
-                .catch((error) => {
-                    Alert.alert('Error', error.message);
+            try {
+                const updatedPitch = await adminUpdatePitches({
+                    id: pitchId,
+                    name,
+                    price,
+                    type: pitchType,
+                    status,
+                    imageURL,
                 });
+                if (updatedPitch.status === 1) {
+                    Alert.alert('Thành công', 'Dữ liệu sân bóng đã được cập nhật');
+                    navigation.goBack();
+                } else {
+                    Alert.alert('Error', updatedPitch.message);
+                }
+            } catch (error) {
+                Alert.alert('Error', error.message);
+            }
         }
     };
     return (
@@ -123,13 +128,7 @@ export default function UpdatePitchesScreen({ route, navigation }) {
                 <View style={{ marginBottom: 10 }}>
                     <Slides />
                 </View>
-                <TextInput
-                    mode="outlined"
-                    label="Tên sân"
-                    value={name}
-                    onChangeText={setName}
-                    style={styles.input}
-                />
+                <TextInput mode="outlined" label="Tên sân" value={name} onChangeText={setName} style={styles.input} />
                 <TextInput
                     mode="outlined"
                     label="Giá sân / 1 tiếng"
@@ -145,8 +144,9 @@ export default function UpdatePitchesScreen({ route, navigation }) {
                     mode="dropdown"
                 >
                     <Picker.Item label="Chọn loại sân" value="" />
-                    <Picker.Item label="Sân 5" value="1" />
-                    <Picker.Item label="Sân 7" value="2" />
+                    <Picker.Item label="Sân 5" value="0" />
+                    <Picker.Item label="Sân 7" value="1" />
+                    <Picker.Item label="Sân 11" value="2" />
                 </Picker>
 
                 <Picker
@@ -156,23 +156,14 @@ export default function UpdatePitchesScreen({ route, navigation }) {
                     mode="dropdown"
                 >
                     <Picker.Item label="Tình trạng" value="" />
-                    <Picker.Item label="Sân đang mở" value="1" />
-                    <Picker.Item label="Sân đang đóng" value="2" />
+                    <Picker.Item label="Sân đang mở" value="0" />
+                    <Picker.Item label="Sân đang đóng" value="1" />
                 </Picker>
-                <Button
-                    mode="contained"
-                    icon="camera"
-                    onPress={selectImage}
-                    style={styles.button}
-                >
+                <Button mode="contained" icon="camera" onPress={selectImage} style={styles.button}>
                     Chọn ảnh
                 </Button>
                 {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-                <Button
-                    mode="contained"
-                    onPress={updatePitch}
-                    style={styles.button_add}
-                >
+                <Button mode="contained" onPress={updatePitch} style={styles.button_add}>
                     Cập nhật sân bóng
                 </Button>
             </ScrollView>
@@ -198,8 +189,8 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     button_add: {
-        backgroundColor: "#006769",
-        marginBottom: 30
+        backgroundColor: '#006769',
+        marginBottom: 30,
     },
     image: {
         width: 100,
@@ -214,5 +205,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#DCF2F1',
         borderWidth: 1,
         marginBottom: 10,
-    }
+    },
 });

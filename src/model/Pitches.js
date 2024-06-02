@@ -10,20 +10,6 @@ export class Pitches {
         this.timeUpdate = timeUpdate;
     }
 
-    // có thể validate dữ liệu trước khi lưu vào firestore, chưa test thử, để đây test sau
-    validate() {
-        if (!this.name) {
-            throw new Error('Name is required');
-        }
-        if (isNaN(this.price)) {
-            throw new Error('Price must be a number');
-        }
-        if (![1, 2, 3].includes(this.pitchType)) {
-            throw new Error('PitchType must be 1, 2, or 3');
-        }
-    }
-
-
     toObject() {
         return {
             name: this.name,
@@ -33,7 +19,7 @@ export class Pitches {
             imageURL: this.imageURL,
             creator: this.creator,
             timeMake: this.timeMake,
-            timeUpdate: this.timeUpdate
+            timeUpdate: this.timeUpdate,
         };
     }
 }

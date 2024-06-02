@@ -2,7 +2,6 @@ import { ArrowRight } from 'iconsax-react-native';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, Card } from 'react-native-paper';
-import { loadAllUsers } from '../../api/user-api';
 import { appColor } from '../../constants/appColor';
 
 export default ManagerUser = ({ navigation }) => {
@@ -33,16 +32,6 @@ export default ManagerUser = ({ navigation }) => {
                 );
             },
         });
-
-        const unsubscribe = loadAllUsers((response) => {
-            if (response.error) {
-                setLoading(true);
-            } else {
-                setLoading(false);
-                setUsers(response.data);
-            }
-        });
-        return () => unsubscribe();
     }, []);
 
     return (

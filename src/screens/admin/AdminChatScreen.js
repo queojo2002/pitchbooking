@@ -1,9 +1,11 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import firestore from '@react-native-firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { loadInfoAdmin } from '../../api/user-api';
+import { loadAllUsers } from '../../api/user-api';
 import { appColor } from '../../constants/appColor';
-const UserChatScreen = ({ navigation }) => {
-    const [admins, setAdmins] = useState([]);
+
+const AdminChatScreen = ({ navigation }) => {
+    const [users, setUser] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,11 +34,11 @@ const UserChatScreen = ({ navigation }) => {
             },
         });
 
-        const fetchAdmins = async () => {
+        const fetchUsers = async () => {
             try {
-                const admins = await loadInfoAdmin();
-                if (admins.status === 1) {
-                    setAdmins(admins.data);
+                const users = await loadAllUsers();
+                if (users.status === 1) {
+                    setUser(users.data);
                     setLoading(false);
                 } else {
                     throw new Error('Không thể lấy dữ liệu người dùng.');
@@ -47,7 +49,7 @@ const UserChatScreen = ({ navigation }) => {
             }
         };
 
-        fetchAdmins();
+        fetchUsers();
     }, []);
 
     const renderAdminItem = ({ item }) => (
@@ -71,17 +73,15 @@ const UserChatScreen = ({ navigation }) => {
     }
 
     return (
-        <Fragment>
-            <View style={styles.container}>
-                <FlatList
-                    data={admins}
-                    renderItem={renderAdminItem}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.filterContainer}
-                    keyExtractor={(item) => item.id}
-                />
-            </View>
-        </Fragment>
+        <View style={styles.container}>
+            <FlatList
+                data={users}
+                renderItem={renderAdminItem}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filterContainer}
+                keyExtractor={(item) => item.id}
+            />
+        </View>
     );
 };
 
@@ -133,4 +133,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default UserChatScreen;
+export default AdminChatScreen;

@@ -3,16 +3,15 @@ import React, { Fragment, useEffect } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { subscribeToUser } from '../../api/user-api';
 import { appColor } from '../../constants/appColor';
-import { logout, updateUsers } from '../../redux/actions/authAction';
+import { logout } from '../../redux/actions/authAction';
+import { convertToInternationalFormat } from '../../helpers/convertToInternationalFormat';
 
 const UserProfileScreen = ({ navigation }) => {
     const user = useSelector((state) => state.auth.userData);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // Thiết lập các tùy chọn điều hướng cho màn hình
         navigation.setOptions({
             headerShown: true,
             headerStyle: {
@@ -25,32 +24,7 @@ const UserProfileScreen = ({ navigation }) => {
             headerTitleAlign: 'center',
             headerTitle: () => <Text style={styles.headerTitle}>Thông tin cá nhân</Text>,
         });
-
-        // Đăng ký cập nhật dữ liệu người dùng
-        const unsubscribe = subscribeToUser((res) => {
-            if (res.error) {
-                console.error('Error1', res.error);
-            } else {
-                dispatch(
-                    updateUsers({
-                        ...res.data,
-                        emailVerified: res.emailVerified,
-                    }),
-                );
-            }
-        });
-        return () => unsubscribe();
     }, [dispatch, navigation]);
-
-    // Chuyển đổi số điện thoại sang định dạng quốc tế
-    const convertToInternationalFormat = (phoneNumber) => {
-        if (!phoneNumber) return '';
-        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-        if (cleaned.startsWith('0')) {
-            return '+84' + cleaned.slice(1);
-        }
-        return '+84' + cleaned;
-    };
 
     return (
         <Fragment>
@@ -68,12 +42,14 @@ const UserProfileScreen = ({ navigation }) => {
                             <View style={styles.containerInfo}>
                                 <Image
                                     source={{
-                                        uri: user.avatar || `https://ui-avatars.com/api/?name=${user.name}&size=128`,
+                                        uri:
+                                            user.imageURL ||
+                                            `https://ui-avatars.com/api/?name=${user.fullname}&size=128`,
                                     }}
                                     style={styles.avatar}
                                 />
                                 <View style={styles.detailName}>
-                                    <Text style={styles.titleName}>{user.name}</Text>
+                                    <Text style={styles.titleName}>{user.fullname}</Text>
                                     <Text style={styles.title}>{convertToInternationalFormat(user.phone)}</Text>
                                 </View>
                                 <ArrowRight2 size={20} style={styles.arrowIcon} />

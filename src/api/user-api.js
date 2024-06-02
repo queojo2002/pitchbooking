@@ -1,91 +1,60 @@
-import firestore, { doc } from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import { axiosApis } from '.';
 
-const db = firestore();
-
-export const loadAllUsers = (callback) => {
-    try {
-        return db
-            .collection('users')
-            .where('email', '!=', auth().currentUser.email)
-            .onSnapshot(
-                (snapshot) => {
-                    const userCollection = snapshot.docs.map((doc) => {
-                        return {
-                            id: doc.id,
-                            ...doc.data(),
-                        };
-                    });
-                    callback({ error: null, data: userCollection });
-                },
-                (error) => {
-                    callback({ error: error.message });
-                },
-            );
-    } catch (error) {
-        callback({ error: error.message });
-    }
-};
-
-/* 
-export const loadAllUsers = async () => {
-    try {
-        const snapshot = await db.collection('users').where('email', '!=', auth().currentUser.email).get();
-
-        const userCollection = snapshot.docs.map((doc) => {
-            return {
-                id: doc.id,
-                ...doc.data(),
-            };
-        });
-
-        return { error: null, data: userCollection };
-    } catch (error) {
-        return { error: error.message };
-    }
-}; */
+///////////////////////////////////////// API User /////////////////////////////////////////
 export const loadUser = async () => {
     try {
-        const currentUser = auth().currentUser;
-        if (!currentUser) {
-            throw new Error('Bạn chưa đang nhập vào hệ thống.');
+        const user = await axiosApis.get('/userApi.php');
+        if (user.status === 200 && user.data) {
+            return user.data;
+        } else {
+            throw new Error('Không thể lấy dữ liệu người dùng.');
         }
-        const snapshot = await db.collection('users').where('email', '==', currentUser.email).get();
-        if (snapshot.empty) {
-            throw new Error('Email của bạn không tồn tại trong hệ thống.');
-        }
-        return snapshot.docs[0].data();
     } catch (error) {
         throw new Error(error.message);
     }
 };
 
-export const subscribeToUser = (callback) => {
+export const updateUser = async (user) => {
     try {
-        const currentUser = auth().currentUser;
-        if (!currentUser) {
-            throw new Error('Bạn chưa đang nhập vào hệ thống.');
+        const userUpdate = await axiosApis.post('/userApi.php', user);
+        if (userUpdate.status === 200) {
+            if (userUpdate.data.status === 1) {
+                return userUpdate.data;
+            } else {
+                throw new Error(userUpdate.data.message);
+            }
+        } else {
+            throw new Error('Không thể cập nhật người dùng.');
         }
-        return db
-            .collection('users')
-            .where('email', '==', currentUser.email)
-            .onSnapshot(
-                (snapshot) => {
-                    if (snapshot.empty) {
-                        callback({ error: 'Email của bạn không tồn tại trong hệ thống.' });
-                    } else {
-                        callback({
-                            error: null,
-                            data: snapshot.docs[0].data(),
-                            emailVerified: currentUser.emailVerified,
-                        });
-                    }
-                },
-                (error) => {
-                    callback({ error: error.message });
-                },
-            );
     } catch (error) {
-        throw new Error('Bạn chưa đang nhập vào hệ thống.');
+        throw new Error(error.message);
+    }
+};
+
+export const loadInfoAdmin = async () => {
+    try {
+        const load = await axiosApis.get('/userApi.php?cmd=getAdmin');
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(userUpdate.data.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+///////////////////////////////////////// API ADMIN /////////////////////////////////////////
+
+export const loadAllUsers = async () => {
+    try {
+        const load = await axiosApis.get('/userApi.php?cmd=getUser');
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(userUpdate.data.message);
+        }
+    } catch (error) {
+        throw new Error(error);
     }
 };
