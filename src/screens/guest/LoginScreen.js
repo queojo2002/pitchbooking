@@ -40,7 +40,11 @@ export default LoginScreen = ({ navigation }) => {
                 setAccessToken({ accessToken: login.data.accessToken, refreshToken: login.data.refreshToken }),
             );
             const user = await loadUser();
-            await dispatch(loginSuccess(user.data));
+            if (user.status === 1) {
+                await dispatch(loginSuccess(user.data));
+            } else {
+                setErrorLogin(user.message);
+            }
         } catch (error) {
             setErrorLogin(error.message);
         }

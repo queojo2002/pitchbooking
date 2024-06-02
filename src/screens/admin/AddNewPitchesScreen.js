@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { Button, Text, TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { appColor } from '../../constants/appColor';
 import Slides from '../../components/Slides';
 import { Pitches } from '../../model/Pitches';
+import { adminAddNewPitches } from '../../api/pitch-api';
 
 export default function AddNewPitchesScreen({ navigation }) {
     const [name, setName] = useState('');
@@ -16,7 +16,7 @@ export default function AddNewPitchesScreen({ navigation }) {
     const [pitchType, setPitchType] = useState('');
     const [status, setStatus] = useState('');
     const [imageUri, setImageUri] = useState(null);
-    const user = useSelector(state => state.auth.userData);
+    const user = useSelector((state) => state.auth.userData);
 
     useEffect(() => {
         navigation.setOptions({
@@ -30,16 +30,24 @@ export default function AddNewPitchesScreen({ navigation }) {
             },
             headerTitle: () => {
                 return (
-                    <View style={{ height: 30, justifyContent: "center", alignItems: "center", alignSelf: "center", alignContent: "center" }}>
-                        <Text style={{ fontSize: 20, color: "white" }}>Thêm sân bóng</Text>
+                    <View
+                        style={{
+                            height: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
+                        <Text style={{ fontSize: 20, color: 'white' }}>Thêm sân bóng</Text>
                     </View>
                 );
             },
-        })
+        });
     }, []);
 
     const selectImage = () => {
-        launchImageLibrary({ mediaType: 'photo' }, response => {
+        launchImageLibrary({ mediaType: 'photo' }, (response) => {
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
@@ -74,84 +82,73 @@ export default function AddNewPitchesScreen({ navigation }) {
         }
         const imageURL = await uploadImage();
         if (imageURL) {
-            const newPitch = new Pitches(name, price, pitchType, status, imageURL, user.email, firestore.FieldValue.serverTimestamp(), firestore.FieldValue.serverTimestamp());
-
-            firestore()
-                .collection('pitches')
-                .add(newPitch.toObject())
-                .then(() => {
+            try {
+                const response = await adminAddNewPitches({
+                    name,
+                    type: pitchType,
+                    price,
+                    imageURL,
+                    status,
+                });
+                if (response.status === 1) {
                     Alert.alert('Thành công', 'Sân đã được thêm thành công');
                     setName('');
                     setPrice('');
                     setPitchType('');
                     setStatus('');
                     setImageUri(null);
-                })
-                .catch((error) => {
-                    Alert.alert('Error', error.message);
-                });
+                } else {
+                    Alert.alert('Error', response.message);
+                }
+            } catch (error) {
+                Alert.alert('Error', error.message);
+            }
         }
     };
 
     return (
         <View style={styles.container}>
             <ScrollView>
-              <View style={{marginBottom: 10}}>
-                <Slides />
-            </View>
-            <TextInput
-                mode="outlined"
-                label="Tên sân"
-                value={name}
-                onChangeText={setName}
-                style={styles.input}
-            />
-            <TextInput
-                mode="outlined"
-                label="Giá sân / 1 tiếng"
-                value={price}
-                onChangeText={setPrice}
-                keyboardType="numeric"
-                style={styles.input}
-            />
-           <Picker
-                selectedValue={pitchType}
-                onValueChange={(itemValue) => setPitchType(itemValue)}
-                style={styles.select}
-                mode="dropdown"
-            >
-                <Picker.Item label="Chọn loại sân" value="" />
-                <Picker.Item label="Sân 5" value="1" />
-                <Picker.Item label="Sân 7" value="2" />
-            </Picker>
-            
-            <Picker
-                selectedValue={status}
-                onValueChange={(itemValue) => setStatus(itemValue)}
-                style={styles.select}
-                mode="dropdown"
-            >
-                <Picker.Item label="Tình trạng" value="" />
-                <Picker.Item label="Sân đang mở" value="1" />
-                <Picker.Item label="Sân đang đóng" value="2" />
-            </Picker>
-            <Button
-                mode="contained"
-                icon="camera"
-                onPress={selectImage}
-                style={styles.button}
-            >
-                Chọn ảnh
-            </Button>
-            {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-            <Button
-                mode="contained"
-                onPress={addPitch}
-                style={styles.button_add}
-            >
-                Thêm sân bóng
-            </Button>
-      
+                <View style={{ marginBottom: 10 }}>
+                    <Slides />
+                </View>
+                <TextInput mode="outlined" label="Tên sân" value={name} onChangeText={setName} style={styles.input} />
+                <TextInput
+                    mode="outlined"
+                    label="Giá sân / 1 tiếng"
+                    value={price}
+                    onChangeText={setPrice}
+                    keyboardType="numeric"
+                    style={styles.input}
+                />
+                <Picker
+                    selectedValue={pitchType}
+                    onValueChange={(itemValue) => setPitchType(itemValue)}
+                    style={styles.select}
+                    mode="dropdown"
+                >
+                    <Picker.Item label="Chọn loại sân" value="" />
+                    <Picker.Item label="Sân 5" value="1" />
+                    <Picker.Item label="Sân 7" value="2" />
+                </Picker>
+
+                <Picker
+                    selectedValue={status}
+                    onValueChange={(itemValue) => setStatus(itemValue)}
+                    style={styles.select}
+                    mode="dropdown"
+                >
+                    <Picker.Item label="Tình trạng" value="" />
+                    <Picker.Item label="Sân đang mở" value="1" />
+                    <Picker.Item label="Sân đang đóng" value="2" />
+                </Picker>
+                <Button mode="contained" icon="camera" onPress={selectImage} style={styles.button}>
+                    Chọn ảnh
+                </Button>
+                {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
+                <Button mode="contained" onPress={addPitch} style={styles.button_add}>
+                    Thêm sân bóng
+                </Button>
             </ScrollView>
         </View>
     );
@@ -175,9 +172,8 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     button_add: {
-        backgroundColor: "#006769",
-        marginBottom: 30
-
+        backgroundColor: '#006769',
+        marginBottom: 30,
     },
     image: {
         width: 100,
@@ -186,11 +182,11 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         alignSelf: 'center',
     },
-    select:{
+    select: {
         height: 50,
         borderColor: 'gray',
         backgroundColor: '#DCF2F1',
         borderWidth: 1,
         marginBottom: 10,
-    }
+    },
 });

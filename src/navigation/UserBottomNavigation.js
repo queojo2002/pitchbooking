@@ -3,8 +3,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {
     UserHistoryScreen,
     UserHomeScreen,
+    UserProfileScreen,
     UserChatScreen,
-    UserProfileScreen
 } from '../screens';
 
 const Tab = createBottomTabNavigator();
@@ -59,17 +59,16 @@ export default function UserBottomNavigation({ navigation }) {
                     ),
                 }}
             />
-             <Tab.Screen
+                <Tab.Screen
                 name="UserChatScreen"
                 component={UserChatScreen}
                 options={{
-                    tabBarLabel: 'Nhắn tin',
+                    tabBarLabel: 'Chat',
                     tabBarIcon: ({ color }) => (
                         <MaterialCommunityIcons name="chat" color={color} size={26} />
                     ),
                 }}
             />
-
             <Tab.Screen
                 name="UserProfileScreen"
                 component={UserProfileScreen}

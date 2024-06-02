@@ -1,9 +1,6 @@
-import firestore, { doc } from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import { axiosApis } from '.';
 
-const db = firestore();
-
+///////////////////////////////////////// API User /////////////////////////////////////////
 export const loadUser = async () => {
     try {
         const user = await axiosApis.get('/userApi.php');
@@ -33,56 +30,31 @@ export const updateUser = async (user) => {
         throw new Error(error.message);
     }
 };
-export const loadAllUsers = (callback) => {
+
+export const loadInfoAdmin = async () => {
     try {
-        return db
-            .collection('users')
-            .where('email', '!=', auth().currentUser.email)
-            .onSnapshot(
-                (snapshot) => {
-                    const userCollection = snapshot.docs.map((doc) => {
-                        return {
-                            id: doc.id,
-                            ...doc.data(),
-                        };
-                    });
-                    callback({ error: null, data: userCollection });
-                },
-                (error) => {
-                    callback({ error: error.message });
-                },
-            );
+        const load = await axiosApis.get('/userApi.php?cmd=getAdmin');
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(userUpdate.data.message);
+        }
     } catch (error) {
-        callback({ error: error.message });
+        throw new Error(error);
     }
 };
 
-export const subscribeToUser = (callback) => {
+///////////////////////////////////////// API ADMIN /////////////////////////////////////////
+
+export const loadAllUsers = async () => {
     try {
-        const currentUser = auth().currentUser;
-        if (!currentUser) {
-            throw new Error('Bạn chưa đang nhập vào hệ thống.');
+        const load = await axiosApis.get('/userApi.php?cmd=getUser');
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(userUpdate.data.message);
         }
-        return db
-            .collection('users')
-            .where('email', '==', currentUser.email)
-            .onSnapshot(
-                (snapshot) => {
-                    if (snapshot.empty) {
-                        callback({ error: 'Email của bạn không tồn tại trong hệ thống.' });
-                    } else {
-                        callback({
-                            error: null,
-                            data: snapshot.docs[0].data(),
-                            emailVerified: currentUser.emailVerified,
-                        });
-                    }
-                },
-                (error) => {
-                    callback({ error: error.message });
-                },
-            );
     } catch (error) {
-        throw new Error('Bạn chưa đang nhập vào hệ thống.');
+        throw new Error(error);
     }
 };

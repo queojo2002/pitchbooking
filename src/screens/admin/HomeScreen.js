@@ -1,11 +1,13 @@
 import firestore from '@react-native-firebase/firestore';
-import React, { useEffect, useState, useCallback, Fragment } from 'react';
-import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Appbar, Menu, IconButton } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Menu } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/actions/authAction';
+import { formatPriceToVND } from '../../helpers/formatPriceToVND';
+import { adminLoadAllPitches } from '../../api/pitch-api';
 
 export default function HomeScreen({ navigation }) {
     const [pitches, setPitches] = useState([]);
@@ -13,13 +15,27 @@ export default function HomeScreen({ navigation }) {
     const user = useSelector((state) => state.auth.userData);
     const dispatch = useDispatch();
 
-    const formatPriceToVND = (price) => {
-        return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-    };
-
     const onLogoutPressed = async () => {
         await dispatch(logout());
     };
+
+    const loadPitches = async () => {
+        try {
+            const pitchesData = await adminLoadAllPitches();
+            if (pitchesData.status === 1) {
+                setPitches(pitchesData.data);
+            } else {
+                throw new Error(pitchesData.message);
+            }
+        } catch (error) {
+            console.log(error, 1);
+        }
+    };
+    useFocusEffect(
+        useCallback(() => {
+            loadPitches();
+        }, []),
+    );
 
     useEffect(() => {
         navigation.setOptions({
@@ -68,25 +84,6 @@ export default function HomeScreen({ navigation }) {
         });
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            const unsubscribe = firestore()
-                .collection('pitches')
-                .onSnapshot((querySnapshot) => {
-                    const pitchesList = [];
-                    querySnapshot.forEach((documentSnapshot) => {
-                        pitchesList.push({
-                            ...documentSnapshot.data(),
-                            key: documentSnapshot.id,
-                        });
-                    });
-                    setPitches(pitchesList);
-                });
-
-            return () => unsubscribe();
-        }, []),
-    );
-
     const navigateToAddNewPitches = () => {
         setMenuVisible(false);
         navigation.navigate('AddNewPitchesScreen');
@@ -96,7 +93,7 @@ export default function HomeScreen({ navigation }) {
         <TouchableOpacity
             style={styles.pitchItem}
             onPress={() => {
-                navigation.navigate('PitchesDetailScreen', { pitchId: item.key });
+                navigation.navigate('PitchesDetailScreen', { pitchId: item.id });
             }}
         >
             <Image src={item.imageURL} style={styles.image}></Image>
@@ -124,7 +121,7 @@ export default function HomeScreen({ navigation }) {
                 <FlatList
                     style={{ flex: 1 }}
                     data={pitches}
-                    keyExtractor={(item) => item.key}
+                    keyExtractor={(item) => item.id}
                     renderItem={renderItem}
                     contentContainerStyle={styles.flatListContainer}
                     showsVerticalScrollIndicator={false}

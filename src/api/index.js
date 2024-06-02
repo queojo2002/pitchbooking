@@ -4,14 +4,14 @@ import { store } from '../redux/store';
 import { loadUser } from './user-api';
 
 export const axiosAuth = axios.create({
-    baseURL: 'http://192.168.1.56:80/pitchesbookingBE',
+    baseURL: 'https://vanduc.top/pitchesBookingApi',
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
 const axiosApis = axios.create({
-    baseURL: 'http://192.168.1.56:80/pitchesbookingBE',
+    baseURL: 'https://vanduc.top/pitchesBookingApi/',
     headers: {
         'Content-Type': 'application/json',
     },
