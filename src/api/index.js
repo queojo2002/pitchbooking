@@ -11,7 +11,7 @@ export const axiosAuth = axios.create({
 });
 
 const axiosApis = axios.create({
-    baseURL: 'https://vanduc.top/pitchesBookingApi/',
+    baseURL: 'https://vanduc.top/pitchesBookingApi',
     headers: {
         'Content-Type': 'application/json',
     },

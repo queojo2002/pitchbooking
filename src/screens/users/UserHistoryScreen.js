@@ -17,7 +17,7 @@ import { useSelector } from 'react-redux';
 import { loadPitchesBookingByEmail } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
 import { formatDateToVND } from '../../helpers/formatDateToVND';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const windowWidth = Dimensions.get('window').width;
 const itemWidth = windowWidth / 3;
 
@@ -129,78 +129,63 @@ export default UserHistoryScreen = ({ navigation }) => {
                 />
             </View>
 
-            <View style={{ flex: 1, backgroundColor: '#F3F3F3', paddingLeft: 5, marginBottom: 50, marginTop: 10 }}>
-                {/* <View
-                    style={{
-                        width: '100%',
-                        height: 60,
-                        justifyContent: 'center',
-                        paddingLeft: 5,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                >
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                        }}
-                    >
-                        <TouchableOpacity
-                            style={{
-                                flexDirection: 'row',
-                                backgroundColor: '#B3B3B3',
-                                width: '100%',
-                                height: 40,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                borderRadius: 15,
-                                color: '#000000',
-                            }}
-                            onPress={() => {
-                                setVisible(true);
-                            }}
-                        >
-                            <Text
-                                style={{
-                                    marginRight: 4,
-                                }}
-                            >
-                                Tìm theo sân
-                            </Text>
-                            <ArrowDown size={18} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                </View> */}
+            <View>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {bookingData.length > 0 ? (
                         bookingData.map((booking, index) => (
                             <View key={index} style={styles.bookingItem}>
                                 <Image
                                     source={{ uri: booking.imageURL }}
-                                    style={{ width: 80, height: 80, borderRadius: 5, backgroundColor: 'red' }}
+                                    style={{
+                                        width: 100,
+                                        height: 100,
+                                        borderRadius: 10,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
                                 />
                                 <View style={{ marginLeft: 10 }}>
-                                    <Text style={styles.labelBold}>Tên sân:</Text>
-                                    <Text style={styles.label}>{booking.name}</Text>
-                                    <Text style={styles.labelBold}>Ngày đặt:</Text>
-                                    <Text style={styles.label}>{formatDateToVND(booking.timeCreate * 1000)}</Text>
-                                    <Text style={styles.labelBold}>Trạng thái:</Text>
-                                    <Text
-                                        style={{
-                                            ...styles.label,
-                                            color: {
-                                                0: 'blue',
-                                                1: 'green',
-                                                2: 'red',
-                                            }[booking.status],
-                                        }}
-                                    >
-                                        {booking.status === 0
-                                            ? 'Chờ xác nhận'
-                                            : booking.status === 1
-                                            ? 'Đặt thành công'
-                                            : 'Đã hủy'}
-                                    </Text>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons name="soccer-field" size={20} style={styles.icon} />
+                                        <Text style={styles.labelBold}>Tên sân:</Text>
+                                        <Text style={styles.label}>{booking.name}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons name="calendar" size={20} style={styles.icon} />
+                                        <Text style={styles.labelBold}>Ngày đặt:</Text>
+                                    </View>
+                                    <Text style={{paddingLeft: 10, paddingBottom: 5}}>{formatDateToVND(booking.timeCreate * 1000)}</Text>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons
+                                            name="check-circle"
+                                            size={20}
+                                            style={{
+                                                ...styles.icon,
+                                                color: {
+                                                    0: 'blue',
+                                                    1: 'green',
+                                                    2: 'red',
+                                                }[booking.status],
+                                            }}
+                                        />
+                                        <Text style={styles.labelBold}>Trạng thái:</Text>
+                                        <Text
+                                            style={{
+                                                ...styles.label,
+                                                color: {
+                                                    0: 'blue',
+                                                    1: 'green',
+                                                    2: 'red',
+                                                }[booking.status],
+                                            }}
+                                        >
+                                            {booking.status === 0
+                                                ? 'Chờ xác nhận'
+                                                : booking.status === 1
+                                                ? 'Đặt thành công'
+                                                : 'Đã hủy'}
+                                        </Text>
+                                    </View>
                                 </View>
                                 <TouchableOpacity
                                     style={{
@@ -222,30 +207,27 @@ export default UserHistoryScreen = ({ navigation }) => {
 
             {selectedBooking && (
                 <Modal
-                    animationType="slide"
-                    transparent={true}
                     visible={modalVisible}
-                    onRequestClose={() => setModalVisible(false)}
+                    onDismiss={() => setModalVisible(false)}
+                    contentContainerStyle={styles.modalContainer}
                 >
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Chi tiết đặt sân</Text>
-                            <Text style={styles.labelBold}>Trạng thái: </Text>
-                            <Text style={styles.label}>
-                                {selectedBooking.status === 0
-                                    ? 'Chờ xác nhận'
-                                    : selectedBooking.status === 1
-                                    ? 'Đã đặt'
-                                    : 'Đã hủy'}
-                            </Text>
-                            <Text style={styles.labelBold}>Thời gian bắt đầu:</Text>
-                            <Text style={styles.label}> {formatDateToVND(selectedBooking.timeStart)} </Text>
-                            <Text style={styles.labelBold}>Thời gian kết thúc:</Text>
-                            <Text style={styles.label}> {formatDateToVND(selectedBooking.timeEnd)}</Text>
-                            <Text style={styles.labelBold}>Người đặt</Text>
-                            <Text style={styles.label}> {selectedBooking.email}</Text>
-                            <Button title="Close" onPress={() => setModalVisible(false)} />
-                        </View>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Chi tiết đặt sân</Text>
+                        <Text style={styles.labelBold}>Trạng thái: </Text>
+                        <Text style={styles.label}>
+                            {selectedBooking.status === 0
+                                ? 'Chờ xác nhận'
+                                : selectedBooking.status === 1
+                                ? 'Đã đặt'
+                                : 'Đã hủy'}
+                        </Text>
+                        <Text style={styles.labelBold}>Thời gian bắt đầu:</Text>
+                        <Text style={styles.label}> {formatDateToVND(selectedBooking.timeStart * 1000)} </Text>
+                        <Text style={styles.labelBold}>Thời gian kết thúc:</Text>
+                        <Text style={styles.label}> {formatDateToVND(selectedBooking.timeEnd * 1000)}</Text>
+                        <Text style={styles.labelBold}>Người đặt</Text>
+                        <Text style={styles.label}> {selectedBooking.email}</Text>
+                        <Button title="Close" onPress={() => setModalVisible(false)} />
                     </View>
                 </Modal>
             )}
@@ -254,7 +236,6 @@ export default UserHistoryScreen = ({ navigation }) => {
                 <Modal
                     visible={visible}
                     onDismiss={hideModal}
-                    title="Example Modal"
                     contentContainerStyle={{
                         backgroundColor: 'white',
                         padding: 20,
@@ -369,21 +350,28 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     bookingItem: {
+        margin: 7,
         flexDirection: 'row',
         alignItems: 'left',
-        padding: 5,
-        marginBottom: 10,
-        backgroundColor: '#f0f0f0',
-        borderRadius: 5,
+        padding: 10,
+        marginBottom: 5,
+        backgroundColor: '#fefefe',
+        borderRadius: 15,
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     labelBold: {
         fontWeight: 'bold',
         marginRight: 5,
     },
-    label: {
-        marginBottom: 5,
-    },
     link: {
+        marginTop: 10,
         color: 'blue',
         textDecorationLine: 'underline',
         marginRight: 15,
@@ -413,5 +401,14 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    icon: {
+        marginRight: 5,
+        color: 'green'
     },
 });
