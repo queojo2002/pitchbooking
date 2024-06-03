@@ -18,6 +18,7 @@ export default function UpdatePitchesScreen({ route, navigation }) {
     const [imageUri, setImageUri] = useState(null);
     const [initialImageUri, setInitialImageUri] = useState(null);
     const user = useSelector((state) => state.auth.userData);
+    const [updating, setUpdating] = useState(false);
 
     useEffect(() => {
         navigation.setOptions({
@@ -95,8 +96,10 @@ export default function UpdatePitchesScreen({ route, navigation }) {
     };
 
     const updatePitch = async () => {
+        setUpdating(true);
         if (name === '' || price === '' || pitchType === '' || status === '' || !imageUri) {
             Alert.alert('Lỗi', 'Vui lòng điền vào tất cả các ô và chọn một hình ảnh');
+            setUpdating(false);
             return;
         }
 
@@ -121,13 +124,14 @@ export default function UpdatePitchesScreen({ route, navigation }) {
                 Alert.alert('Error', error.message);
             }
         }
+        setUpdating(false);
     };
     return (
         <View style={styles.container}>
             <ScrollView>
-                <View style={{ marginBottom: 10 }}>
+                {/* <View style={{ marginBottom: 10 }}>
                     <Slides />
-                </View>
+                </View> */}
                 <TextInput mode="outlined" label="Tên sân" value={name} onChangeText={setName} style={styles.input} />
                 <TextInput
                     mode="outlined"
@@ -159,14 +163,14 @@ export default function UpdatePitchesScreen({ route, navigation }) {
                     <Picker.Item label="Sân đang mở" value="0" />
                     <Picker.Item label="Sân đang đóng" value="1" />
                 </Picker>
-                <Button mode="contained" icon="camera" onPress={selectImage} style={styles.button}>
-                    Chọn ảnh
-                </Button>
                 {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-                <Button mode="contained" onPress={updatePitch} style={styles.button_add}>
-                    Cập nhật sân bóng
-                </Button>
             </ScrollView>
+            <Button mode="contained" icon="camera" onPress={selectImage} style={styles.button}>
+                Chọn ảnh mới
+            </Button>
+            <Button mode="contained" onPress={updatePitch} style={styles.button_add} disabled={updating}>
+                {updating ? 'Đang cập nhật...' : 'Cập nhật sân bóng'}
+            </Button>
         </View>
     );
 }
@@ -190,13 +194,13 @@ const styles = StyleSheet.create({
     },
     button_add: {
         backgroundColor: '#006769',
-        marginBottom: 30,
     },
     image: {
-        width: 100,
-        height: 100,
+        width: '100%',
+        height: 200,
         marginTop: 10,
         marginBottom: 20,
+        borderRadius: 10,
         alignSelf: 'center',
     },
     select: {

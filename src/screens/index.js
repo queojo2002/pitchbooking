@@ -19,7 +19,6 @@ import UserNotificationScreen from './users/UserNotificationScreen';
 import UserProfileEditScreen from './users/UserProfileEditScreen';
 import UserProfileScreen from './users/UserProfileScreen';
 import UserTermsAndConditionsScreen from './users/UserTermsAndConditionsScreen';
-
 export {
     AddNewPitchesScreen,
     AdminChatScreen,
