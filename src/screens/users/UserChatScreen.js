@@ -1,11 +1,13 @@
+import { CloseSquare, SearchNormal1 } from 'iconsax-react-native';
 import React, { Fragment, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View,TextInput } from 'react-native';
 import { loadInfoAdmin } from '../../api/user-api';
 import { appColor } from '../../constants/appColor';
 const UserChatScreen = ({ navigation }) => {
+    
     const [admins, setAdmins] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [searchText, setSearchText] = useState('');
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
@@ -55,8 +57,8 @@ const UserChatScreen = ({ navigation }) => {
             <View style={styles.contentContainer}>
                 <Image source={{ uri: item.imageURL }} style={styles.avatar} />
                 <View style={styles.textContainer}>
-                    <Text style={styles.adminName}>Tên: {item.fullname}</Text>
-                    <Text style={styles.phoneNumber}>Số điện thoại {item.phone}</Text>
+                    <Text style={styles.adminName}>{item.fullname}</Text>
+                    <Text>Bạn: Hiện tin nhắn mới nhất : 7:30</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -73,6 +75,21 @@ const UserChatScreen = ({ navigation }) => {
     return (
         <Fragment>
             <View style={styles.container}>
+                <View style={styles.searchContainer}>
+                    <SearchNormal1 name="search" size={20} color="#C8C8C8" style={styles.searchIcon} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Tìm kiếm ..."
+                        placeholderTextColor="gray"
+                        value={searchText}
+                        onChangeText={setSearchText}
+                    />
+                    {searchText.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearchText('')} style={styles.clearButton}>
+                            <CloseSquare name="close" size={20} color="black" />
+                        </TouchableOpacity>
+                    )}
+                </View>
                 <FlatList
                     data={admins}
                     renderItem={renderAdminItem}
@@ -87,22 +104,44 @@ const UserChatScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: '#ffff',
         alignItems: 'left',
     },
-    filterContainer: {
-        backgroundColor: '#FEFAF6',
-        width: '100%',
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 10,
-        shadowColor: '#000000',
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FCFCFC',
+        borderWidth: 1,
+        borderColor: '#FCFCFC',
+        borderRadius: 15,
+        shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        paddingHorizontal: 5,
+        height: 40,
+        margin: 10,
+    },
+    searchIcon: {
+        marginRight: 10,
+    },
+    input: {
+        flex: 1,
+        color: 'black',
+        fontWeight: 'bold',
+        paddingVertical: 0,
+    },
+    filterContainer: {
+        backgroundColor: '#ffff',
+        width: '100%',
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 10,
     },
     adminItem: {
         width: '100%',
@@ -113,13 +152,13 @@ const styles = StyleSheet.create({
     contentContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 10,
+        marginTop: 10,
     },
     avatar: {
-        width: 80,
-        height: 80,
+        width: 60,
+        height: 60,
         marginRight: 10,
-        borderRadius: 20,
+        borderRadius: 50,
     },
     textContainer: {
         flexDirection: 'column',
@@ -131,6 +170,7 @@ const styles = StyleSheet.create({
     phoneNumber: {
         fontSize: 16,
     },
+    
 });
 
 export default UserChatScreen;

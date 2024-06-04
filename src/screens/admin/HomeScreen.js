@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/actions/authAction';
 import { formatPriceToVND } from '../../helpers/formatPriceToVND';
 import { adminLoadAllPitches } from '../../api/pitch-api';
+import { Swipeable } from 'react-native-gesture-handler';
 
 export default function HomeScreen({ navigation }) {
     const [pitches, setPitches] = useState([]);
@@ -90,16 +91,48 @@ export default function HomeScreen({ navigation }) {
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity
-            style={styles.pitchItem}
-            onPress={() => {
-                navigation.navigate('PitchesDetailScreen', { pitchId: item.id });
-            }}
-        >
-            <Image src={item.imageURL} style={styles.image}></Image>
-            <Text style={styles.pitchName}>{item.name}</Text>
-            <Text style={styles.pitchPrice}>{formatPriceToVND(parseFloat(item.price))}</Text>
-        </TouchableOpacity>
+        <Swipeable renderRightActions={() => renderRightActions(item)}>
+            <TouchableOpacity onPress={() => navigation.navigate('PitchesDetailScreen', { pitchId: item.id })}>
+                <View style={styles.pitchItem}>
+                    <Image source={{ uri: item.imageURL }} style={styles.image} />
+                    <View style={styles.detail}>
+                        <Text style={styles.pitchName}>{item.name}</Text>
+                        <Text>
+                            Loại sân:
+                            {item.type == 0 ? (
+                                <Text> Sân 5</Text>
+                            ) : item.type == 1 ? (
+                                <Text> Sân 7</Text>
+                            ) : item.type == 2 ? (
+                                <Text> Sân 11</Text>
+                            ) : (
+                                <Text style={{ color: 'green' }}>Liên hệ chủ sân để biết thêm chi tiết</Text>
+                            )}
+                        </Text>
+                        <Text style={styles.pitchPrice}>{formatPriceToVND(parseFloat(item.price))}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        </Swipeable>
+    );
+
+    const renderRightActions = (item) => (
+        <View style={styles.rightActionsContainer}>
+            <TouchableOpacity
+                style={[styles.rightAction, styles.editAction]}
+                onPress={() => navigation.navigate('UpdatePitchesScreen', { pitchId: item.id })}
+            >
+                <Icon name="edit" size={20} color="white" />
+                <Text style={styles.actionText}>Sửa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.rightAction, styles.deleteAction]}
+                onPress={() => console.log('Delete pitch')}
+            >
+                <Icon name="delete" size={20} color="white" />
+                <Text style={styles.actionText}>Xóa</Text>
+            </TouchableOpacity>
+        </View>
     );
 
     return (
@@ -159,17 +192,38 @@ const styles = StyleSheet.create({
     },
     pitchItem: {
         backgroundColor: '#fff',
-        padding: 15,
+        paddingVertical: 10,
+        paddingStart: 20,
+        paddingHorizontal: 110,
         marginVertical: 5,
+        marginHorizontal: 15,
         borderRadius: 5,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         elevation: 1,
+        borderRadius: 15,
+    },
+    detail: {
+        marginLeft: 30,
+    },
+    control: {
+        marginLeft: 10,
+    },
+    controlButton: {
+        alignItems: 'center',
+        padding: 2,
+        margin: 2,
+        backgroundColor: '#f7f7fa',
+        borderRadius: 5,
+        flexDirection: 'row',
+    },
+    controlButtonText: {
+        marginLeft: 5,
+        fontSize: 14,
+        color: '#666',
     },
     pitchName: {
-        position: 'absolute',
-        left: 120,
         fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
@@ -177,15 +231,39 @@ const styles = StyleSheet.create({
     pitchPrice: {
         fontSize: 16,
         color: '#666',
+        marginTop: 5,
     },
     addButton: {
         marginRight: 10,
     },
     image: {
-        width: 100,
-        height: 50,
+        width: 80,
+        height: 70,
+        borderRadius: 15,
     },
     flatListContainer: {
         paddingBottom: 70,
     },
+    rightActionsContainer: {
+        flexDirection: 'row',
+    },
+    rightAction: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        marginVertical: 7,
+        borderRadius: 5,
+        flexDirection: 'column',
+        marginRight: 10,
+    },
+    editAction: {
+        backgroundColor: '#2196F3',
+    },
+    deleteAction: {
+        backgroundColor: '#F44336',
+    },
+    actionText: {
+        color: 'white',
+    },
 });
+

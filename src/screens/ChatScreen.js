@@ -1,7 +1,9 @@
 import firestore from '@react-native-firebase/firestore';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, Send } from 'react-native-gifted-chat';
 import { useSelector } from 'react-redux';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { View, StyleSheet } from 'react-native';
 import { appColor } from '../constants/appColor';
 
 const ChatScreen = ({ navigation, route }) => {
@@ -59,15 +61,45 @@ const ChatScreen = ({ navigation, route }) => {
                         (msg) =>
                             (msg.user._id === user.email && msg.recipient === item.email) ||
                             (msg.user._id === item.email && msg.recipient === user.email),
-
-                        // dòng này có nghĩa là:
-                        // chỉ lấy các tin nhận có người gửi là user hiện tại và người nhận là item.email
-                        // hoặc ngược lại, người gửi là item.email và người nhận là user hiện tại
                     );
                 setMessages(list);
             });
         return () => unsubscribe();
     }, [item.email, user.email]);
+
+    const renderBubble = (props) => {
+        return (
+            <Bubble
+                {...props}
+                wrapperStyle={{
+                    right: {
+                        backgroundColor: '#0000FF', // Màu nền của tin nhắn bên phải
+                    },
+                    left: {
+                        backgroundColor: '#cccccc', // Màu nền của tin nhắn bên trái
+                    },
+                }}
+                textStyle={{
+                    right: {
+                        color: '#fff', // Màu chữ của tin nhắn bên phải
+                    },
+                    left: {
+                        color: '#000', // Màu chữ của tin nhắn bên trái
+                    },
+                }}
+            />
+        );
+    };
+
+    const renderSend = (props) => {
+        return (
+            <Send {...props}>
+                <View style={styles.sendingContainer}>
+                    <MaterialCommunityIcons name="send-circle" size={32} color="#0000FF" />
+                </View>
+            </Send>
+        );
+    };
 
     return (
         <GiftedChat
@@ -78,8 +110,27 @@ const ChatScreen = ({ navigation, route }) => {
                 name: user.fullname,
                 avatar: user.imageURL,
             }}
+            renderBubble={renderBubble}
+            renderSend={renderSend}
+            placeholder="Nhập tin nhắn..."
+            alwaysShowSend
+            renderAvatarOnTop
+            containerStyle={styles.chatContainer}
         />
     );
 };
+
+const styles = StyleSheet.create({
+    chatContainer: {
+        backgroundColor: '#F0F0F0', 
+        backgrou: 'green',
+    },
+    sendingContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+        marginBottom: 5,
+    },
+});
 
 export default ChatScreen;
