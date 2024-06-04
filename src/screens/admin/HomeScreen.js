@@ -9,6 +9,8 @@ import { logout } from '../../redux/actions/authAction';
 import { formatPriceToVND } from '../../helpers/formatPriceToVND';
 import { adminLoadAllPitches } from '../../api/pitch-api';
 import { Swipeable } from 'react-native-gesture-handler';
+import { ArchiveAdd } from 'iconsax-react-native';
+import { appColor } from '../../constants/appColor';
 
 export default function HomeScreen({ navigation }) {
     const [pitches, setPitches] = useState([]);
@@ -19,12 +21,14 @@ export default function HomeScreen({ navigation }) {
     const onLogoutPressed = async () => {
         await dispatch(logout());
     };
+
     const handleDelete = () => {
         Alert.alert('Xóa sân', 'Bạn có chắc muốn xóa sân này không ?', [
             { text: 'Hủy', style: 'cancel' },
-            { text: 'Xóa', onPress: Alert.alert('Thông báo', 'Tính năng đang phát triển') },
+            { text: 'Xóa', onPress: () => Alert.alert('Thông báo', 'Tính năng đang phát triển') },
         ]);
     };
+
     const loadPitches = async () => {
         try {
             const pitchesData = await adminLoadAllPitches();
@@ -37,6 +41,7 @@ export default function HomeScreen({ navigation }) {
             console.log(error, 1);
         }
     };
+
     useFocusEffect(
         useCallback(() => {
             loadPitches();
@@ -46,49 +51,34 @@ export default function HomeScreen({ navigation }) {
     useEffect(() => {
         navigation.setOptions({
             headerStyle: {
-                backgroundColor: '#090210',
+                backgroundColor: appColor.blackblue,
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#FFF',
             headerTitleStyle: {
                 fontWeight: 'bold',
             },
             headerRight: () => (
-                <View>
-                    <TouchableOpacity
-                        onPress={() => {
-                            Alert.alert('Xác nhận hành động', 'Bạn có chắc chắn muốn đăng xuất?', [
-                                {
-                                    text: 'Hủy bỏ',
-                                    onPress: () => console.log('No Pressed'),
-                                    style: 'cancel',
-                                },
-                                {
-                                    text: 'Xác nhận',
-                                    onPress: () => {
-                                        onLogoutPressed();
-                                    },
-                                },
-                            ]);
-                        }}
-                    >
-                        <Icon name="logout" size={30} color="#fff" style={{ marginRight: 15 }} />
-                    </TouchableOpacity>
-                </View>
-            ),
-            headerTitle: () => (
-                <View
-                    style={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        alignSelf: 'center',
-                        alignContent: 'center',
+                <TouchableOpacity
+                    onPress={() => {
+                        Alert.alert('Xác nhận hành động', 'Bạn có chắc chắn muốn đăng xuất?', [
+                            { text: 'Hủy bỏ', style: 'cancel' },
+                            {
+                                text: 'Xác nhận',
+                                onPress: onLogoutPressed,
+                            },
+                        ]);
                     }}
                 >
-                    <Text style={{ fontSize: 16, color: 'white' }}>{user.name}</Text>
+                    <Icon name="logout" size={24} color="#FFF" style={{ marginRight: 15 }} />
+                </TouchableOpacity>
+            ),
+            headerTitle: () => (
+                <View style={styles.headerTitleContainer}>
+                    <Text style={styles.headerTitle}>{user.fullname}</Text>
                 </View>
             ),
         });
-    }, []);
+    }, [navigation]);
 
     const navigateToAddNewPitches = () => {
         setMenuVisible(false);
@@ -102,17 +92,15 @@ export default function HomeScreen({ navigation }) {
                     <Image source={{ uri: item.imageURL }} style={styles.image} />
                     <View style={styles.detail}>
                         <Text style={styles.pitchName}>{item.name}</Text>
-                        <Text>
-                            Loại sân:
-                            {item.type == 0 ? (
-                                <Text> Sân 5</Text>
-                            ) : item.type == 1 ? (
-                                <Text> Sân 7</Text>
-                            ) : item.type == 2 ? (
-                                <Text> Sân 11</Text>
-                            ) : (
-                                <Text style={{ color: 'green' }}>Liên hệ chủ sân để biết thêm chi tiết</Text>
-                            )}
+                        <Text style={styles.pitchType}>
+                            Loại sân:{' '}
+                            {item.type == 0
+                                ? 'Sân 5'
+                                : item.type == 1
+                                ? 'Sân 7'
+                                : item.type == 2
+                                ? 'Sân 11'
+                                : 'Liên hệ chủ sân để biết thêm chi tiết'}
                         </Text>
                         <Text style={styles.pitchPrice}>{formatPriceToVND(parseFloat(item.price))}</Text>
                     </View>
@@ -140,25 +128,21 @@ export default function HomeScreen({ navigation }) {
     return (
         <Fragment>
             <View style={styles.container}>
-                <Image source={require('../../assets/logodth.png')} style={styles.logo} />
-                <View style={styles.headerRow}>
-                    <Text style={styles.pitchListTitle}>Danh sách sân bóng</Text>
-                    <Menu
-                        visible={menuVisible}
-                        onDismiss={() => setMenuVisible(false)}
-                        anchor={<Icon name="add-circle" size={30} color="green" onPress={() => setMenuVisible(true)} />}
-                    >
-                        <Menu.Item onPress={navigateToAddNewPitches} title="Thêm sân bóng" />
-                    </Menu>
+                <View style={styles.header}>
+                    <Image source={require('../../assets/logodth.png')} style={styles.logo} />
                 </View>
+                <Text style={styles.pitchListTitle}>Danh sách sân bóng</Text>
                 <FlatList
-                    style={{ flex: 1 }}
+                    style={styles.flatList}
                     data={pitches}
                     keyExtractor={(item) => item.id}
                     renderItem={renderItem}
                     contentContainerStyle={styles.flatListContainer}
                     showsVerticalScrollIndicator={false}
                 />
+                <TouchableOpacity style={styles.addButton} onPress={navigateToAddNewPitches}>
+                    <ArchiveAdd size={50} variant="Bulk" color="#FFF" />
+                </TouchableOpacity>
             </View>
         </Fragment>
     );
@@ -167,82 +151,74 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f8f8f8',
+        backgroundColor: '#E0F7FA',
+        paddingTop: 20,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
     logo: {
-        alignContent: 'center',
-        alignSelf: 'center',
         width: '100%',
         height: 120,
         resizeMode: 'contain',
     },
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
+    addButton: {
+        position: 'absolute',
+        bottom: 80,
+        right: 20,
+        backgroundColor: '#0288D1',
+        borderRadius: 20,
+        elevation: 5,
     },
     pitchListTitle: {
-        fontSize: 18,
+        fontSize: 24,
         fontWeight: 'bold',
+        color: '#0288D1',
+        textAlign: 'center',
+        marginVertical: 20,
     },
-    pitchList: {
-        paddingHorizontal: 10,
-    },
-    pitchItem: {
-        backgroundColor: '#fff',
-        paddingVertical: 10,
-        paddingStart: 20,
-        paddingHorizontal: 110,
-        marginVertical: 5,
-        marginHorizontal: 15,
-        borderRadius: 5,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        elevation: 1,
-        borderRadius: 15,
-    },
-    detail: {
-        marginLeft: 30,
-    },
-    control: {
-        marginLeft: 10,
-    },
-    controlButton: {
-        alignItems: 'center',
-        padding: 2,
-        margin: 2,
-        backgroundColor: '#f7f7fa',
-        borderRadius: 5,
-        flexDirection: 'row',
-    },
-    controlButtonText: {
-        marginLeft: 5,
-        fontSize: 14,
-        color: '#666',
-    },
-    pitchName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    pitchPrice: {
-        fontSize: 16,
-        color: '#666',
-        marginTop: 5,
-    },
-    addButton: {
-        marginRight: 10,
-    },
-    image: {
-        width: 80,
-        height: 70,
-        borderRadius: 15,
+    flatList: {
+        flex: 1,
     },
     flatListContainer: {
         paddingBottom: 70,
+    },
+    pitchItem: {
+        backgroundColor: '#FFF',
+        padding: 15,
+        marginVertical: 10,
+        marginHorizontal: 20,
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        elevation: 3,
+    },
+    detail: {
+        marginLeft: 20,
+        flex: 1,
+    },
+    pitchName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#0288D1',
+    },
+    pitchType: {
+        fontSize: 16,
+        color: '#757575',
+        marginTop: 5,
+    },
+    pitchPrice: {
+        fontSize: 16,
+        color: '#0288D1',
+        marginTop: 5,
+    },
+    image: {
+        width: 80,
+        height: 80,
+        borderRadius: 10,
     },
     rightActionsContainer: {
         flexDirection: 'row',
@@ -251,18 +227,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
-        marginVertical: 7,
+        marginVertical: 10,
         borderRadius: 8,
         flexDirection: 'column',
         marginRight: 10,
     },
     editAction: {
-        backgroundColor: '#2196F3',
+        backgroundColor: '#FF9800',
     },
     deleteAction: {
         backgroundColor: '#F44336',
     },
     actionText: {
         color: 'white',
+        marginTop: 5,
+    },
+    headerTitleContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerTitle: {
+        fontSize: 18,
+        color: '#FFF',
     },
 });
