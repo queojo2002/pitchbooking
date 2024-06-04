@@ -3,17 +3,17 @@ import { loginSuccess, setAccessToken } from '../redux/actions/authAction';
 import { store } from '../redux/store';
 import { loadUser } from './user-api';
 
-export const baseURL = 'http://10.0.0.64/pitchesBookingApi';
+export const baseURL = 'https://vanduc.top/pitchesBookingApi';
 
 export const axiosAuth = axios.create({
-    baseURL,
+    baseURL: baseURL,
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
 const axiosApis = axios.create({
-    baseURL,
+    baseURL: baseURL,
     headers: {
         'Content-Type': 'application/json',
     },

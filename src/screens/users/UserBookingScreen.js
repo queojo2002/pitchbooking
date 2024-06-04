@@ -55,7 +55,7 @@ export default function UserBookingScreen({ navigation, route }) {
             if (bookingPitches.status === 1) {
                 setNotificationSB('Đã đặt sân thành công!');
                 setVisible(true);
-                navigation.navigate('UserHistoryScreen');
+                navigation.replace('UserConfirmBooking', { data: bookingPitches.data });
             } else {
                 setNotificationSB(bookingPitches.message);
                 setVisible(true);

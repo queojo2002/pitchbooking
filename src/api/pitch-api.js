@@ -17,6 +17,8 @@ export const loadAllPith = async () => {
 export const addNewPitchesBooking = async (data) => {
     try {
         const load = await axiosApis.post('/pitchesBookingApi.php', data);
+        console.log(load.data);
+
         if (load.status === 200) {
             return load.data;
         } else {
@@ -44,6 +46,19 @@ export const loadPitchesBookingByID = async (id) => {
 export const loadPitchesBookingByEmail = async () => {
     try {
         const load = await axiosApis.get(`/pitchesBookingApi.php?cmd=getPitchesBookingByUserID`);
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(userUpdate.data.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const checkIsBooking = async (id) => {
+    try {
+        const load = await axiosApis.get(`/vnpay_callback_pitchesbooking.php?pitchesBookingID=${id}`);
         if (load.status === 200) {
             return load.data;
         } else {

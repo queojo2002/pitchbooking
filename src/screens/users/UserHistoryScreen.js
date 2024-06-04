@@ -1,11 +1,19 @@
-import { CloseSquare, SearchNormal1 } from 'iconsax-react-native';
-import React, { Fragment, useEffect, useState } from 'react';
+import {
+    CloseSquare,
+    LocationDiscover,
+    Refresh,
+    RefreshCircle,
+    RefreshRightSquare,
+    SearchNormal1,
+} from 'iconsax-react-native';
+import React, { Fragment, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import {
     Button,
     Dimensions,
     FlatList,
     Image,
     ScrollView,
+    StatusBar,
     StyleSheet,
     Text,
     TextInput,
@@ -13,11 +21,12 @@ import {
     View,
 } from 'react-native';
 import { Modal, Portal } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import { loadPitchesBookingByEmail } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
 import { formatDateToVND } from '../../helpers/formatDateToVND';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFocusEffect } from '@react-navigation/native';
 const windowWidth = Dimensions.get('window').width;
 const itemWidth = windowWidth / 3;
 
@@ -34,7 +43,7 @@ export default UserHistoryScreen = ({ navigation }) => {
     const [searchText, setSearchText] = useState('');
     const user = useSelector((state) => state.auth.userData);
     const [filters, setFilters] = useState([
-        { id: 1, status: 0, label: 'Chờ xác nhận' },
+        { id: 1, status: 0, label: 'Chờ thanh toán' },
         { id: 2, status: 1, label: 'Đặt thành công' },
         { id: 3, status: 2, label: 'Đã hủy' },
     ]);
@@ -77,24 +86,29 @@ export default UserHistoryScreen = ({ navigation }) => {
                 );
             },
         });
+    }, []);
 
-        const loadPitchesByEmail = async () => {
-            try {
-                const response = await loadPitchesBookingByEmail();
-                if (response.status !== 1) {
-                    console.log('Lỗi không thể load được dữ liệu', response.error);
+    useFocusEffect(
+        React.useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    const response = await loadPitchesBookingByEmail();
+                    console.log(response.data);
+                    if (response.status !== 1) {
+                        console.log('Lỗi không thể load được dữ liệu', response.error);
+                    }
+                    const filteredData = response.data.filter((item) => {
+                        return item.status === filters[selectedFilter - 1].status && item.name.includes(searchText);
+                    });
+                    setBookingData(filteredData);
+                } catch (error) {
+                    console.log('Lỗi không thể load được dữ liệu', error);
                 }
-                const filteredData = response.data.filter((item) => {
-                    return item.status === filters[selectedFilter - 1].status && item.name.includes(searchText);
-                });
-                setBookingData(filteredData);
-            } catch (error) {
-                console.log('Lỗi không thể load được dữ liệu', error);
-            }
-        };
+            };
 
-        loadPitchesByEmail();
-    }, [selectedFilter, searchText]);
+            fetchData();
+        }, [selectedFilter, searchText]),
+    );
 
     const handleDetailsPress = (booking) => {
         setSelectedBooking(booking);
@@ -129,7 +143,12 @@ export default UserHistoryScreen = ({ navigation }) => {
                 />
             </View>
 
-            <View>
+            <View
+                style={{
+                    height: 400,
+                    marginBottom: 50,
+                }}
+            >
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {bookingData.length > 0 ? (
                         bookingData.map((booking, index) => (
@@ -154,10 +173,18 @@ export default UserHistoryScreen = ({ navigation }) => {
                                         <MaterialCommunityIcons name="calendar" size={20} style={styles.icon} />
                                         <Text style={styles.labelBold}>Ngày đặt:</Text>
                                     </View>
-                                    <Text style={{paddingLeft: 10, paddingBottom: 5}}>{formatDateToVND(booking.timeCreate * 1000)}</Text>
+                                    <Text style={{ paddingLeft: 10, paddingBottom: 5 }}>
+                                        {formatDateToVND(booking.timeCreate * 1000)}
+                                    </Text>
                                     <View style={styles.row}>
                                         <MaterialCommunityIcons
-                                            name="check-circle"
+                                            name={
+                                                {
+                                                    0: 'reload-alert',
+                                                    1: 'check-circle',
+                                                    2: 'cancel',
+                                                }[booking.status]
+                                            }
                                             size={20}
                                             style={{
                                                 ...styles.icon,
@@ -180,7 +207,7 @@ export default UserHistoryScreen = ({ navigation }) => {
                                             }}
                                         >
                                             {booking.status === 0
-                                                ? 'Chờ xác nhận'
+                                                ? 'Chờ thanh toán'
                                                 : booking.status === 1
                                                 ? 'Đặt thành công'
                                                 : 'Đã hủy'}
@@ -192,15 +219,44 @@ export default UserHistoryScreen = ({ navigation }) => {
                                         position: 'absolute',
                                         right: 0,
                                         paddingRight: 5,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
                                     }}
                                     onPress={() => handleDetailsPress(booking)}
                                 >
                                     <Text style={styles.link}>Chi tiết</Text>
+                                    {booking.status === 0 && (
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                navigation.navigate('UserConfirmBooking', {
+                                                    data: {
+                                                        id: booking.id,
+                                                        url: booking.URLPayment,
+                                                    },
+                                                });
+                                            }}
+                                        >
+                                            <Text style={styles.link}>Thanh toán</Text>
+                                        </TouchableOpacity>
+                                    )}
                                 </TouchableOpacity>
                             </View>
                         ))
                     ) : (
-                        <Text>Không có dữ liệu...</Text>
+                        <Text
+                            style={{
+                                textAlign: 'center',
+                                fontSize: 16,
+                                fontStyle: 'italic',
+                                fontWeight: 'bold',
+                                alignContent: 'center',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginTop: 5,
+                            }}
+                        >
+                            Không có dữ liệu...
+                        </Text>
                     )}
                 </ScrollView>
             </View>
@@ -216,7 +272,7 @@ export default UserHistoryScreen = ({ navigation }) => {
                         <Text style={styles.labelBold}>Trạng thái: </Text>
                         <Text style={styles.label}>
                             {selectedBooking.status === 0
-                                ? 'Chờ xác nhận'
+                                ? 'Chờ thanh toán'
                                 : selectedBooking.status === 1
                                 ? 'Đã đặt'
                                 : 'Đã hủy'}
@@ -409,6 +465,6 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 5,
-        color: 'green'
+        color: 'green',
     },
 });
