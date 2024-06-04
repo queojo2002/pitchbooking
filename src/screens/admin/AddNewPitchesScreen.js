@@ -142,14 +142,14 @@ export default function AddNewPitchesScreen({ navigation }) {
                     <Picker.Item label="Sân đang mở" value="1" />
                     <Picker.Item label="Sân đang đóng" value="2" />
                 </Picker>
-                <Button mode="contained" icon="camera" onPress={selectImage} style={styles.button}>
-                    Chọn ảnh
-                </Button>
                 {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-                <Button mode="contained" onPress={addPitch} style={styles.button_add}>
-                    Thêm sân bóng
-                </Button>
             </ScrollView>
+            <Button mode="contained" icon="camera" onPress={selectImage} style={styles.button}>
+                Chọn ảnh
+            </Button>
+            <Button mode="contained" onPress={addPitch} style={styles.button_add}>
+                Thêm sân bóng
+            </Button>
         </View>
     );
 }
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     image: {
-        width: 100,
-        height: 100,
+        width: '100%',
+        height: 200,
         marginTop: 10,
         marginBottom: 20,
         alignSelf: 'center',

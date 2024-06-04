@@ -19,7 +19,12 @@ export default function HomeScreen({ navigation }) {
     const onLogoutPressed = async () => {
         await dispatch(logout());
     };
-
+    const handleDelete = () => {
+        Alert.alert('Xóa sân', 'Bạn có chắc muốn xóa sân này không ?', [
+            { text: 'Hủy', style: 'cancel' },
+            { text: 'Xóa', onPress: Alert.alert('Thông báo', 'Tính năng đang phát triển') },
+        ]);
+    };
     const loadPitches = async () => {
         try {
             const pitchesData = await adminLoadAllPitches();
@@ -125,10 +130,7 @@ export default function HomeScreen({ navigation }) {
                 <Icon name="edit" size={20} color="white" />
                 <Text style={styles.actionText}>Sửa</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-                style={[styles.rightAction, styles.deleteAction]}
-                onPress={() => console.log('Delete pitch')}
-            >
+            <TouchableOpacity style={[styles.rightAction, styles.deleteAction]} onPress={handleDelete}>
                 <Icon name="delete" size={20} color="white" />
                 <Text style={styles.actionText}>Xóa</Text>
             </TouchableOpacity>
@@ -144,9 +146,7 @@ export default function HomeScreen({ navigation }) {
                     <Menu
                         visible={menuVisible}
                         onDismiss={() => setMenuVisible(false)}
-                        anchor={
-                            <Icon name="add-circle" size={40} color="#ff4081" onPress={() => setMenuVisible(true)} />
-                        }
+                        anchor={<Icon name="add-circle" size={30} color="green" onPress={() => setMenuVisible(true)} />}
                     >
                         <Menu.Item onPress={navigateToAddNewPitches} title="Thêm sân bóng" />
                     </Menu>
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 10,
         marginVertical: 7,
-        borderRadius: 5,
+        borderRadius: 8,
         flexDirection: 'column',
         marginRight: 10,
     },
@@ -266,4 +266,3 @@ const styles = StyleSheet.create({
         color: 'white',
     },
 });
-
