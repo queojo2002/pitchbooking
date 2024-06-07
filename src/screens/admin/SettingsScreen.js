@@ -1,18 +1,13 @@
-
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/actions/authAction';
 
 export default SettingsScreen = ({ navigation }) => {
-    const user = useSelector(state => state.auth.userData);
+    const user = useSelector((state) => state.auth.userData);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        
-    }, []);
-
-
+    useEffect(() => {}, []);
 
     useEffect(() => {
         navigation.setOptions({
@@ -25,21 +20,27 @@ export default SettingsScreen = ({ navigation }) => {
             },
             headerTitle: () => {
                 return (
-                    <View style={{ height: 30, justifyContent: "center", alignItems: "center", alignSelf: "center", alignContent: "center" }}>
-                        <Text style={{ fontSize: 20, color: "white" }}>{user.name}</Text>
+                    <View
+                        style={{
+                            height: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            alignSelf: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
+                        <Text style={{ fontSize: 20, color: 'white' }}>{user.name}</Text>
                     </View>
                 );
             },
         });
     }, []);
 
-
     if (!user) {
         return null;
     }
     return (
         <View style={styles.container}>
-            <Text>Test sử dụng lấy dữ liệu Redux</Text>
             <Text>Xin chào {user.name}</Text>
 
             <TouchableOpacity onPress={() => dispatch(logout())}>
@@ -57,4 +58,3 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
 });
-

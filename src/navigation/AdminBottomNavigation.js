@@ -2,9 +2,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {HomeScreen,SettingsScreen,AdminChatScreen, ManagePitchesScreen 
-} from '../screens';
-
+import { HomeScreen, SettingsScreen, AdminChatScreen, ManagePitchesScreen } from '../screens';
+import ManagerUser from './../screens/admin/ManageUser';
 
 const Tab = createBottomTabNavigator();
 
@@ -67,25 +66,23 @@ export default function AdminBottomNavigation({ navigation }) {
                     tabBarIcon: ({ color }) => <MaterialCommunityIcons name="bank" color={color} size={26} />,
                 }}
             />
-            {/* <Tab.Screen
+            <Tab.Screen
                 name="ManagerUser"
                 component={ManagerUser}
                 options={{
                     tabBarLabel: 'Quản lý người dùng',
                     tabBarIcon: ({ color }) => <MaterialCommunityIcons name="account" color={color} size={26} />,
                 }}
-            /> */}
-             <Tab.Screen
+            />
+            <Tab.Screen
                 name="AdminChatScreen"
                 component={AdminChatScreen}
                 options={{
                     tabBarLabel: 'Chat',
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="chat" color={color} size={26} />
-                    ),
+                    tabBarIcon: ({ color }) => <MaterialCommunityIcons name="chat" color={color} size={26} />,
                 }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="Settings"
                 component={SettingsScreen}
                 options={{
@@ -94,7 +91,7 @@ export default function AdminBottomNavigation({ navigation }) {
                         <MaterialCommunityIcons name="application-cog" color={color} size={26} />
                     ),
                 }}
-            />
+            /> */}
         </Tab.Navigator>
     );
 }
