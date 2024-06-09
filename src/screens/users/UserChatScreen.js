@@ -25,30 +25,19 @@ const UserChatScreen = ({ navigation }) => {
     const fetchAdmins = async () => {
         try {
             const admins = await loadInfoAdmin();
-            const messageData = await firestore().collection('messages').get();
+            const messageData = await firestore().collection('messages').orderBy('createdAt', 'desc').get();
             if (admins.status === 1) {
-                const messages = messageData.docs.map((doc) => doc.data());
-                const lastMessages = admins.data.map((admin) => {
-                    const relevantMessages = messages.filter(
-                        (msg) => msg.user._id === admin.email || msg.recipient === admin.email,
-                    );
-                    relevantMessages.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-                    return relevantMessages[0];
-                });
-
-                const adminsData = admins.data.map((admin) => {
-                    const lastMessage = lastMessages.filter(
+                admins.data.forEach((admin) => {
+                    const relevantMessages = messageData.docs.filter(
                         (msg) =>
                             msg &&
-                            ((msg.user._id === user.email && msg.recipient === admin.email) ||
-                                (msg.user._id === admin.email && msg.recipient === user.email)),
+                            ((msg.data().user._id === user.email && msg.data().recipient === admin.email) ||
+                                (msg.data().user._id === admin.email && msg.data().recipient === user.email)),
                     );
-                    return {
-                        ...admin,
-                        lastMessages: lastMessage.length >= 1 ? lastMessage[0].text : null,
-                    };
+                    relevantMessages.sort((a, b) => b.data().createdAt.toDate() - a.data().createdAt.toDate());
+                    admin.lastMessages = relevantMessages.length >= 1 ? relevantMessages[0].data().text : null;
                 });
-                setAdmins(adminsData);
+                setAdmins(admins.data);
                 setLoading(false);
             } else {
                 throw new Error('Không thể lấy dữ liệu người dùng.');
