@@ -37,7 +37,47 @@ export const loadInfoAdmin = async () => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const updateTokenFCM = async (token) => {
+    try {
+        const update = await axiosApis.options('/userApi.php', {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: {
+                tokenFCM: token,
+            },
+        });
+        console.log('updateTokenFCM', update.data);
+        if (update.status === 200) {
+            return update.data;
+        } else {
+            throw new Error(update.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const userSendNotification = async (title, body, imageURL) => {
+    try {
+        const send = await axiosApis.post('/sendNotification.php', {
+            title: title,
+            body: body,
+            imageURL: imageURL,
+            reciverIDS: 0,
+            type: 'userToAdmin',
+        });
+        if (send.status === 200) {
+            return send.data;
+        } else {
+            throw new Error(send.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -52,7 +92,39 @@ export const loadAllUsers = async () => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const loadAllUserAndCountBooking = async () => {
+    try {
+        const load = await axiosApis.get('/admin/userApi.php?cmd=getUsersAndCountBooking');
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(load.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const adminSendNotification = async (title, body, imageURL, id) => {
+    try {
+        const send = await axiosApis.post('/sendNotification.php', {
+            title: title,
+            body: body,
+            imageURL: imageURL,
+            reciverIDS: id,
+            type: 'adminToUser',
+        });
+        if (send.status === 200) {
+            return send.data;
+        } else {
+            throw new Error(send.message);
         }
     } catch (error) {
         throw new Error(error);

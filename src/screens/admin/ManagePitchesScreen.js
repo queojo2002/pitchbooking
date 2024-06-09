@@ -1,52 +1,72 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Platform } from 'react-native';
-import { appColor } from '../../constants/appColor';
-import { Card, Avatar, Button, Menu, Provider, TextInput } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import { ArrowRight, FilterSearch, FilterTick, Information, Refresh2, TickCircle, Xrp } from 'iconsax-react-native';
+import React, { Fragment, useEffect, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import DatePicker from 'react-native-date-picker';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Avatar, Button, Card, Modal, PaperProvider, Paragraph, Portal } from 'react-native-paper';
+import { adminFilterPitchesBooking, adminLoadAllPitches, adminSetStatusPitchesBooking } from '../../api/pitch-api';
+import HeaderSearch from '../../components/HeaderSearch';
+import { appColor } from '../../constants/appColor';
+import { formatDateTimeToHM } from '../../helpers/formatDateTimeToHM';
+import { formatDateToVND } from '../../helpers/formatDateToVND';
+import { adminSendNotification } from '../../api/user-api';
+
 export default ManagePitchesScreen = ({ navigation }) => {
+    const [pitchesIDS, setPitchesIDS] = useState([
+        {
+            label: 'Tắt cả sân',
+            value: null,
+        },
+    ]);
+    const [filters, setFilters] = useState([
+        { id: 1, status: 0, label: 'Chờ thanh toán' },
+        { id: 2, status: 1, label: 'Đặt thành công' },
+        { id: 3, status: 2, label: 'Đã hủy' },
+    ]);
+    const [selectedFilter, setSelectedFilter] = useState(1);
     const [pitches, setPitches] = useState([]);
     const [filteredPitches, setFilteredPitches] = useState([]);
-    const [selectedPitch, setSelectedPitch] = useState('');
-    const [selectedStatus, setSelectedStatus] = useState('');
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-    const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+    const [fromDate, setFromDate] = useState(new Date());
+    const [toDate, setToDate] = useState(new Date());
+    const [pitchesID, setPitchesID] = useState();
+    const [visible, setVisible] = React.useState(false);
+    const showModalFilter = () => setVisible(true);
+    const hideModalFilter = () => setVisible(false);
+    const [openFromTime, setOpenFromTime] = useState(false);
+    const [openToTime, setOpenToTime] = useState(false);
+    const [searchText, setSearchText] = useState('');
+    const [debouncedSearchText, setDebouncedSearchText] = useState('');
 
-    const mockPitches = [
-        {
-            id: '1',
-            name: 'Sân A',
-            user: 'Anh Tú',
-            status: '0',
-            date: '2024-06-03',
-            startTime: '16:30',
-            endTime: '18:00',
-            imageURL: require('../../assets/background1.jpg'),
-        },
-        {
-            id: '2',
-            name: 'Sân B',
-            user: 'Văn Đức',
-            status: '0',
-            date: '2024-06-04',
-            startTime: '17:00',
-            endTime: '18:30',
-            imageURL: require('../../assets/background2.jpg'),
-        },
-        {
-            id: '3',
-            name: 'Sân C',
-            user: 'Phúc Hiếu',
-            status: '1',
-            date: '2024-06-05',
-            startTime: '18:00',
-            endTime: '19:30',
-            imageURL: require('../../assets/background3.jpg'),
-        },
-    ];
+    const fetchDataPitchesName = async () => {
+        const response = await adminLoadAllPitches();
+        if (response.status === 1) {
+            const data = response.data.map((item) => ({
+                label: item.name,
+                value: item.id,
+            }));
+            setPitchesIDS([
+                {
+                    label: 'Tất cả sân',
+                    value: null,
+                },
+                ...data,
+            ]);
+        }
+    };
+
+    const sendNotification = async (body, id, imageURL) => {
+        try {
+            const res = await adminSendNotification('Thông báo từ ADMIN', body, imageURL, id);
+            if (res.status === 1) {
+                console.log('OK');
+            } else {
+                throw new Error(res.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
         navigation.setOptions({
@@ -71,179 +91,481 @@ export default ManagePitchesScreen = ({ navigation }) => {
                     </Text>
                 );
             },
+            headerRight: () => {
+                return (
+                    <TouchableOpacity
+                        style={{
+                            marginRight: 15,
+                        }}
+                        onPress={showModalFilter}
+                    >
+                        <FilterSearch size={26} color="white" />
+                    </TouchableOpacity>
+                );
+            },
+            headerLeft: () => {
+                return (
+                    <TouchableOpacity
+                        style={{
+                            marginLeft: 15,
+                        }}
+                    >
+                        <Refresh2 size={25} color="white" />
+                    </TouchableOpacity>
+                );
+            },
         });
 
-        setPitches(mockPitches);
+        fetchDataPitchesName();
     }, []);
 
     useEffect(() => {
-        applyFilters();
-    }, [selectedPitch, selectedStatus, startDate, endDate]);
+        const timerId = setTimeout(() => {
+            setDebouncedSearchText(searchText);
+        }, 500);
 
-    const applyFilters = () => {
-        let filtered = pitches;
+        return () => {
+            clearTimeout(timerId);
+        };
+    }, [searchText]);
 
-        if (selectedPitch) {
-            filtered = filtered.filter((pitch) => pitch.name === selectedPitch);
+    useEffect(() => {
+        try {
+            const response = async () => {
+                const statusBooking = filters[selectedFilter - 1].status;
+                const textSearch = searchText ? '&searchText=' + searchText : '';
+                console.log(textSearch);
+                const response = await adminFilterPitchesBooking('?statusBooking=' + statusBooking + textSearch);
+                if (response.status === 1) {
+                    setFilteredPitches(response.data);
+                } else {
+                    setFilteredPitches([]);
+                }
+            };
+            response();
+        } catch (error) {
+            console.log(error);
         }
+    }, [debouncedSearchText, selectedFilter]);
 
-        setFilteredPitches(filtered);
-        console.log(filtered);
+    const handleFilter = async () => {
+        const fromDate1 = new Date(fromDate);
+        const toDate1 = new Date(toDate);
+        fromDate1.setHours(0, 0, 0, 0);
+        toDate1.setHours(23, 59, 59, 999);
+        const statusBooking = filters[selectedFilter - 1].status;
+        try {
+            const response = await adminFilterPitchesBooking(
+                '?fromDate=' +
+                    Math.floor(fromDate1.getTime() / 1000) +
+                    '&toDate=' +
+                    Math.floor(toDate1.getTime() / 1000) +
+                    '&statusBooking=' +
+                    statusBooking +
+                    '&pitchesID=' +
+                    pitchesID +
+                    '&searchText=' +
+                    searchText,
+            );
+            if (response.status === 1) {
+                setFilteredPitches(response.data);
+            } else {
+                setFilteredPitches([]);
+                console.log(response.message);
+            }
+            hideModalFilter();
+        } catch (error) {
+            Alert.alert(error);
+            hideModalFilter();
+        }
     };
 
-    const handleCancel = () => {
-        console.log('Đã hủy');
+    const handleCancel = async (pitch) => {
+        Alert.alert('Đổi trạng thái sân sang ĐÃ HỦY', 'Bạn SURE chưa?', [
+            { text: 'Hủy bỏ', style: 'cancel' },
+            {
+                text: 'Xác nhận',
+                onPress: async () => {
+                    try {
+                        const response = await adminSetStatusPitchesBooking({
+                            id: pitch.id,
+                            status: 2,
+                        });
+                        console.log(response);
+                        if (response.status === 1) {
+                            await sendNotification(
+                                'Đã đổi chuyển thái sân ' + pitch.name + ' sang <b>HỦY</b>',
+                                pitch.userID,
+                                pitch.imageURL,
+                            );
+
+                            setSelectedFilter(3);
+                        } else {
+                            Alert.alert('Thông báo', response.message);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                },
+            },
+        ]);
     };
 
-    const handleConfirm = () => {
-        console.log('Đã xác nhận');
+    const handleConfirm = (pitch) => {
+        Alert.alert('Đổi trạng thái sân sang ĐẶT THÀNH CÔNG', 'Bạn SURE chưa?', [
+            { text: 'Hủy bỏ', style: 'cancel' },
+            {
+                text: 'Xác nhận',
+                onPress: async () => {
+                    try {
+                        const response = await adminSetStatusPitchesBooking({
+                            id: pitch.id,
+                            status: 1,
+                        });
+                        console.log(response);
+                        if (response.status === 1) {
+                            await sendNotification(
+                                'Đã đổi chuyển thái sân ' + pitch.name + ' sang <b>ĐÃ ĐẶT THÀNH CÔNG</b>',
+                                pitch.userID,
+                                pitch.imageURL,
+                            );
+                            setSelectedFilter(2);
+                        } else {
+                            Alert.alert('Thông báo', response.message);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                },
+            },
+        ]);
     };
 
-    const handleStartDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || startDate;
-        setShowStartDatePicker(Platform.OS === 'ios');
-        setStartDate(currentDate);
-    };
-
-    const handleEndDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || endDate;
-        setShowEndDatePicker(Platform.OS === 'ios');
-        setEndDate(currentDate);
+    const handleDetails = (pitchesBooking) => {
+        navigation.navigate('AdminPitchesBookingDetail', { pitchesBooking });
     };
 
     return (
-        <Provider>
-            <ScrollView style={styles.container}>
-                <View style={styles.filterContainer}>
-                    <Picker
-                        selectedValue={selectedPitch}
-                        onValueChange={(itemValue, itemIndex) => setSelectedPitch(itemValue)}
-                        style={styles.pickerselect}
-                       
-                    >
-                        {mockPitches.map((pitch) => (
-                            <Picker.Item key={pitch.id} label={pitch.name} value={pitch.name} />
-                        ))}
-                    </Picker>
-                    <View style={{ width: 200 }}>
-                        <Picker
-                            selectedValue={selectedStatus}
-                            onValueChange={(itemValue, itemIndex) => setSelectedStatus(itemValue)}
+        <PaperProvider>
+            <Portal>
+                <Modal
+                    visible={visible}
+                    onDismiss={hideModalFilter}
+                    contentContainerStyle={{
+                        backgroundColor: 'white',
+                        padding: 20,
+                        borderRadius: 10,
+                        width: '95%',
+                        justifyContent: 'center',
+                        alignSelf: 'center',
+                        marginBottom: 100,
+                    }}
+                >
+                    <Paragraph
+                        style={{
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            fontSize: 18,
+                            marginBottom: 20,
+                        }}
+                    >{`Bộ Lọc Tìm Kiếm`}</Paragraph>
+                    <View>
+                        <Paragraph
                             style={{
-                                backgroundColor: '#FCFCFC',
-                                flex: 1,
-                                width: '100%',
-                                height: 40,
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                fontSize: 13,
+                                marginBottom: 10,
+                            }}
+                        >{`Chọn từ ngày -> đến ngày cần lọc \n (Có thể bỏ trống)`}</Paragraph>
+
+                        <View
+                            style={{
+                                flexDirection: 'row',
                                 justifyContent: 'center',
+                                alignContent: 'center',
                                 alignItems: 'center',
-                                shadowColor: '#000000',
-                                shadowOffset: {
-                                    width: 0,
-                                    height: 2,
-                                },
-                                shadowOpacity: 0.25,
-                                shadowRadius: 3.84,
-                                elevation: 5,
                             }}
                         >
-                            <Picker.Item label="Chưa thanh toán" value="0" />
-                            <Picker.Item label="Đã thanh toán" value="1" />
-                        </Picker>
-                    </View>
-                    <View style={styles.datePickerContainer}>
-                        <Button
-                            icon={({ size, color }) => (
-                                <MaterialCommunityIcons name="calendar" size={size} color="blue" />
-                            )}
-                            onPress={() => setShowStartDatePicker(true)}
-                        >
-                            Từ ngày
-                        </Button>
-                        {startDate && <Text>{startDate.toDateString()}</Text>}
-                    </View>
-                    <View style={styles.datePickerContainer}>
-                        <Button
-                            icon={({ size, color }) => (
-                                <MaterialCommunityIcons name="calendar" size={size} color="blue" />
-                            )}
-                            onPress={() => setShowEndDatePicker(true)}
-                        >
-                            Đến ngày
-                        </Button>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setOpenFromTime(true);
+                                }}
+                                style={{
+                                    width: '100%',
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: 150,
+                                        height: 40,
+                                        fontSize: 14,
+                                        backgroundColor: '#E1E1E1',
+                                        fontWeight: 'bold',
+                                        textAlign: 'center',
+                                        textAlignVertical: 'center',
+                                        color: '#006B83',
+                                    }}
+                                >
+                                    {fromDate.toLocaleDateString('vi-VN', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    })}
+                                </Text>
+                            </TouchableOpacity>
 
-                        {endDate && <Text>{endDate.toDateString()}</Text>}
-                    </View>
-                    {showStartDatePicker && (
-                        <DateTimePicker
-                            value={startDate || new Date()}
-                            mode="date"
-                            display="default"
-                            onChange={handleStartDateChange}
-                        />
-                    )}
-                    {showEndDatePicker && (
-                        <DateTimePicker
-                            value={endDate || new Date()}
-                            mode="date"
-                            display="default"
-                            onChange={handleEndDateChange}
-                        />
-                    )}
-                </View>
-                {filteredPitches.map((pitch) => (
-                    <Card key={pitch.id} style={{ width: '90%', margin: 10 }}>
-                        <View style={styles.imageContainer}>
-                            <Card.Cover source={pitch.imageURL} style={styles.coverImage} />
-                            <View style={styles.overlay}>
-                                <Card.Title
-                                    title={pitch.user}
-                                    titleStyle={styles.titleStyle}
-                                    left={(props) => (
-                                        <Avatar.Icon {...props} icon="account" style={styles.avatarIcon} />
-                                    )}
-                                    style={styles.cardTitle}
-                                />
-                                <Card.Content style={styles.cardContent}>
-                                    <View style={styles.rowContainer}>
-                                        <Text style={styles.pitchbookinglable}>Sân đặt: </Text>
-                                        <Text style={styles.pitchbooking}>{pitch.name}</Text>
-                                    </View>
-                                    <View style={styles.rowContainer}>
-                                        <Text style={styles.pitchbookinglable}>Ngày đặt: </Text>
-                                        <Text style={styles.pitchbooking}>{pitch.date}</Text>
-                                    </View>
-                                    <View style={styles.rowContainer}>
-                                        <Text style={styles.pitchbookinglable}>Thời gian đặt: </Text>
-                                        <Text style={styles.pitchbooking}>
-                                            Từ {pitch.startTime} - {pitch.endTime}{' '}
-                                        </Text>
-                                    </View>
-                                </Card.Content>
-                            </View>
+                            <ArrowRight size={25} color="black" />
+
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setOpenToTime(true);
+                                }}
+                                style={{
+                                    height: 40,
+                                    width: '100%',
+                                    justifyContent: 'center',
+                                    alignContent: 'center',
+                                    alignItems: 'center',
+                                    alignSelf: 'center',
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        width: 150,
+                                        height: 40,
+                                        fontSize: 14,
+                                        backgroundColor: '#E1E1E1',
+                                        fontWeight: 'bold',
+                                        textAlign: 'center',
+                                        textAlignVertical: 'center',
+                                        color: '#006B83',
+                                    }}
+                                >
+                                    {toDate.toLocaleDateString('vi-VN', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                    })}
+                                </Text>
+                            </TouchableOpacity>
                         </View>
-                        <Card.Actions style={styles.iconContainer}>
-                            <Button
-                                icon={({ size, color }) => (
-                                    <MaterialCommunityIcons name="cancel" size={size} color="red" />
-                                )}
-                                onPress={handleCancel}
+
+                        <Paragraph
+                            style={{
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                fontSize: 13,
+                                marginBottom: 10,
+                                marginTop: 10,
+                            }}
+                        >{`Chọn sân mà bạn muốn lọc \n (Có thể bỏ trống)`}</Paragraph>
+
+                        <View
+                            style={{
+                                borderRadius: 5,
+                                height: 40,
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                borderWidth: 1,
+                                borderColor: '#E1E1E1',
+                            }}
+                        >
+                            <Picker
+                                selectedValue={pitchesID}
+                                onValueChange={(itemValue, itemIndex) => setPitchesID(itemValue)}
+                                style={{
+                                    textAlign: 'center',
+                                }}
                             >
-                                Hủy
-                            </Button>
+                                {pitchesIDS.map((pitch, index) => {
+                                    return <Picker.Item label={pitch.label} value={pitch.value} key={index} />;
+                                })}
+                            </Picker>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                paddingTop: 20,
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                            }}
+                        >
                             <Button
-                                style={{ marginRight: 30, backgroundColor: 'green' }}
-                                icon={({ size, color }) => (
-                                    <MaterialCommunityIcons name="check" size={size} color="white" />
-                                )}
-                                onPress={handleConfirm}
+                                style={{ backgroundColor: '#A2A2A2' }}
+                                icon={() => {
+                                    return <FilterTick size={24} color="black" />;
+                                }}
+                                onPress={handleFilter}
                             >
-                                Xác nhận
+                                <Text
+                                    style={{
+                                        color: '#353535',
+                                    }}
+                                >
+                                    Thực hiện tìm kiếm
+                                </Text>
                             </Button>
-                        </Card.Actions>
-                    </Card>
-                ))}
+                        </View>
+
+                        <DatePicker
+                            modal
+                            title={'Từ ngày'}
+                            open={openFromTime}
+                            date={fromDate}
+                            mode="date"
+                            onConfirm={(fromDate) => {
+                                setFromDate(fromDate);
+                                setOpenFromTime(false);
+                            }}
+                            onCancel={() => {
+                                setOpenFromTime(false);
+                            }}
+                            locale="vi-VN"
+                        />
+
+                        <DatePicker
+                            modal
+                            title={'Đến ngày'}
+                            open={openToTime}
+                            date={toDate}
+                            mode="date"
+                            onConfirm={(toDate) => {
+                                setToDate(toDate);
+                                setOpenToTime(false);
+                            }}
+                            onCancel={() => {
+                                setOpenToTime(false);
+                            }}
+                            locale="vi-VN"
+                            minimumDate={fromDate}
+                        />
+                    </View>
+                </Modal>
+            </Portal>
+
+            <HeaderSearch
+                searchText={searchText}
+                setSearchText={setSearchText}
+                filters={filters}
+                setFilters={setFilters}
+                selectedFilter={selectedFilter}
+                setSelectedFilter={setSelectedFilter}
+            />
+
+            <ScrollView
+                contentContainerStyle={{
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                }}
+                style={styles.container}
+                showsVerticalScrollIndicator={false}
+            >
+                {filteredPitches.length > 0 ? (
+                    filteredPitches.map((pitch, index) => (
+                        <Card key={pitch.id} style={{ width: '90%', marginTop: 10, marginBottom: 10 }}>
+                            <View style={styles.imageContainer}>
+                                <Card.Cover
+                                    source={{
+                                        uri: pitch.imageURL,
+                                    }}
+                                    style={styles.coverImage}
+                                />
+                                <View style={styles.overlay}>
+                                    <Card.Title
+                                        title={pitch.fullname}
+                                        titleStyle={styles.titleStyle}
+                                        left={(props) => (
+                                            <Avatar.Icon {...props} icon="account" style={styles.avatarIcon} />
+                                        )}
+                                        style={styles.cardTitle}
+                                    />
+                                    <Card.Content style={styles.cardContent}>
+                                        <View style={styles.rowContainer}>
+                                            <Text style={styles.pitchbookinglable}>Sân đặt: </Text>
+                                            <Text style={styles.pitchbooking}>{pitch.name}</Text>
+                                        </View>
+                                        <View style={styles.rowContainer}>
+                                            <Text style={styles.pitchbookinglable}>Ngày đặt:</Text>
+                                            <Text style={styles.pitchbooking}>
+                                                {formatDateToVND(pitch.timeCreate * 1000)}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.rowContainer}>
+                                            <Text style={styles.pitchbookinglable}>Thời gian đặt: </Text>
+                                            <Text style={styles.pitchbooking}>
+                                                Từ {formatDateTimeToHM(Number(pitch.timeStart * 1000))} -{' '}
+                                                {formatDateTimeToHM(Number(pitch.timeEnd * 1000))}
+                                            </Text>
+                                        </View>
+                                    </Card.Content>
+                                </View>
+                            </View>
+
+                            {pitch.statusBooking === 0 ? (
+                                <Fragment></Fragment>
+                            ) : filters[selectedFilter - 1].status === 1 ? (
+                                <Card.Actions style={styles.iconContainer}>
+                                    <Button
+                                        style={{ backgroundColor: 'red' }}
+                                        icon={() => {
+                                            return <Xrp size={16} color="white" />;
+                                        }}
+                                        onPress={() => {
+                                            return handleCancel(pitch);
+                                        }}
+                                    >
+                                        <Text style={{ color: 'white' }}>Hủy</Text>
+                                    </Button>
+                                    <Button
+                                        style={{ marginRight: 25, backgroundColor: 'blue' }}
+                                        icon={() => {
+                                            return <Information size={16} color="white" />;
+                                        }}
+                                        onPress={() => {
+                                            return handleDetails(pitch);
+                                        }}
+                                    >
+                                        Xem chi tiết
+                                    </Button>
+                                </Card.Actions>
+                            ) : (
+                                <Card.Actions style={styles.iconContainer}>
+                                    <Button
+                                        style={{ backgroundColor: 'green', width: '100%' }}
+                                        icon={() => {
+                                            return <TickCircle size={16} color="white" />;
+                                        }}
+                                        onPress={() => {
+                                            return handleConfirm(pitch);
+                                        }}
+                                    >
+                                        <Text style={{ color: 'white' }}>Xác nhận Đặt thành công</Text>
+                                    </Button>
+                                </Card.Actions>
+                            )}
+                        </Card>
+                    ))
+                ) : (
+                    <Text
+                        style={{
+                            textAlign: 'center',
+                            fontSize: 16,
+                            fontStyle: 'italic',
+                            fontWeight: 'bold',
+                            alignContent: 'center',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: 5,
+                        }}
+                    >
+                        Không có dữ liệu...
+                    </Text>
+                )}
             </ScrollView>
-        </Provider>
+        </PaperProvider>
     );
 };
 
@@ -251,8 +573,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f8f8',
+        marginBottom: 60,
     },
-    pickerselect:{
+    pickerselect: {
         backgroundColor: '#FCFCFC',
         flex: 1,
         marginRight: 10,
@@ -296,7 +619,6 @@ const styles = StyleSheet.create({
         elevation: 5,
         paddingHorizontal: 10,
         height: 40,
-        margin: 10,
     },
     imageContainer: {
         position: 'relative',
@@ -323,6 +645,7 @@ const styles = StyleSheet.create({
     },
     avatarIcon: {
         backgroundColor: 'transparent',
+        marginLeft: 12,
     },
     cardContent: {
         padding: 8,
@@ -333,18 +656,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     pitchbookinglable: {
-        fontSize: 16,
+        fontSize: 14,
         marginRight: 5,
         color: 'white',
     },
     pitchbooking: {
-        fontSize: 16,
+        fontSize: 14,
         color: 'lightblue',
     },
     iconContainer: {
         justifyContent: 'center',
         width: '100%',
-        paddingHorizontal: 16,
-        paddingBottom: 10,
     },
 });

@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { addNewPitchesBooking, loadPitchesBookingByID } from '../../api/pitch-api';
 import { formatDateToVND } from '../../helpers/formatDateToVND';
 import { formatPriceToVND } from '../../helpers/formatPriceToVND';
+import { userSendNotification } from '../../api/user-api';
 
 export default function UserBookingScreen({ navigation, route }) {
     const user = useSelector((state) => state.auth.userData);
@@ -25,6 +26,27 @@ export default function UserBookingScreen({ navigation, route }) {
     const [loading, setLoading] = useState(true);
     const handleTab = (tab) => {
         setSelectedFilter(tab);
+    };
+
+    const sendNotification = async () => {
+        try {
+            const res = await userSendNotification(
+                'Đặt sân',
+                'Người dùng ' +
+                    user.fullname +
+                    ' đã đặt sân ' +
+                    item.name +
+                    ' - Trạng thái: <b style="color: blue">Chờ thanh toán</b>',
+                item.imageURL,
+            );
+            if (res.status === 1) {
+                console.log('OK');
+            } else {
+                throw new Error(res.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const handleFromTime = (fromTime) => {
@@ -53,9 +75,10 @@ export default function UserBookingScreen({ navigation, route }) {
                 timeEnd: Math.floor(toTime.getTime() / 1000),
             });
             if (bookingPitches.status === 1) {
+                await sendNotification();
                 setNotificationSB('Đã đặt sân thành công!');
                 setVisible(true);
-                navigation.replace('UserConfirmBooking', { data: bookingPitches.data });
+                navigation.replace('UserConfirmBooking', { item, data: bookingPitches.data });
             } else {
                 setNotificationSB(bookingPitches.message);
                 setVisible(true);

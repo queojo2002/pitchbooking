@@ -1,10 +1,9 @@
-import { ArrowRight } from 'iconsax-react-native';
-import React, { useEffect, useCallback, useState } from 'react';
-import { Image, FlatList, StyleSheet, Text, View, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { ActivityIndicator, Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { useFocusEffect } from '@react-navigation/native';
-import { loadAllUsers } from '../../api/user-api';
+import { loadAllUserAndCountBooking } from '../../api/user-api';
 import { appColor } from '../../constants/appColor';
 
 const ManagerUser = ({ navigation }) => {
@@ -13,7 +12,7 @@ const ManagerUser = ({ navigation }) => {
 
     const loadUser = async () => {
         try {
-            const usersData = await loadAllUsers();
+            const usersData = await loadAllUserAndCountBooking();
             if (usersData.status === 1) {
                 setUser(usersData.data);
             } else {
@@ -62,17 +61,13 @@ const ManagerUser = ({ navigation }) => {
                         style={styles.avatar}
                     />
                 )}
-                right={() => <Text style={styles.times}>3</Text>}
+                right={() => <Text style={styles.times}>Số lần đặt: {item.countBooking}</Text>}
             />
         </Card>
     );
 
     return (
         <View>
-            <View style={styles.note}>
-                <Text style={styles.textinfo}>Thông tin</Text>
-                <Text style={styles.texttimes}>Số lần đặt sân</Text>
-            </View>
             <FlatList
                 data={user}
                 renderItem={renderItem}
@@ -125,8 +120,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     times: {
-        paddingRight: 60,
-        fontSize: 18,
+        paddingRight: 20,
+        fontSize: 13,
+        color: appColor.blackblue,
     },
 });
 

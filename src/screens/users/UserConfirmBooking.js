@@ -2,10 +2,34 @@ import React, { useEffect, useRef } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { checkIsBooking } from '../../api/pitch-api';
+import { userSendNotification } from '../../api/user-api';
+import { useSelector } from 'react-redux';
 
 export default UseConfirmBooking = ({ navigation, route }) => {
-    const { data } = route.params;
+    const { data, item } = route.params;
     const checkIsBookingRef = useRef();
+    const user = useSelector((state) => state.auth.userData);
+
+    const sendNotification = async () => {
+        try {
+            const res = await userSendNotification(
+                'Đặt sân',
+                'Người dùng ' +
+                    user.fullname +
+                    ' đã đặt sân ' +
+                    item.name +
+                    ' - Trạng thái: <b style="color: green">Đã thanh toán</b>',
+                item.imageURL,
+            );
+            if (res.status === 1) {
+                console.log('OK');
+            } else {
+                throw new Error(res.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
         navigation.setOptions({
@@ -32,7 +56,7 @@ export default UseConfirmBooking = ({ navigation, route }) => {
                 );
             },
         });
-    });
+    }, []);
 
     useEffect(() => {
         checkIsBookingRef.current = setInterval(() => {
@@ -40,6 +64,8 @@ export default UseConfirmBooking = ({ navigation, route }) => {
                 const check = async () => {
                     const res = await checkIsBooking(data.id);
                     if (res.status === 1 || res.status === 2) {
+                        console.log('Sending notification'); // Debugging log
+                        await sendNotification();
                         clearInterval(checkIsBookingRef.current);
                         navigation.goBack();
                         navigation.navigate('UserHistoryScreen');

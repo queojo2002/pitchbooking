@@ -2,6 +2,7 @@ import AddNewPitchesScreen from './admin/AddNewPitchesScreen';
 import AdminChatScreen from './admin/AdminChatScreen';
 import ChatScreen from './ChatScreen';
 import HomeScreen from './admin/HomeScreen';
+import AdminPitchesBookingDetail from './admin/AdminPitchesBookingDetail';
 import LoginScreen from './guest/LoginScreen';
 import ManagePitchesScreen from './admin/ManagePitchesScreen';
 import OnboardingScreen from './OnboardingScreen';
@@ -41,4 +42,5 @@ export {
     UserProfileScreen,
     UserTermsAndConditionsScreen,
     LoginScreen,
+    AdminPitchesBookingDetail,
 };

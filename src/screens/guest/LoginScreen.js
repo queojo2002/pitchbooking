@@ -33,6 +33,7 @@ export default LoginScreen = ({ navigation }) => {
         try {
             const login = await loginUser({ email: email.value.toLowerCase(), password: password.value });
             if (login.status === 0) {
+                setLoading(false);
                 setErrorLogin(login.message);
                 return;
             }
@@ -43,9 +44,11 @@ export default LoginScreen = ({ navigation }) => {
             if (user.status === 1) {
                 await dispatch(loginSuccess(user.data));
             } else {
+                setLoading(false);
                 setErrorLogin(user.message);
             }
         } catch (error) {
+            setLoading(false);
             setErrorLogin(error.message);
         }
         setLoading(false);
@@ -57,6 +60,7 @@ export default LoginScreen = ({ navigation }) => {
         /* setEmail({ value: "AnhTu080302@gmail.com", error: '' })
          setPassword({ value: "AnhTu$123", error: '' }) */
         if (errorLogin) {
+            setLoading(false);
             setErrorLogin('');
         }
     }, []);
@@ -71,7 +75,7 @@ export default LoginScreen = ({ navigation }) => {
                     });
                 }}
             />
-            <Header>Welcome back</Header>
+            <Header>Pitches Booking</Header>
             <TextInput
                 label="Email"
                 returnKeyType="next"
@@ -91,12 +95,12 @@ export default LoginScreen = ({ navigation }) => {
                 onChangeText={(text) => setPassword({ value: text, error: '' })}
                 error={!!password.error}
                 errorText={password.error}
-                secureTextEntryProp
+                secureTextEntryProp={true}
             />
             {errorLogin ? <Text>{errorLogin}</Text> : null}
             <View style={styles.forgotPassword}>
                 <TouchableOpacity onPress={() => navigation.navigate('ResetPasswordScreen')}>
-                    <Text style={styles.forgot}>Forgot your password?</Text>
+                    <Text style={styles.forgot}>Bạn quên mật khẩu?</Text>
                 </TouchableOpacity>
             </View>
 
@@ -104,13 +108,13 @@ export default LoginScreen = ({ navigation }) => {
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
                 <Button mode="contained" onPress={onLoginPressed} style={{ backgroundcolor: 'red' }}>
-                    Login
+                    Đăng nhập
                 </Button>
             )}
             <View style={styles.row}>
-                <Text style={{ padding: 10 }}>Don’t have an account? </Text>
+                <Text style={{ padding: 10 }}>Bạn chưa có tài khoản? </Text>
                 <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
-                    <Text style={styles.link}>Sign up</Text>
+                    <Text style={styles.link}>Đăng ký</Text>
                 </TouchableOpacity>
             </View>
             <Button
@@ -127,7 +131,7 @@ export default LoginScreen = ({ navigation }) => {
                     backgroundColor: '#F3F3F3',
                 }}
             >
-                <Text style={{ marginLeft: 25 }}>Login with Google</Text>
+                <Text style={{ marginLeft: 25 }}>Đăng nhập với Google</Text>
             </Button>
 
             <Button
@@ -142,7 +146,7 @@ export default LoginScreen = ({ navigation }) => {
                     backgroundColor: '#F3F3F3',
                 }}
             >
-                <Text style={{ marginLeft: 25 }}>Login with Phone</Text>
+                <Text style={{ marginLeft: 25 }}>Đăng nhập với Phone</Text>
             </Button>
         </Background>
     );

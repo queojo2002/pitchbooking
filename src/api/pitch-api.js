@@ -7,7 +7,7 @@ export const loadAllPith = async () => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -17,12 +17,10 @@ export const loadAllPith = async () => {
 export const addNewPitchesBooking = async (data) => {
     try {
         const load = await axiosApis.post('/pitchesBookingApi.php', data);
-        console.log(load.data);
-
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -36,7 +34,7 @@ export const loadPitchesBookingByID = async (id) => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -49,7 +47,7 @@ export const loadPitchesBookingByEmail = async () => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -62,7 +60,7 @@ export const checkIsBooking = async (id) => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -77,7 +75,7 @@ export const adminAddNewPitches = async (data) => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -90,7 +88,7 @@ export const adminLoadAllPitches = async () => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -103,7 +101,7 @@ export const adminLoadPitchesByID = async (id) => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);
@@ -116,7 +114,33 @@ export const adminUpdatePitches = async (data) => {
         if (load.status === 200) {
             return load.data;
         } else {
-            throw new Error(userUpdate.data.message);
+            throw new Error(load.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const adminFilterPitchesBooking = async (data) => {
+    try {
+        const load = await axiosApis.get(`/admin/pitchesBookingApi.php${data}`);
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(load.message);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const adminSetStatusPitchesBooking = async (data) => {
+    try {
+        const load = await axiosApis.put('/admin/pitchesBookingApi.php', data);
+        if (load.status === 200) {
+            return load.data;
+        } else {
+            throw new Error(load.message);
         }
     } catch (error) {
         throw new Error(error);

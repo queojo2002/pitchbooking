@@ -73,9 +73,9 @@ export default function RegisterScreen({ navigation }) {
                     });
                 }}
             />
-            <Header>Create Account</Header>
+            <Header>Đăng ký tài khoản</Header>
             <TextInput
-                label="Full Name"
+                label="Họ và tên"
                 returnKeyType="next"
                 value={name.value}
                 onChangeText={(text) => setName({ value: text, error: '' })}
@@ -83,7 +83,7 @@ export default function RegisterScreen({ navigation }) {
                 errorText={name.error}
             />
             <TextInput
-                label="Email"
+                label="Email của bạn"
                 returnKeyType="next"
                 value={email.value}
                 onChangeText={(text) => setEmail({ value: text, error: '' })}
@@ -95,7 +95,7 @@ export default function RegisterScreen({ navigation }) {
                 keyboardType="email-address"
             />
             <TextInput
-                label="Password"
+                label="Mật khẩu"
                 returnKeyType="done"
                 value={password.value}
                 onChangeText={(text) => setPassword({ value: text, error: '' })}
@@ -105,7 +105,7 @@ export default function RegisterScreen({ navigation }) {
             />
 
             <TextInput
-                label="Confirm Password"
+                label="Nhập lại mật khẩu"
                 returnKeyType="done"
                 value={confirmPassword.value}
                 onChangeText={(text) => setConfirmPassword({ value: text, error: '' })}
@@ -120,14 +120,14 @@ export default function RegisterScreen({ navigation }) {
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
                 <Button mode="contained" onPress={onSignUpPressed}>
-                    Sign Up
+                    Đăng ký
                 </Button>
             )}
 
             <View style={styles.row}>
-                <Text>Already have an account? </Text>
+                <Text>Bạn đã có tài khoản rồi? </Text>
                 <TouchableOpacity onPress={() => navigation.replace('LoginScreen')}>
-                    <Text style={styles.link}>Login</Text>
+                    <Text style={styles.link}>Đăng nhập</Text>
                 </TouchableOpacity>
             </View>
         </Background>

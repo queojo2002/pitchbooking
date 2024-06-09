@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { View, StyleSheet } from 'react-native';
 import { appColor } from '../constants/appColor';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ChatScreen = ({ navigation, route }) => {
     const { item } = route.params;
@@ -40,32 +41,35 @@ const ChatScreen = ({ navigation, route }) => {
         });
     }, [item.fullname, navigation]);
 
-    useLayoutEffect(() => {
-        const unsubscribe = firestore()
-            .collection('messages')
-            .orderBy('createdAt', 'desc')
-            .onSnapshot((snapshot) => {
-                const list = snapshot.docs
-                    .map((doc) => ({
-                        _id: doc.data()._id,
-                        text: doc.data().text,
-                        createdAt: doc.data().createdAt.toDate(),
-                        recipient: doc.data().recipient,
-                        user: {
-                            _id: doc.data().user._id,
-                            name: doc.data().user.name,
-                            avatar: doc.data().user.avatar,
-                        },
-                    }))
-                    .filter(
-                        (msg) =>
-                            (msg.user._id === user.email && msg.recipient === item.email) ||
-                            (msg.user._id === item.email && msg.recipient === user.email),
-                    );
-                setMessages(list);
-            });
-        return () => unsubscribe();
-    }, [item.email, user.email]);
+    useFocusEffect(
+        React.useCallback(() => {
+            const unsubscribe = firestore()
+                .collection('messages')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((snapshot) => {
+                    const list = snapshot.docs
+                        .map((doc) => ({
+                            _id: doc.data()._id,
+                            text: doc.data().text,
+                            createdAt: doc.data().createdAt.toDate(),
+                            recipient: doc.data().recipient,
+                            user: {
+                                _id: doc.data().user._id,
+                                name: doc.data().user.name,
+                                avatar: doc.data().user.avatar,
+                            },
+                        }))
+                        .filter(
+                            (msg) =>
+                                (msg.user._id === user.email && msg.recipient === item.email) ||
+                                (msg.user._id === item.email && msg.recipient === user.email),
+                        );
+                    console.table(list);
+                    setMessages(list);
+                });
+            return () => unsubscribe();
+        }, [item.email, user.email]),
+    );
 
     const renderBubble = (props) => {
         return (
@@ -122,7 +126,7 @@ const ChatScreen = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
     chatContainer: {
-        backgroundColor: '#F0F0F0', 
+        backgroundColor: '#F0F0F0',
         backgrou: 'green',
     },
     sendingContainer: {

@@ -1,19 +1,12 @@
-import {
-    CloseSquare,
-    LocationDiscover,
-    Refresh,
-    RefreshCircle,
-    RefreshRightSquare,
-    SearchNormal1,
-} from 'iconsax-react-native';
-import React, { Fragment, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { CloseSquare, SearchNormal1 } from 'iconsax-react-native';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
     Button,
     Dimensions,
     FlatList,
     Image,
     ScrollView,
-    StatusBar,
     StyleSheet,
     Text,
     TextInput,
@@ -26,7 +19,6 @@ import { useSelector } from 'react-redux';
 import { loadPitchesBookingByEmail } from '../../api/pitch-api';
 import { appColor } from '../../constants/appColor';
 import { formatDateToVND } from '../../helpers/formatDateToVND';
-import { useFocusEffect } from '@react-navigation/native';
 const windowWidth = Dimensions.get('window').width;
 const itemWidth = windowWidth / 3;
 

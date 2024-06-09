@@ -8,6 +8,7 @@ import {
     UpdatePitchesScreen,
     AdminChatScreen,
     ChatScreen,
+    AdminPitchesBookingDetail,
 } from '../screens';
 import AdminBottomNavigation from './AdminBottomNavigation';
 import { appColor } from '../constants/appColor';
@@ -25,6 +26,7 @@ export default AdminNavigation = () => {
                 <Stack.Screen name="UpdatePitchesScreen" component={UpdatePitchesScreen} />
                 <Stack.Screen name="AdminChatScreen" component={AdminChatScreen} />
                 <Stack.Screen name="ChatScreen" component={ChatScreen} />
+                <Stack.Screen name="AdminPitchesBookingDetail" component={AdminPitchesBookingDetail} />
             </Stack.Navigator>
         </GestureHandlerRootView>
     );
